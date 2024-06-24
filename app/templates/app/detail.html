@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ object.name }}</title>
+</head>
+<body>
+    {% if error_message %}
+        <p>{{ error_message }}</p>
+    {% else %}
+        <h1>{{ object.name }}</h1>
+        <p>Age: {{ object.age }}</p>
+        <p>Email: {{ object.email }}</p>
+    {% endif %}
+    <a href="{% url 'index' %}">Back to list</a>
+</body>
+</html>
