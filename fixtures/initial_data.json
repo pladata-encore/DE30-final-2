@@ -1,0 +1,11 @@
+[
+  {
+    "model": "app.yourmodel",
+    "pk": 1,
+    "fields": {
+      "name": "John Doe",
+      "age": 30,
+      "email": "john@example.com"
+    }
+  }
+]

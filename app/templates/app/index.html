@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YourModel List</title>
+</head>
+<body>
+    <h1>YourModel List</h1>
+    <ul>
+        {% for object in objects %}
+            <li><a href="{% url 'detail' object.id %}">{{ object.name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
