@@ -24,4 +24,5 @@ urlpatterns = [
     path('', include('app.urls')),
     path('create/', views.your_model_create, name='create'),
     path('form/', views.your_form_view, name='your_form'),
+    path('diary/', include('diaryapp.urls'))
 ]
