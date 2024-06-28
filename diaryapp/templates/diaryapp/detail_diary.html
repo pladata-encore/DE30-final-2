@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ diary.diarytitle }}</title>
+</head>
+<body>
+    <h1>{{ diary.diarytitle }}</h1>
+<!--    <p>작성자: {{ diary.user_email }}</p>-->
+<!--    <p>감정: {{ diary.emotion }}</p>-->
+    <p>내용: {{ diary.content }}</p>
+    <p>장소: {{ diary.place }}</p>
+    <p>친구와 함께: {{ diary.withfriend }}</p>
+    <p>작성일: {{ diary.created_at }}</p>
+    {% if diary.image_file %}
+        <img src="{{ diary.image_file.url }}" alt="Image">
+    {% endif %}
+    {% if diary.video_file %}
+        <video src="{{ diary.video_file.url }}" controls></video>
+    {% endif %}
+    {% if diary.sticker_file %}
+        <img src="{{ diary.sticker_file.url }}" alt="Sticker">
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <!-- 반복문을 통해 각 다이어리 항목을 출력 -->
+    {% for diary in diary_list %}
+    <div>
+        <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}">{{ diary.diarytitle }}</a>
+    </div>
+    {% endfor %}
+
+    <!-- 일기 작성 링크 -->
+    <a href="{% url 'write_diary' %}">일기 작성</a>
+</body>
+</html>
