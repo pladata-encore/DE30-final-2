@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "diaryapp",
-    "app"
 ]
 
 MIDDLEWARE = [
@@ -94,6 +93,15 @@ DATABASES = {
     }
 }
 
+# 미디어 파일 저장 경로
+MEDIA_URL = '/media/'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 이미지 DB
+MONGO_URI = 'mongodb://localhost:27017/'
+MONGO_DB_NAME = 'diary'
+MEDIA_BASE_URL = 'http://localhost:8000/media/'  # GridFS의 파일을 접근할 수 있는 기본 URL
 
 
 # Password validation
@@ -132,9 +140,13 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# GridFS설정
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DEFAULT_FROM_EMAIL = "aaa@gmail.com"
+DEBUG = True

@@ -1,18 +1,27 @@
+<!-- list_diary.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Diary List</title>
 </head>
 <body>
-    <!-- 반복문을 통해 각 다이어리 항목을 출력 -->
-    {% for diary in diary_list %}
-    <div>
-        <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}">{{ diary.diarytitle }}</a>
-    </div>
-    {% endfor %}
-
-    <!-- 일기 작성 링크 -->
-    <a href="{% url 'write_diary' %}">일기 작성</a>
+    <h1>Diary List</h1>
+    <ul>
+        {% for diary in diary_list %}
+            <li>
+                <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}">{{ diary.diarytitle }}</a>
+                {% if diary.representative_image %}
+                    <img src="{{ diary.representative_image.image_file_url }}" alt="Representative Image">
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No diaries found.</li>
+        {% endfor %}
+    </ul>
+    <!-- 일기 작성 화면으로 가는 버튼 추가 -->
+    <a href="{% url 'write_diary' %}">
+        <button>Write a New Diary</button>
+    </a>
 </body>
 </html>

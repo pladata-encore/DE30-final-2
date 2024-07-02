@@ -1,20 +1,18 @@
+# diaryapp/views.py
+import gridfs
 import torch
 import open_clip
 from PIL import Image
-from django.core.serializers import serialize, deserialize
-from django.forms import model_to_dict
-from django.urls import reverse
-from huggingface_hub._webhooks_payload import ObjectId
+from pymongo import MongoClient
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
-from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
-
 from myproject import settings
 from .forms import DiaryForm
-from .models import AiwriteModel
+from .models import AiwriteModel, ImageModel#,VideoModel, StickerModel
+from .storage import save_file_to_gridfs, get_file_from_gridfs, delete_file_from_gridfs, get_file_url_from_gridfs
 from googletrans import Translator
-import logging
-from bson import ObjectId
+import io
+
 
 def generate_dynamic_descriptions():
     descriptions = [
@@ -31,13 +29,12 @@ def translate_to_korean(text): # 일기 내용 한국어로 번역
     translator = Translator()
     translated = translator.translate(text, src='en', dest='ko')
     return translated.text
-
-def translate_to_English(text): # 입력한 감정 영어로 번역
+def translate_to_English(text): # 입력한 감정,장소 영어로 번역
     translator = Translator()
     translated = translator.translate(text, src='ko', dest='en')
     return translated.text
 
-# GPT API
+# GPT API사용해서 일기 가져오는 부분
 def generate_diary(request):
     if request.method == 'POST':
         form = DiaryForm(request.POST, request.FILES)
@@ -46,13 +43,26 @@ def generate_diary(request):
             place = form.cleaned_data['place']
             emotion = form.cleaned_data['emotion']
             withfriend = form.cleaned_data['withfriend']
-            image_file = form.cleaned_data['image_file']
-            video_file = form.cleaned_data['video_file']
-            sticker_file = form.cleaned_data['sticker_file']
+            content = form.cleaned_data['content']
+            image_file = request.FILES.get('image_file')
+            video_file = request.FILES.get('video_file')
+            sticker_file = request.FILES.get('sticker_file')
 
+            user_email = settings.DEFAULT_FROM_EMAIL
+            # user_email = request.user.email  # if request.user.is_authenticated else None
+
+            # 파일 처리
+            image_model = None
+            if image_file:
+                image_id = save_file_to_gridfs(image_file.read(), image_file.name)
+                image_model = ImageModel.objects.create(
+                    image_id=image_id,
+                    image_file_url=get_file_url_from_gridfs(image_file.name)
+                )
             # emotion, place 번역
             translated_emotion = translate_to_English(emotion)
             translated_place = translate_to_English(place)
+
             # CLIP 모델과 전처리기 로드
             model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
             # print(model_info)  # 반환 값을 확인하기 위해 출력
@@ -123,20 +133,14 @@ def generate_diary(request):
 
             translated_text = translate_to_korean(extracted_content)
 
-            user_email = settings.DEFAULT_FROM_EMAIL
-            # user_email = request.user.email  # if request.user.is_authenticated else None
-
-            # 생성된 일기를 저장
+            # AiwriteModel에 저장
             diary_entry = AiwriteModel.objects.create(
                 user_email=user_email,
-#                emotion=emotion,
+                diarytitle=diarytitle,
                 place=place,
                 content=translated_text,
-                image_file=image_file,
-                diarytitle=diarytitle,
                 withfriend=withfriend,
-                video_file=video_file,
-                sticker_file=sticker_file,
+                representative_image=image_model
             )
 
             return redirect('list_diary')
@@ -146,7 +150,7 @@ def generate_diary(request):
         form = DiaryForm()
     return render(request, 'diaryapp/write_diary.html', {'form': form})
 
-# 나머지 일기 부분 작성
+# 직접 일기 부분 작성
 def write_diary(request):
     if request.method == 'POST':
         form = DiaryForm(request.POST, request.FILES)
@@ -156,24 +160,31 @@ def write_diary(request):
             emotion = form.cleaned_data['emotion']
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
-            image_file = form.cleaned_data['image_file']
-            video_file = form.cleaned_data['video_file']
-            sticker_file = form.cleaned_data['sticker_file']
+            image_file = request.FILES.get('image_file')
+            video_file = request.FILES.get('video_file')
+            sticker_file = request.FILES.get('sticker_file')
 
-            # user_email = request.user.email #if request.user.is_authenticated else None
             user_email = settings.DEFAULT_FROM_EMAIL
 
+            # 파일 처리
+            image_model = None
+            if image_file:
+                image_id = save_file_to_gridfs(image_file.read(), image_file.name)
+                image_model = ImageModel.objects.create(
+                    image_id=image_id,
+                    image_file_url=get_file_url_from_gridfs(image_file.name)
+                )
+
+                # 일기 저장
             diary_entry = AiwriteModel.objects.create(
                 user_email=user_email,
- #               emotion=emotion,
+                diarytitle=diarytitle,
                 place=place,
                 content=content,
-                image_file=image_file,
-                diarytitle=diarytitle,
                 withfriend=withfriend,
-                video_file=video_file,
-                sticker_file=sticker_file,
+                representative_image=image_model  # 대표 이미지 설정
             )
+
             return redirect('list_diary')
         else:
             return render(request, 'diaryapp/write_diary.html', {'form': form})
@@ -181,18 +192,15 @@ def write_diary(request):
         form = DiaryForm()
     return render(request, 'diaryapp/write_diary.html', {'form': form})
 
+
+# 블로그 글 리스트
 def list_diary(request):
     # user_email = request.user.email #if request.user.is_authenticated else None
     user_email = settings.DEFAULT_FROM_EMAIL
-    diary_list = AiwriteModel.objects.all().order_by('-created_at')  # 최신 순서대로 정렬 예시
+    diary_list = AiwriteModel.objects.all().order_by('-created_at')
     return render(request, 'diaryapp/list_diary.html', {'diary_list': diary_list})
 
-# def detail_diary_by_title(request, diary_title):
-#     # user_email = request.user.email #if request.user.is_authenticated else None
-#     user_email = settings.DEFAULT_FROM_EMAIL
-#     diary = get_object_or_404(AiwriteModel, diarytitle=diary_title)
-#     return render(request, 'detail_diary.html', {'diary': diary})
-
+# 일기 내용 확인
 def detail_diary_by_id(request, unique_diary_id):
     # user_email = request.user.email #if request.user.is_authenticated else None
     user_email = settings.DEFAULT_FROM_EMAIL
