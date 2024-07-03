@@ -139,7 +139,7 @@ def generate_diary(request):
                 user_email=user_email,
                 diarytitle=diarytitle,
                 place=place,
-                content=content,
+                content=translated_text,
                 withfriend=withfriend,
             )
 
