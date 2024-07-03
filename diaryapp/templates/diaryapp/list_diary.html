@@ -12,7 +12,7 @@
             <li>
                 <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}">{{ diary.diarytitle }}</a>
                 {% if diary.representative_image %}
-                    <img src="{{ diary.representative_image.image_file_url }}" alt="Representative Image">
+                    <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image">
                 {% endif %}
             </li>
         {% empty %}

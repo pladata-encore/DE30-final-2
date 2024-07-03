@@ -3,6 +3,8 @@ import gridfs
 import torch
 import open_clip
 from PIL import Image
+from django.http import HttpResponse
+from django.utils import timezone
 from pymongo import MongoClient
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from django.shortcuts import render, get_object_or_404, redirect
@@ -12,7 +14,12 @@ from .models import AiwriteModel, ImageModel#,VideoModel, StickerModel
 from .storage import save_file_to_gridfs, get_file_from_gridfs, delete_file_from_gridfs, get_file_url_from_gridfs
 from googletrans import Translator
 import io
+import base64
 
+def image_detail(request, pk):
+    image_model = ImageModel.objects.get(pk=pk)
+    image_data = base64.b64decode(image_model.image_file)
+    return HttpResponse(image_data, content_type="image/png")
 
 def generate_dynamic_descriptions():
     descriptions = [
@@ -45,20 +52,12 @@ def generate_diary(request):
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
             image_file = request.FILES.get('image_file')
-            video_file = request.FILES.get('video_file')
-            sticker_file = request.FILES.get('sticker_file')
+            # video_file = request.FILES.get('video_file')
+            # sticker_file = request.FILES.get('sticker_file')
 
             user_email = settings.DEFAULT_FROM_EMAIL
             # user_email = request.user.email  # if request.user.is_authenticated else None
 
-            # 파일 처리
-            image_model = None
-            if image_file:
-                image_id = save_file_to_gridfs(image_file.read(), image_file.name)
-                image_model = ImageModel.objects.create(
-                    image_id=image_id,
-                    image_file_url=get_file_url_from_gridfs(image_file.name)
-                )
             # emotion, place 번역
             translated_emotion = translate_to_English(emotion)
             translated_place = translate_to_English(place)
@@ -133,15 +132,26 @@ def generate_diary(request):
 
             translated_text = translate_to_korean(extracted_content)
 
-            # AiwriteModel에 저장
+            # 일기 저장
+            unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
             diary_entry = AiwriteModel.objects.create(
+                unique_diary_id=unique_diary_id,
                 user_email=user_email,
                 diarytitle=diarytitle,
                 place=place,
-                content=translated_text,
+                content=content,
                 withfriend=withfriend,
-                representative_image=image_model
             )
+
+            # 이미지 처리
+            if image_file:
+                image = Image.open(image_file)
+                image_model = ImageModel(diary=diary_entry)
+                image_model.save_image(image)
+                image_model.save()
+                diary_entry.representative_image = image_model
+                diary_entry.images.add(image_model)
+                diary_entry.save()
 
             return redirect('list_diary')
         else:
@@ -161,30 +171,39 @@ def write_diary(request):
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
             image_file = request.FILES.get('image_file')
-            video_file = request.FILES.get('video_file')
-            sticker_file = request.FILES.get('sticker_file')
+            # video_file = request.FILES.get('video_file')
+            # sticker_file = request.FILES.get('sticker_file')
 
             user_email = settings.DEFAULT_FROM_EMAIL
 
-            # 파일 처리
-            image_model = None
-            if image_file:
-                image_id = save_file_to_gridfs(image_file.read(), image_file.name)
-                image_model = ImageModel.objects.create(
-                    image_id=image_id,
-                    image_file_url=get_file_url_from_gridfs(image_file.name)
-                )
-
-                # 일기 저장
+            # 일기 저장
+            unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
             diary_entry = AiwriteModel.objects.create(
+                unique_diary_id=unique_diary_id,
                 user_email=user_email,
                 diarytitle=diarytitle,
                 place=place,
                 content=content,
                 withfriend=withfriend,
-                representative_image=image_model  # 대표 이미지 설정
             )
 
+            # 이미지 처리
+            if image_file:
+                image = Image.open(image_file)
+                image_model = ImageModel(diary=diary_entry)
+                image_model.save_image(image)
+                image_model.save()
+                # 첫 번째 이미지를 대표 이미지로 설정
+                if not diary_entry.representative_image:
+                    image_model.is_representative = True
+                    image_model.save()
+                    diary_entry.representative_image = image_model
+                    diary_entry.save()
+                else:
+                    image_model.is_representative = False
+                    image_model.save()
+                    diary_entry.images.add(image_model)
+                    diary_entry.save()
             return redirect('list_diary')
         else:
             return render(request, 'diaryapp/write_diary.html', {'form': form})

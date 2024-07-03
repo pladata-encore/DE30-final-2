@@ -28,3 +28,4 @@ def get_file_url_from_gridfs(unique_diary_id):
         pass
 def delete_file_from_gridfs(unique_diary_id):
     fs.delete(unique_diary_id)
+

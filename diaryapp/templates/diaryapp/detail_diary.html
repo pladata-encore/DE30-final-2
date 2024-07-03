@@ -13,11 +13,13 @@
     <p><strong>Created at:</strong> {{ diary.created_at }}</p>
 
     {% if diary.representative_image %}
-        <img src="{{ diary.representative_image.image_file_url }}" alt="Representative Image">
+        <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image">
     {% endif %}
 
-    {% for image in diary.images.all %}
-        <img src="{{ image.image_file_url }}" alt="Diary Image">
+    {% for image in diary.diary_images.all %}
+        {% if not image.is_representative %}
+            <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image">
+        {% endif %}
     {% empty %}
         No images available
     {% endfor %}
