@@ -5,12 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/diaryapp/templates/diary.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common_templates/footer.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common_templates/header.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/assets/js/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diary.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myproject/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,17 +44,21 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;diary&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/projects/Encore_Final_Project&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/projects/Encore_Final_Project/static/assets/js&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\projects\Encore_Final_Project\static\assets\js" />
+      <recent name="C:\projects\Encore_Final_Project\static\assets\css" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\projects\Encore_Final_Project" />
+      <recent name="C:\projects\Encore_Final_Project\static\templates" />
       <recent name="C:\projects\Encore_Final_Project\diaryapp\templates" />
       <recent name="C:\projects\Encore_Final_Project\templates" />
-      <recent name="C:\projects\Encore_Final_Project" />
       <recent name="C:\projects\Encore_Final_Project\diaryapp\static" />
-      <recent name="C:\Users\fx567\PycharmProjects\myproject" />
     </key>
   </component>
   <component name="RunManager">
