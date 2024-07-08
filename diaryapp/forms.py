@@ -6,6 +6,7 @@ from .storage import *
 
 class DiaryForm(forms.ModelForm):
     image_file = forms.FileField(required=False)
+    emotion = forms.ChoiceField(choices=AiwriteModel.EMOTION_CHOICES)
     # video_file = forms.FileField(required=False)
     # sticker_file = forms.FileField(required=False)
 

@@ -7,12 +7,9 @@
     <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/migrations/0002_remove_imagemodel_image_file_url.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/migrations/0003_imagemodel_is_representative_and_more.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/write_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/write_diary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -23,8 +20,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>

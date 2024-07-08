@@ -33,17 +33,31 @@ class ImageModel(models.Model):
     def __str__(self):
         return f"Image for {self.diary.unique_diary_id}"
 
+
 class AiwriteModel(models.Model):
+    EMOTION_CHOICES = [
+        ('Happiness', '행복'),
+        ('Sadness', '슬픔'),
+        ('Anger', '화남'),
+        ('Annoyance', '짜증'),
+        ('Joy', '기쁨'),
+        ('Fear', '두려움 '),
+        ('Relief', '안도 '),
+        ('Anxiety', '불안  '),
+    ]
+
     unique_diary_id = models.CharField(max_length=255, unique=True)  # 실제 사용하는 아이디
     user_email = models.EmailField()
     diarytitle = models.CharField(max_length=100, default='제목')
-    emotion = models.CharField(max_length=100)
+    emotion = models.CharField(max_length=100, choices=EMOTION_CHOICES)
     content = models.TextField(blank=True, null=True)
     place = models.CharField(max_length=100, default='Unknown')
     created_at = models.DateTimeField(auto_now_add=True)
     withfriend = models.CharField(max_length=100, blank=True, null=True)
     images = models.ManyToManyField(ImageModel, related_name='aiwrite_models')
     representative_image = models.OneToOneField('ImageModel', on_delete=models.SET_NULL, null=True, blank=True)
+
+
 
     def save(self, *args, **kwargs):
         if not self.created_at:

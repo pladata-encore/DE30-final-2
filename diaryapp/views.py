@@ -15,6 +15,7 @@ from .storage import save_file_to_gridfs, get_file_from_gridfs, delete_file_from
 from googletrans import Translator
 import io
 import base64
+from django.forms.models import modelformset_factory
 
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
@@ -165,9 +166,9 @@ def generate_diary(request):
                 additional_image_model.save()
                 diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
 
-            return redirect('list_diary')
+            return redirect('list_diary', permanent=True)
         else:
-            return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
+            return render(request, 'diaryapp/list_diary.html', {'form': form, 'image_form': image_form})
     else:
         form = DiaryForm()
         image_form = ImageUploadForm()
@@ -243,5 +244,48 @@ def detail_diary_by_id(request, unique_diary_id):
     # user_email = request.user.email #if request.user.is_authenticated else None
     user_email = settings.DEFAULT_FROM_EMAIL
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-
     return render(request, 'diaryapp/detail_diary.html', {'diary': diary})
+
+# 일기 내용 수정
+def update_diary(request, unique_diary_id):
+    diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+    image_instances = ImageModel.objects.filter(diary=diary).all()
+
+    if request.method == 'POST':
+        form = DiaryForm(request.POST, request.FILES, instance=diary)
+
+        if form.is_valid():
+            form.save()
+
+            # 대표 이미지 처리
+            representative_image = request.FILES.get('image_file')
+            if representative_image:
+                image_model = ImageModel(is_representative=True)
+                image_model.save_image(Image.open(representative_image))
+                image_model.save()
+                diary.representative_image = image_model
+                diary.save()
+
+            # 추가 이미지 처리
+            images = request.FILES.getlist('images')
+            for img in images:
+                additional_image_model = ImageModel(is_representative=False)
+                additional_image_model.save_image(Image.open(img))
+                additional_image_model.save()
+                diary.images.add(additional_image_model)
+
+            # 일기 상세 페이지로 리디렉션
+            return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
+    else:
+        form = DiaryForm(instance=diary)
+        image_form = ImageUploadForm()  # 이미지 단일 폼 객체 생성
+
+    return render(request, 'diaryapp/update_diary.html', {'form': form, 'image_form': image_form})
+# 일기 내용 삭제
+def delete_diary(request, unique_diary_id):
+  diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+  if request.method == 'POST':
+      diary.delete()
+      return redirect('list_diary')
+
+  return redirect('list_diary')

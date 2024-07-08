@@ -24,6 +24,12 @@
         No images available
     {% endfor %}
 
-    <a href="{% url 'list_diary' %}">Back to Diary List</a>
+    <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
+    <a href="{% url 'update_diary' unique_diary_id=diary.unique_diary_id %}">일기수정하기</a>
+    <!-- 삭제 버튼 -->
+    <form action="{% url 'delete_diary' unique_diary_id=diary.unique_diary_id %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="삭제하기">
+    </form>
 </body>
 </html>
