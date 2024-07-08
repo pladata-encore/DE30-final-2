@@ -3,9 +3,11 @@
 /* 공통 */
 #wrapper{width:66em;padding:5em 0 2em;}
 #main{min-height:calc(100vh - 7em)}
+#main > .main{padding:4em 1em 4em}
 #main a, #main a:hover, a, a:hover{border:0;color:inherit}
 strong, b{color:inherit}
 .screen_out {overflow: hidden;position: absolute;width: 0;height: 0;line-height: 0;text-indent: -9999px;}
+.tit_main{font-weight:500}
 
 /* head */
 .head_tour {
@@ -163,13 +165,22 @@ main {
   overflow-y: auto;
 }
 
+
+
 /* diary */
 
 #main > .main_diary{
     padding-left:0;
     padding-right:0;
     }
-
+.info_diary{padding:0 1em}
+.info_diary .badge_tour{margin-top:1em}
+.card_diary{position:relative;margin-top:3em}
+.card_diary .tit_main{margin-left:1em;}
+.link_all{position:absolute;right:1em;top:0;font-size:.8em;line-height:2.5}
+.link_all svg{vertical-align:text-top}
+#main .btn_setting{width:32px;height:32px;overflow:hidden;box-shadow:none;font-size:0;line-height: 0;opacity:0.5; transition: opacity 0.2s ease;}
+#main .btn_setting:hover, #main .btn_setting:active, #main .btn_setting:focus{background:none;opacity:1}
 
 /* slider */
 
@@ -184,7 +195,7 @@ main {
 .slider {
   display: inline-flex;
   transition: transform 0.5s ease;
-  margin-bottom:1em;
+  margin-bottom:1rem;
     }
 
 .carousel-control-next, .carousel-control-prev{
@@ -195,6 +206,9 @@ main {
     height:5em;
     box-shadow:none !important;
     }
+.carousel-control-next:focus, .carousel-control-next:hover, .carousel-control-prev:focus, .carousel-control-prev:hover{
+    background-color:rgba(222, 222, 222, 0.5);
+}
 
 .carousel-control-prev-icon, .carousel-control-next-icon{
     filter: invert(1) grayscale(100);
@@ -202,27 +216,9 @@ main {
 }
 
 /* card - 다이어리 */
-.card{
-    display:block;
-    width:300px;
-    margin-left:1.5em;
-    margin-right:0;
-    border:0;
-    }
-
-.card .link_card {
-    display: block;
-    position: relative;
-    height: 100%;
-    box-shadow: 2px 4px 12px #00000014;
-    transition: .3s cubic-bezier(0,0,.5,1);
-    border-radius:inherit;
-    }
-
-.card .link_card:hover, .card .link_card:focus {
-    box-shadow: 2px 4px 18px #00000029;
-    }
-
+.card{max-width:300px;margin-left:1.5rem;margin-right:0;border:0;}
+.card .link_card {display: block;position: relative;height: 100%;box-shadow: 2px 4px 12px #00000014;transition: .3s cubic-bezier(0,0,.5,1);border-radius:inherit;}
+.card .link_card:hover, .card .link_card:focus {box-shadow: 2px 4px 18px #00000029;}
 .card-img{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;height:200px;border-bottom-right-radius:0;border-bottom-left-radius:0;}
 .card-img .txt_noimg{display:block;position:absolute;opacity:.6}
 .card-img img + .txt_noimg{display:none}

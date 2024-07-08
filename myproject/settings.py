@@ -90,12 +90,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
-        # 'ENFORCE_SCHEMA': False,
-        # 'CLIENT': {
-        #     'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-        #     'username': 'Bora',
-        #     'password': '1234'
-        # }
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+            'username': 'Bora',
+            'password': '1234'
+        }
     }
 }
 
