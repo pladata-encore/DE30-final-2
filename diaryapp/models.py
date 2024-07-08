@@ -1,4 +1,5 @@
 # diaryapp/models.py
+import uuid
 from io import BytesIO
 # from django.db import models
 from urllib.parse import urljoin
@@ -9,7 +10,8 @@ from djongo import models
 import base64
 
 class ImageModel(models.Model):
-    diary = models.OneToOneField('AiwriteModel', on_delete=models.CASCADE, related_name='diary_images')
+    image_id = models.CharField(max_length=255, unique=True)
+    diary = models.ManyToManyField('AiwriteModel', related_name='diary_images')
     image_file = models.TextField()  # base64 인코딩된 이미지 문자열을 저장할 필드
     is_representative = models.BooleanField(default=False)
 
@@ -17,7 +19,11 @@ class ImageModel(models.Model):
         buffered = BytesIO()
         image.save(buffered, format="PNG")
         self.image_file = base64.b64encode(buffered.getvalue()).decode('utf-8')
-        #self.image_file_url = reverse('image_detail', args=[self.pk])
+
+    def save(self, *args, **kwargs):
+        if not self.image_id:
+            self.image_id = str(uuid.uuid4())
+        super().save(*args, **kwargs)
 
     def get_image(self):
         image_data = base64.b64decode(self.image_file)

@@ -31,6 +31,7 @@
     <form id="diary-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
+        {{ image_form.as_p }}
         <button type="submit">일기 작성</button>
         <button id="generate-button">AI가 일기 써주기</button>
     </form>

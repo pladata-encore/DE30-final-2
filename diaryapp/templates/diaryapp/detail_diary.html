@@ -16,7 +16,7 @@
         <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image">
     {% endif %}
 
-    {% for image in diary.diary_images.all %}
+    {% for image in diary.images.all %}
         {% if not image.is_representative %}
             <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image">
         {% endif %}
