@@ -62,7 +62,7 @@ def generate_diary(request):
             # user_email = request.user.email  # if request.user.is_authenticated else None
 
             # emotion, place 번역
-            translated_emotion = translate_to_English(emotion)
+            # translated_emotion = translate_to_English(emotion)
             translated_place = translate_to_English(place)
 
             # CLIP 모델과 전처리기 로드
@@ -111,9 +111,9 @@ def generate_diary(request):
             #           )
             prompt = (f"Please draft my travel diary based on this information."
                       f"I recently visited {translated_place} in korea. "
-                      f"During my trip, I felt a strong sense of {translated_emotion}. "
+                      f"During my trip, I felt a strong sense of {emotion}. "
                       f"One of the notable experiences was {best_description}. "
-                      f"It must include {translated_place},{translated_emotion} and {best_description}"
+                      f"It must include {translated_place},{emotion} and {best_description}"
                       )
 
             # GPT-2 모델을 사용하여 텍스트 생성
@@ -135,6 +135,9 @@ def generate_diary(request):
 
             translated_text = translate_to_korean(extracted_content)
 
+            # emotion 번역
+            translated_emotion = translate_to_korean(emotion)
+
             # 일기 저장
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
             diary_entry = AiwriteModel.objects.create(
@@ -142,7 +145,7 @@ def generate_diary(request):
                 user_email=user_email,
                 diarytitle=diarytitle,
                 place=place,
-                emotion=emotion,
+                emotion=translated_emotion,
                 withfriend=withfriend,
                 content=translated_text,
             )
@@ -156,7 +159,6 @@ def generate_diary(request):
                 image_model.save()
                 diary_entry.representative_image = image_model
                 diary_entry.save()
-                diary_entry.images.add(image_model)  # ManyToMany 관계 설정
 
                 # 추가 이미지 처리
             images = request.FILES.getlist('images')
@@ -191,6 +193,9 @@ def write_diary(request):
 
             user_email = settings.DEFAULT_FROM_EMAIL
 
+            # emotion 번역
+            translated_emotion = translate_to_korean(emotion)
+
             # 일기 저장
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
             diary_entry = AiwriteModel.objects.create(
@@ -198,7 +203,7 @@ def write_diary(request):
                 user_email=user_email,
                 diarytitle=diarytitle,
                 place=place,
-                emotion=emotion,
+                emotion=translated_emotion,
                 withfriend=withfriend,
                 content=content,
             )
@@ -212,7 +217,7 @@ def write_diary(request):
                 image_model.save()
                 diary_entry.representative_image = image_model
                 diary_entry.save()
-                diary_entry.images.add(image_model)  # ManyToMany 관계 설정
+
 
                 # 추가 이미지 처리
             images = request.FILES.getlist('images')
@@ -241,7 +246,7 @@ def list_diary(request):
 
 # 일기 내용 확인
 def detail_diary_by_id(request, unique_diary_id):
-    # user_email = request.user.email #if request.user.is_authenticated else None
+    # user_email = request.user.email if request.user.is_authenticated else None
     user_email = settings.DEFAULT_FROM_EMAIL
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     return render(request, 'diaryapp/detail_diary.html', {'diary': diary})
@@ -249,38 +254,56 @@ def detail_diary_by_id(request, unique_diary_id):
 # 일기 내용 수정
 def update_diary(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-    image_instances = ImageModel.objects.filter(diary=diary).all()
 
     if request.method == 'POST':
-        form = DiaryForm(request.POST, request.FILES, instance=diary)
+        diary.diarytitle = request.POST['diarytitle']
+        diary.place = request.POST['place']
+        diary.emotion = request.POST['emotion']
+        diary.withfriend = request.POST['withfriend']
+        diary.content = request.POST['content']
 
-        if form.is_valid():
-            form.save()
+        user_email = settings.DEFAULT_FROM_EMAIL
+        diary.save()
 
-            # 대표 이미지 처리
-            representative_image = request.FILES.get('image_file')
-            if representative_image:
-                image_model = ImageModel(is_representative=True)
-                image_model.save_image(Image.open(representative_image))
-                image_model.save()
-                diary.representative_image = image_model
-                diary.save()
+        # 대표 이미지 처리 (대표 이미지 변경)
+        representative_image = request.FILES.get('image_file')
+        if representative_image:
+            if diary.representative_image:
+                diary.representative_image.delete()  # 기존 대표 이미지 삭제
+            image_model = ImageModel(is_representative=True)
+            image_model.save_image(Image.open(representative_image))
+            image_model.save()
+            diary.representative_image = image_model
+            diary.save()
 
-            # 추가 이미지 처리
-            images = request.FILES.getlist('images')
-            for img in images:
-                additional_image_model = ImageModel(is_representative=False)
-                additional_image_model.save_image(Image.open(img))
-                additional_image_model.save()
-                diary.images.add(additional_image_model)
+        # 추가 이미지 처리
+        images = request.FILES.getlist('images')
+        for img in images:
+            additional_image_model = ImageModel(is_representative=False)
+            additional_image_model.save_image(Image.open(img))
+            additional_image_model.save()
+            diary.images.add(additional_image_model)  # ManyToMany 관계 설정
 
-            # 일기 상세 페이지로 리디렉션
-            return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
+        # 기존 이미지 삭제 처리
+        delete_image_ids = request.POST.getlist('delete_images')
+        for image_id in delete_image_ids:
+            image_to_delete = ImageModel.objects.get(id=image_id)
+            diary.images.remove(image_to_delete)
+            image_to_delete.delete()
+
+        return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
     else:
         form = DiaryForm(instance=diary)
-        image_form = ImageUploadForm()  # 이미지 단일 폼 객체 생성
+        image_form = ImageUploadForm()
 
-    return render(request, 'diaryapp/update_diary.html', {'form': form, 'image_form': image_form})
+    existing_images = diary.images.all()
+
+    return render(request, 'diaryapp/update_diary.html', {
+        'diary': diary,
+        'existing_images': existing_images,
+        'form': form,
+        'image_form': image_form,
+    })
 # 일기 내용 삭제
 def delete_diary(request, unique_diary_id):
   diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)

@@ -1,6 +1,6 @@
 <!-- list_diary.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Diary List</title>
@@ -11,8 +11,9 @@
         {% for diary in diary_list %}
             <li>
                 <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}">{{ diary.diarytitle }}</a>
+                <br/>
                 {% if diary.representative_image %}
-                    <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image">
+                    <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image" width="150">
                 {% endif %}
             </li>
         {% empty %}

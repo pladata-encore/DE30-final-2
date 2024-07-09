@@ -7,8 +7,6 @@ from .storage import *
 class DiaryForm(forms.ModelForm):
     image_file = forms.FileField(required=False)
     emotion = forms.ChoiceField(choices=AiwriteModel.EMOTION_CHOICES)
-    # video_file = forms.FileField(required=False)
-    # sticker_file = forms.FileField(required=False)
 
     class Meta:
         model = AiwriteModel
@@ -17,10 +15,8 @@ class DiaryForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super(DiaryForm, self).save(commit=False)
 
-        # 파일 필드 처리
+        # 대표 이미지 필드 처리
         image_file = self.cleaned_data.get('image_file')
-        # video_file = self.cleaned_data.get('video_file')
-        # sticker_file = self.cleaned_data.get('sticker_file')
 
         if image_file:
             image_file_id = save_file_to_gridfs(image_file.read(), image_file.name)
@@ -32,7 +28,7 @@ class DiaryForm(forms.ModelForm):
 
         return instance
 
-
+# 다중 선택 이미지 처리
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 

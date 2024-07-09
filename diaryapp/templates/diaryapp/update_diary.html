@@ -1,15 +1,74 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Update Diary</title>
-</head>
-<body>
-    <h2>Update Diary</h2>
-    <form method="post" enctype="multipart/form-data">
+    <head>
+        <meta charset="UTF-8">
+        <title>Write Diary</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+         <script>
+            $(document).ready(function() {
+                $('#generate-button').click(function(event) {
+                    event.preventDefault();
+                    var formData = new FormData($('#diary-form')[0]);
+                    $.ajax({
+                        url: "{% url 'generate_diary' %}",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            $('#id_content').val(response.generated_content);
+                        },
+                        error: function(response) {
+                            alert("Error generating content");
+                        }
+                    });
+                });
+            });
+         </script>
+    </head>
+    <body>
+        <h1>Write Diary</h1>
+        <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        {{ image_form.as_p }}
-        <button type="submit">수정하기</button>
+<!--        <label for="id_diarytitle">Title:</label>-->
+<!--        <input type="text" id="id_diarytitle" name="diarytitle" value="{{ diary.diarytitle }}">-->
+<!--<br/>-->
+<!--        <label for="id_place">Place:</label>-->
+<!--        <input type="text" id="id_place" name="place" value="{{ diary.place }}">-->
+<!--<br/>-->
+<!--        <label for="id_emotion">Emotion:</label>-->
+<!--        <input type="text" id="id_emotion" name="emotion" value="{{ diary.emotion }}">-->
+<!--<br/>-->
+<!--        <label for="id_withfriend">With Friend:</label>-->
+<!--        <input type="text" id="id_withfriend" name="withfriend" value="{{ diary.withfriend }}">-->
+<!--<br/>-->
+<!--        <label for="id_content">Content:</label>-->
+<!--        <textarea id="id_content" name="content">{{ diary.content }}</textarea>-->
+<!--<br/>-->
+            <p>{{ form.diarytitle }}</p>
+            <p>{{ form.place }}</p>
+            <p>{{ form.withfriend }}</p>
+            <p>{{ form.emotion }}</p>
+            <p>{{ form.content }}</p>
+<br/>
+        <label for="id_new_representative_image">Upload Representative Image:</label>
+        <input type="file" id="id_new_representative_image" name="image_file">
+<br/>
+        <label for="id_images">Upload Additional Images:</label>
+        <input type="file" id="id_images" name="images" multiple>
+<br/>
+        <h3>Existing Images:</h3>
+        <ul>
+            {% for image in existing_images %}
+                <li>
+                    <img src="data:image/png;base64,{{ image.image_file }}" alt="Existing Image" width="100">
+                    <label for="delete_image_{{ image.id }}">Delete</label>
+                    <input type="checkbox" id="delete_image_{{ image.id }}" name="delete_images" value="{{ image.id }}">
+                </li>
+            {% endfor %}
+        </ul>
+
+        <button type="submit">Update Diary</button>
     </form>
-</body>
+    </body>
 </html>
