@@ -297,155 +297,155 @@ function getTimeHTML(distance) {
 </body>
 </html>
 
-
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>일차별 내용 보기</title>
+    <title>Kakao API 주소 검색 모달</title>
+    <!-- 부트스트랩 CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 부트스트랩 JavaScript 및 jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
-        .content {
-            display: none;
-        }
-        #day1 {
-            display: block; /* 초기에는 첫 번째 내용만 보이게 설정 */
+        #addressResults {
+            max-height: 400px; /* 원하는 높이로 조정 가능 */
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
-    <h1>일차별 내용 보기</h1>
-    <button id="button_day1">1일차</button>
-    <button id="button_day2">2일차</button>
-    <button id="button_day3">3일차</button>
 
-    <div id="day1" class="content">
-        <h2>1일차</h2>
-        <p>1일차에 대한 설명이 여기에 들어갑니다.</p>
-    </div>
+<!-- 장소 추가 버튼 -->
+<button type="button" id="openModalButton" class="btn btn-primary">장소 추가</button>
 
-    <div id="day2" class="content">
-        <h2>2일차</h2>
-        <p>2일차에 대한 설명이 여기에 들어갑니다.</p>
-    </div>
-
-    <div id="day3" class="content">
-        <h2>3일차</h2>
-        <p>3일차에 대한 설명이 여기에 들어갑니다.</p>
-    </div>
-
-    <script>
-        document.getElementById('button_day1').addEventListener('click', function() {
-            showContent('day1');
-        });
-
-        document.getElementById('button_day2').addEventListener('click', function() {
-            showContent('day2');
-        });
-
-        document.getElementById('button_day3').addEventListener('click', function() {
-            showContent('day3');
-        });
-
-        function showContent(id) {
-            // 모든 content 숨기기
-            var contents = document.querySelectorAll('.content');
-            for (var i = 0; i < contents.length; i++) {
-                contents[i].style.display = 'none';
-            }
-
-            // 해당하는 content 보이기
-            document.getElementById(id).style.display = 'block';
-        }
-    </script>
-</body>
-</html>
-
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>장소 추가 모달</title>
-    <style>
-        /* 모달 스타일 */
-        .modal {
-            display: none; /* 초기에는 숨김 */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 반투명한 배경 */
-            z-index: 9999; /* 화면 최상위에 표시 */
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            text-align: center;
-            position: relative;
-        }
-
-        /* 닫기 버튼 스타일 */
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 30px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <h1>장소 추가 모달</h1>
-
-    <!-- 장소 추가 버튼 -->
-    <button id="openModalBtn">장소 추가</button>
-
-    <!-- 모달 -->
-    <div id="myModal" class="modal">
+<!-- 모달 -->
+<div class="modal" id="addressModal">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <span class="close">&times;</span> <!-- 닫기 버튼 -->
-            <h2>장소 추가</h2>
-            <p>여기에 장소 추가 폼 또는 내용을 넣으세요.</p>
-            <button id="addLocationBtn">장소 추가</button> <!-- 장소 추가 버튼 -->
+            <!-- 모달 헤더 -->
+            <div class="modal-header">
+                <h5 class="modal-title">주소 검색</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <!-- 모달 바디 -->
+            <div class="modal-body">
+                <div class="input-group">
+                    <input type="text" id="addressInput" class="form-control" placeholder="주소를 입력하세요">
+                    <div class="input-group-append">
+                        <button type="button" id="searchButton" class="btn btn-primary">검색</button>
+                    </div>
+                </div>
+                <div id="addressResults" class="overflow-auto mt-3"></div>
+            </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // 모달 열기
-        var modal = document.getElementById('myModal');
-        var openModalBtn = document.getElementById('openModalBtn');
-        var closeModalBtn = document.getElementsByClassName('close')[0];
+<!-- 선택한 장소 리스트 -->
+<div id="selectedPlaces" class="mt-3">
+    <h5>선택한 장소 리스트</h5>
+    <ul id="placesList1" class="list-group"></ul>
+</div>
 
-        openModalBtn.addEventListener('click', function() {
-            modal.style.display = 'block';
-        });
+<script>
+    // Kakao API 키
+    const kakaoApiKey = '1ca1474a66a4cd0fdd5d9e5a9e020070';
+    let selectedPlaces = []; // 선택한 장소를 저장할 배열
 
-        // 모달 닫기
-        closeModalBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
+    // 장소 추가 버튼 클릭 이벤트 처리
+    document.getElementById('openModalButton').addEventListener('click', function() {
+        // 모달 표시
+        $('#addressModal').modal('show');
+    });
 
-        // 모달 외 다른 곳 클릭 시 닫기
-        window.addEventListener('click', function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
+    // 모달이 닫힐 때 초기화
+    $('#addressModal').on('hidden.bs.modal', function () {
+        $('#addressInput').val('');
+        $('#addressResults').empty();
+    });
+
+    // 검색 버튼 클릭 이벤트 처리
+    document.getElementById('searchButton').addEventListener('click', function() {
+        const addressInput = document.getElementById('addressInput').value;
+
+        // Kakao API 호출 URL
+        const apiUrl = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(addressInput)}`;
+
+        // Ajax 요청
+        fetch(apiUrl, {
+            headers: {
+                'Authorization': `KakaoAK ${kakaoApiKey}`
             }
-        });
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Kakao API 요청에 실패했습니다.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 검색 결과를 처리하는 로직
+            const resultsDiv = document.getElementById('addressResults');
+            resultsDiv.innerHTML = ''; // 기존 결과 초기화
 
-        // 장소 추가 버튼 클릭 시
-        var addLocationBtn = document.getElementById('addLocationBtn');
-        addLocationBtn.addEventListener('click', function() {
-            alert('장소가 추가되었습니다!'); // 여기에 원하는 기능 추가
+            if (data.documents && data.documents.length > 0) {
+                data.documents.forEach(item => {
+                    const address = item.address_name || '주소 정보 없음';
+                    const placeName = item.place_name || '장소 이름 없음';
+                    const resultElement = document.createElement('div');
+                    resultElement.className = 'd-flex justify-content-between align-items-center border p-2';
+                    resultElement.innerHTML = `
+                        <span>[${placeName}] ${address}</span>
+                        <button type="button" class="btn btn-sm btn-success addPlaceButton">추가</button>
+                    `;
+                    resultElement.querySelector('.addPlaceButton').addEventListener('click', function() {
+                        addPlace(placeName, address);
+                    });
+                    resultsDiv.appendChild(resultElement);
+                });
+            } else {
+                resultsDiv.textContent = '검색 결과가 없습니다.';
+            }
+        })
+        .catch(error => {
+            console.error('주소 검색 중 오류가 발생했습니다.', error);
+            const resultsDiv = document.getElementById('addressResults');
+            resultsDiv.textContent = '주소 검색 중 오류가 발생했습니다.';
         });
-    </script>
+    });
+
+    // 선택한 장소를 추가하는 함수
+    function addPlace(placeName, address) {
+        const placesList = document.getElementById('placesList');
+        const placeItem = document.createElement('li');
+        placeItem.className = 'list-group-item';
+        placeItem.textContent = `[${placeName}] ${address}`;
+        placesList.appendChild(placeItem);
+
+        // 선택한 장소를 배열에 추가
+        selectedPlaces.push({ placeName, address });
+
+        // 모달을 닫음
+        $('#addressModal').modal('hide');
+    }
+</script>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 <html lang="ko">
@@ -455,8 +455,7 @@ function getTimeHTML(distance) {
   <title>Modal Example</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <!-- jQuery --><script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <!-- Bootstrap JS -->
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </head>
@@ -470,7 +469,7 @@ function getTimeHTML(distance) {
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+<div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true" data-backdrop="false">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -480,31 +479,31 @@ function getTimeHTML(distance) {
         </button>
       </div>
       <div class="modal-body">
-        <form id="categoryForm" method="GET" action="{% url 'get_category' %}">
+        <form id="categoryForm" method="GET" action="{% url 'get_data' %}">
           <div class="form-group">
             <label for="selectCategory1">대분류</label>
             <select class="form-control" id="selectCategory1", name="cat1_code" onchange="fetchMiddleCategories()">
               <option value="">select</option>
                 {% for largecategory in largecategories %}
-                <option value="{{ largecategory.id }}">{{ largecategory.name }}</option>
+                <option value="{{ largecategory.code }}">{{ largecategory.name }}</option>
                 {% endfor %}
             </select>
           </div>
           <div class="form-group">
             <label for="selectCategory2">중분류</label>
-            <select class="form-control" id="selectCategory2" >
+            <select class="form-control" id="selectCategory2", name="cat2_code" onchange="fetchSmallCategories()">
               <option value="">select</option>
                 {% for middlecategory  in middlecategories %}
-                <option value="{{ middlecategory.id }}">{{ middlecategory.name }}</option>
+                <option value="{{ middlecategory.code }}">{{ middlecategory.name }}</option>
               {% endfor %}
             </select>
           </div>
           <div class="form-group">
             <label for="selectCategory3">소분류</label>
-            <select class="form-control" id="selectCategory3" disabled>
+            <select class="form-control" id="selectCategory3">
               <option value="">select</option>
                 {% for smallcategory  in smallcategories %}
-                <option value="{{ smallcategory.id }}">{{ samllcategory.name }}</option>
+                <option value="{{ smallcategory.code }}">{{ samllcategory.name }}</option>
               {% endfor %}
             </select>
           </div>
@@ -512,7 +511,7 @@ function getTimeHTML(distance) {
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="saveSelection()">Save changes</button>
+        <button type="button" class="btn btn-primary" onclick="saveCategory()">Save changes</button>
       </div>
     </div>
   </div>
@@ -524,21 +523,410 @@ function fetchMiddleCategories() {
     var middleCategorySelect = document.getElementById('selectCategory2');
     middleCategorySelect.innerHTML = '<option value="">select</option>'; // 초기화
 
+$.ajax({
+        url: '/middlecategory/',
+        type: 'GET',
+        data: {
+            'cat1_code': largeCategory
+        },
+        success: function(data) {
+            data.middlecategories.forEach(function(category) {
+                var option = document.createElement('option');
+                option.value = category.code;
+                option.textContent = category.name;
+                middleCategorySelect.appendChild(option);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching middle categories:', error);
+        }
+    });
+ }
+
+function fetchSmallCategories() {
+    var middleCategory = document.getElementById('selectCategory2').value;
+    var smallCategorySelect = document.getElementById('selectCategory3');
+    smallCategorySelect.innerHTML = '<option value="">select</option>'; // 초기화
+
+$.ajax({
+        url: '/smallcategory/',
+        type: 'GET',
+        data: {
+            'cat2_code': middleCategory
+        },
+        success: function(data) {
+            data.smallcategories.forEach(function(category) {
+                var option = document.createElement('option');
+                option.value = category.code;
+                option.textContent = category.name;
+                smallCategorySelect.appendChild(option);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching middle categories:', error);
+        }
+    });
+ }
+
+
+
+
+/*
     // AJAX 요청을 통해 중분류 데이터를 가져옴
     fetch(`/map/?cat1_code=${largeCategory}`)
         .then(data => {
             data.middlecategories.forEach(function(category) {
                 var option = document.createElement('option');
-                option.value = category._id;
+                option.value = category.code;
                 option.text = category.name;
                 middleCategorySelect.appendChild(option);
             });
         })
-        .catch(error => console.error('Error fetching middle categories:', error));
-}
+        .catch(error => console.error('Error fetching small categories:', error));
+
+
+ */
+
 </script>
 
 </body>
 </html>
 
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Selector</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#locationModal">
+            Select Location
+        </button>
 
+        <!-- Modal -->
+        <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true" data-backdrop="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="locationModalLabel">Select Location</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="provinceSelect">광역시/도</label>
+                                <select id="provinceSelect" class="form-control" onchange="fetchCities()">
+                                    <option value="">select</option>
+                                    {% for Areacode  in Areacodes %}
+                                    <option value="{{ Areacode.code }}">{{ Areacode.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="citySelect">시/군/구</label>
+                                <select id="citySelect" class="form-control">
+                                    {% for citydistrict  in citydistricts %}
+                                    <option value="{{ citydistrict.code }}">{{ citydistrict.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveLocation()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="placesList" class="mt-4">
+            <h2>Places</h2>
+            <ul id="places">
+                <!-- 장소 리스트가 여기에 동적으로 추가됩니다 -->
+            </ul>
+        </div>
+    </div>
+
+<!-- jQuery --><script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function fetchCities() {
+    var AreaCode = document.getElementById('provinceSelect').value;
+    var citydistrictSelect = document.getElementById('citySelect');
+    citydistrictSelect.innerHTML = '<option value="">select</option>'; // 초기화
+
+    $.ajax({
+            url: '/citydistrict/',
+            type: 'GET',
+            data: {
+                'areacode': AreaCode
+            },
+            success: function(data) {
+                data.citydistricts.forEach(function(city) {
+                    var option = document.createElement('option');
+                    option.value = city.code;
+                    option.textContent = city.name;
+                    citydistrictSelect.appendChild(option);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching citydistrict:', error);
+            }
+        });
+     }
+
+        function saveLocation() {
+            selectedProvince = document.getElementById('provinceSelect').value;
+            selectedCity = document.getElementById('citySelect').value;
+            $('#locationModal').modal('hide');
+        }
+
+        function saveCategory() {
+            selectedCategory1 = document.getElementById('selectCategory1').value;
+            selectedCategory2 = document.getElementById('selectCategory2').value;
+            selectedCategory3 = document.getElementById('selectCategory3').value;
+            $('#categoryModal').modal('hide');
+            fetchPlaces(); // 카테고리를 선택하면 장소를 불러옴
+        }
+
+        function fetchPlaces() {
+            var placesList = document.getElementById('places');
+            placesList.innerHTML = ''; // 초기화
+
+            if (selectedCity && selectedCategory3 && selectedProvince) {
+                $.ajax({
+                    url: '/place/',
+                    type: 'GET',
+                    data: {
+                        'area_code': selectedProvince,
+                        'city_code': selectedCity,
+                        'category_code': selectedCategory3
+                    },
+                    success: function(data) {
+                        // 데이터가 성공적으로 도착하면, <ul> 리스트를 업데이트합니다
+                        var $placeList = $('#place');
+                        $placeList.empty(); // 기존의 리스트를 비웁니다
+
+                        $.each(data.places, function(index, place) {
+                            var $li = $('<li></li>')
+                                .addClass('list-group-item place-item')
+                                .attr('data-place-id', index + 1)
+                                .text(place.title); // place 객체의 title 속성에 접근합니다
+                            $placeList.append($li);
+                        });
+                        // 항목 클릭 시 selected 클래스 토글
+                        $placeList.on('click', '.place-item', function() {
+                            $(this).toggleClass('selected');
+                            var placeId = $(this).data('place-id');
+                            if ($(this).hasClass('selected')) {
+                                selectedPlaces.push(placeId);
+                            } else {
+                                var index = selectedPlaces.indexOf(placeId);
+                                if (index > -1) {
+                                    selectedPlaces.splice(index, 1);
+                                }
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching places:', error);
+                    }
+                });
+            }
+        }
+
+    </script>
+</body>
+</html>
+
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>일차별 장소 선택</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .place-item {
+            cursor: pointer;
+        }
+        .place-item.selected {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        .day-btn {
+            margin-right: 5px;
+        }
+        .day-section {
+            display: none;
+        }
+        .day-section.active {
+            display: block;
+        }
+        .container {
+            display: flex;
+        }
+        .places {
+            flex: 1;
+        }
+        .day-selection {
+            flex: 2;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="places">
+        <h3>장소 리스트</h3>
+        <ul id="place" class="list-group">
+
+        </ul>
+        <button id="addBtn" class="btn btn-primary mt-3">추가</button>
+    </div>
+    <div class="day-selection">
+        <h2>일차별 장소 선택</h2>
+        <div class="btn-group" role="group" aria-label="일차 선택">
+            <button type="button" class="btn btn-outline-primary day-btn" data-day="1">1일차</button>
+            <button type="button" class="btn btn-outline-primary day-btn" data-day="2">2일차</button>
+            <button type="button" class="btn btn-outline-primary day-btn" data-day="3">3일차</button>
+        </div>
+
+        <button id="addDayBtn" class="btn btn-secondary mt-3">날짜 추가</button>
+        <button class="btn btn-danger ml-2" id="deleteActiveDayBtn">삭제</button>
+
+        <div id="day-sections" class="mt-4">
+            <!-- 각 일차별 선택한 장소 섹션은 여기에 추가됩니다. -->
+        </div>
+
+        <div id="day1" class="day-section active mt-4">
+            <h4>1일차 선택한 장소</h4>
+            <ul id="selectedPlaces1" class="list-group">
+                <!-- 선택한 장소 목록 -->
+            </ul>
+        </div>
+
+        <div id="day2" class="day-section mt-4">
+            <h4>2일차 선택한 장소</h4>
+            <ul id="selectedPlaces2" class="list-group">
+                <!-- 선택한 장소 목록 -->
+            </ul>
+        </div>
+
+        <div id="day3" class="day-section mt-4">
+            <h4>3일차 선택한 장소</h4>
+            <ul id="selectedPlaces3" class="list-group">
+                <!-- 선택한 장소 목록 -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    var selectedPlaces = [];
+    var dayCount = $('.day-btn').length; // 현재 일차 수 추적
+
+    // 장소 항목 클릭 이벤트
+    $('.place-item').click(function() {
+        $(this).toggleClass('selected');
+        var placeId = $(this).data('place-id');
+        if ($(this).hasClass('selected')) {
+            selectedPlaces.push(placeId);
+        } else {
+            var index = selectedPlaces.indexOf(placeId);
+            if (index > -1) {
+                selectedPlaces.splice(index, 1);
+            }
+        }
+    });
+
+    // 일차 선택 버튼 클릭 이벤트
+    $(document).on('click', '.day-btn', function() {
+        var day = $(this).data('day');
+        $('.day-section').removeClass('active');
+        $('#day' + day).addClass('active');
+        $('.day-btn').removeClass('active');
+        $(this).addClass('active');
+    });
+
+    // 추가 버튼 클릭 이벤트
+    $('#addBtn').click(function() {
+        var day = $('.day-btn.active').data('day');
+        var selectedPlacesList = $('#selectedPlaces' + day);
+        selectedPlaces.forEach(function(placeId) {
+            var placeItem = $('.place-item[data-place-id="' + placeId + '"]').text();
+            selectedPlacesList.append('<li class="list-group-item">' + placeItem + '</li>');
+        });
+        selectedPlaces = [];
+        $('.place-item').removeClass('selected');
+    });
+
+    // 날짜 추가 버튼 클릭 이벤트
+    $('#addDayBtn').click(function() {
+        dayCount++;
+        var newDayBtn = $('<button type="button" class="btn btn-outline-primary day-btn" data-day="' + dayCount + '">' + dayCount + '일차</button>');
+        $('.btn-group').append(newDayBtn);
+
+        var newDaySection = $(
+            '<div id="day' + dayCount + '" class="day-section">' +
+                '<h4 class="day-title">' + dayCount + '일차 선택한 장소</h4>' +
+                '<ul id="selectedPlaces' + dayCount + '" class="list-group"></ul>' +
+            '</div>'
+        );
+        $('#day-sections').append(newDaySection);
+
+        // 일차 버튼 클릭 이벤트 재할당
+
+        newDayBtn.click(function() {
+            var day = $(this).data('day');
+            $('.day-section').removeClass('active');
+            $('#day' + day).addClass('active');
+            $('.day-btn').removeClass('active');
+            $(this).addClass('active');
+        });
+
+    });
+
+$('#deleteActiveDayBtn').click(function() {
+    var activeDay = $('.day-btn.active').data('day');
+    if (activeDay) {
+        var confirmDelete = confirm(activeDay + '일차를 삭제하시겠습니까?');
+        if (confirmDelete) {
+            $('#day' + activeDay).remove(); // 해당 일차 섹션을 삭제
+            $('.day-btn[data-day="' + activeDay + '"]').remove(); // 해당 일차 버튼을 삭제
+
+            // 삭제된 일차 이후의 일차 번호를 조정하고 선택한 장소 리스트 섹션 제목 업데이트
+            for (var i = activeDay + 1; i <= dayCount; i++) {
+                var $daySection = $('#day' + i);
+                var $selectedPlaces = $('#selectedPlaces' + i);
+
+                $daySection.attr('id', 'day' + (i - 1)); // 일차 섹션의 ID 변경
+                $selectedPlaces.attr('id', 'selectedPlaces' + (i - 1)); // 선택한 장소 리스트의 ID 변경
+
+                $('.day-btn[data-day="' + i + '"]').attr('data-day', i - 1).text((i - 1) + '일차'); // 일차 버튼의 데이터 및 텍스트 변경
+                $daySection.find('.day-title').text((i - 1) + '일차 선택한 장소'); // 선택한 장소 리스트 섹션 제목 변경
+            }
+            dayCount--;
+
+            // 삭제된 일차가 현재 활성화된 상태였다면, 첫 번째 일차를 활성화 상태로 변경
+            if ($('#day' + activeDay).hasClass('active')) {
+                $('.day-btn[data-day="1"]').addClass('active');
+                $('#day1').addClass('active');
+                activeDay = 1; // activeDay 변수를 첫 번째 일차로 초기화
+            }
+        }
+    } else {
+        alert('삭제할 일차를 선택해주세요.');
+    }
+});
+</script>
+</body>
+</html>

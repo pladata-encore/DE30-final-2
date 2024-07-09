@@ -63,7 +63,10 @@ for area_code in area_codes:
                 # MongoDB에 데이터 삽입
                 items = city_district_data['response']['body']['items']['item']
                 if items:
-                    db.cityDistrict.insert_many(items)
+                    # 각 아이템에 areacode 추가
+                    for item in items:
+                        item['areacode'] = area_code
+                    db.cityDistrict1.insert_many(items)
 
                 # 다음 페이지로 이동
                 page_no += 1
@@ -85,6 +88,6 @@ for area_code in area_codes:
                 print(f"Timeout error: {e}")
                 time.sleep(retry_delay)
 
-        # 더 이상 데이터가 없으면 종료
+            # 더 이상 데이터가 없으면 종료
         if len(items) < num_of_rows:
             break

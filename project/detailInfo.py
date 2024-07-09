@@ -5,13 +5,9 @@ import time
 from pymongo import MongoClient
 
 # MongoDB 연결 설정
-client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority', 27017)
+client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',
+                     27017)
 db = client.MyDiary
-areaBaseList14_collection = db.areaBaseList14
-
-# 모든 code 값을 가져옴
-areaBaseList = areaBaseList14_collection.find({}, {"contentid": 1, "_id": 0})
-areaBaseList_ids = [item['contentid'] for item in areaBaseList]
 
 url = "http://apis.data.go.kr/B551011/KorService1/detailIntro1"
 key = "sn4p9/xq3HzvfZw7DjDo9gJBjru0dhT62DbDbJFDdiZEYPe2Lyio/NSLbeFkKw1Of4/P8G+dQdTBfr8m0OMoQA=="
@@ -22,12 +18,14 @@ max_retries = 5
 retry_delay = 5  # 초
 timeout = 10  # 초
 
-# 한 컬렉션에 저장하기 위해 컬렉션 이름을 고정
-collection_name = "detailInfo14"
+# 처리할 컬렉션 이름 목록
+collection_names = ["areaBaseList12", "areaBaseList14", "areaBaseList28", "areaBaseList38", "areaBaseList39"]
+
 
 def get_last_page_no(collection_name, content_id):
     record = db.lastPage.find_one({"collection_name": collection_name, "content_id": content_id})
     return record["page_no"] if record else 1
+
 
 def update_last_page_no(collection_name, content_id, page_no):
     db.lastPage.update_one(
@@ -36,11 +34,19 @@ def update_last_page_no(collection_name, content_id, page_no):
         upsert=True
     )
 
-def fetch_data(areaBaseList_ids):
+
+def fetch_data_for_collection(collection_name):
+    collection = db[collection_name]
+
+    # 모든 code 값을 가져옴
+    areaBaseList = collection.find({}, {"contentid": 1, "_id": 0})
+    areaBaseList_ids = [item['contentid'] for item in areaBaseList]
+
     for areaBaseList_id in areaBaseList_ids:
         page_no = get_last_page_no(collection_name, areaBaseList_id)
         total_count = 0
-        print(f"Starting to fetch data for contentId {areaBaseList_id} from page {page_no}")
+        print(
+            f"Starting to fetch data for contentId {areaBaseList_id} from page {page_no} in collection {collection_name}")
 
         while True:
             queryParams = '?' + urlencode({
@@ -51,7 +57,7 @@ def fetch_data(areaBaseList_ids):
                 quote_plus('MobileApp'): 'AppTest',
                 quote_plus('_type'): 'json',
                 quote_plus('contentId'): areaBaseList_id,
-                quote_plus('contentTypeId'): 14
+                quote_plus('contentTypeId'): int(collection_name[-2:])  # 예: areaBaseList14 -> contentTypeId 14
             })
 
             # 반복 시도 설정
@@ -73,7 +79,7 @@ def fetch_data(areaBaseList_ids):
 
                     # MongoDB에 데이터 삽입
                     items = data['response']['body']['items']['item']
-                    db[collection_name].insert_many(items)
+                    db["detailInfo" + collection_name[-2:]].insert_many(items)
 
                     # 마지막으로 성공적으로 가져온 페이지 번호 업데이트
                     update_last_page_no(collection_name, areaBaseList_id, page_no)
@@ -102,10 +108,12 @@ def fetch_data(areaBaseList_ids):
             if total_count is not None and page_no > (total_count // num_of_rows) + 1:
                 break
 
+
 def main():
     while True:
         try:
-            fetch_data(areaBaseList_ids)
+            for collection_name in collection_names:
+                fetch_data_for_collection(collection_name)
         except KeyboardInterrupt:
             print("\nProcess interrupted by user. Exiting...")
             break
@@ -118,6 +126,7 @@ def main():
         if answer != 'y':
             print("Exiting...")
             break
+
 
 if __name__ == "__main__":
     main()
