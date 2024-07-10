@@ -1,4 +1,7 @@
 # diaryapp/views.py
+import os
+import openai
+from dotenv import load_dotenv
 import gridfs
 import torch
 import open_clip
@@ -17,6 +20,10 @@ import io
 import base64
 from django.forms.models import modelformset_factory
 
+# GPTAPI키 가져오기
+# load_dotenv()
+# openai.api_key = "${OPEN_API_KEY}"
+
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
     image_data = base64.b64decode(image_model.image_file)
@@ -24,11 +31,14 @@ def image_detail(request, pk):
 
 def generate_dynamic_descriptions():
     descriptions = [
-        "dog", "park", "cat", "sunset", "ocean",
-        "street", "landscape", "mountain", "tree", "flow", "friends", "picnic",
-        "bridge", "sky", "market", "fruits", "vegetables",
-        "beach", "sea", "coffee", " books", "cafe", "family", " zoo",
-        "couple", " park", "castle", "flower", "street", "village", "bridge"
+        "dog", "park", "cat", "sunset", "ocean", "island", 'Village', 'Campsite', 'Lodge', "Safari", "Fountain",
+        "street", "landscape", "mountain", "tree", "flow", "friends", "picnic", 'Cottage', "Cruise", "Square",
+        "bridge", "sky", "market", "fruits", "vegetables", "Theme park", "Amusement park", "Aquarium", "Plaza",
+        "beach", "sea", "coffee", " books", "cafe", "family", " zoo", "Botanical garden", "National park",
+        "couple", "castle", "flower", "street", "village", "bridge", "Harbor", "Port", "River", "Waterfall",
+        "Promenade", "Viewpoint", "Lighthouse", "Monument", "Memorial", "Statue", "Landmark", "Tower", "Arena",
+        "Stadium", "Pasture", "Orchard", "Brewery", "Winery", "Distillery", "Fair", "Carnival", "Parade", "Festival",
+        "Hiking trail", "Bike trail", "Ski slope", "Golf course"
     ]
     return descriptions
 
@@ -55,14 +65,11 @@ def generate_diary(request):
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
             representative_image = request.FILES.get('image_file')
-            # video_file = request.FILES.get('video_file')
-            # sticker_file = request.FILES.get('sticker_file')
 
             user_email = settings.DEFAULT_FROM_EMAIL
-            # user_email = request.user.email  # if request.user.is_authenticated else None
+            # user_email = request.user.email if request.user.is_authenticated else None
 
-            # emotion, place 번역
-            # translated_emotion = translate_to_English(emotion)
+            # place 번역
             translated_place = translate_to_English(place)
 
             # CLIP 모델과 전처리기 로드
@@ -88,34 +95,10 @@ def generate_diary(request):
                 best_description_idx = similarity.argmax().item()
                 best_description = descriptions[best_description_idx]
 
-            # 프롬프트 생성
-            # prompt = (f"I recently visited {translated_place}. "
-            #           f"During my trip, I felt a strong sense of {translated_emotion}. "
-            #           f"One of the notable experiences was {best_description}. "
-            #           f"Here are the details of my trip to {translated_place}, focusing on my experiences and feelings:"
-            #           f"\n\n"
-            #           f"Day 1: I arrived at {translated_place} and was immediately struck by {best_description}. "
-            #           f"The place was exactly what I imagined, filled with {translated_emotion}. "
-            #           f"\n\n"
-            #           f"Day 2: I explored more of {translated_place}. The highlight of the day was experiencing {best_description}. "
-            #           f"It made me feel {translated_emotion}, and I was deeply moved by the atmosphere."
-            #           f"\n\n"
-            #           f"Day 3: On the last day of my trip, I reflected on my experiences. The {best_description} stood out the most. "
-            #           f"Overall, my visit to {translated_place} was filled with {translated_emotion}, making it a memorable trip."
-            #           f"\n\n"
-            #           f"This was my travel diary from {translated_place}. Please expand on this by adding specific details, interactions, and personal reflections to make it feel like a natural and vivid diary entry."
-            #           f"It must include {translated_place},{translated_emotion} and {best_description}"
-            #           f"Please write a travel diary based on the information."
-            #           f"Think of it as your own experience and write it down"
-            #           f"I want you to write it. Don't ask me for any more information "
-            #           )
-            prompt = (f"Please draft my travel diary based on this information."
-                      f"I recently visited {translated_place} in korea. "
-                      f"During my trip, I felt a strong sense of {emotion}. "
-                      f"One of the notable experiences was {best_description}. "
-                      f"It must include {translated_place},{emotion} and {best_description}"
-                      )
-
+            korea_description = translate_to_korean(best_description)
+            translated_emotion = translate_to_korean(emotion)
+            prompt = (
+                f"Please draft my travel diary based on this information. 'I recently visited {translated_place} in korea and i felt a strong sense of {emotion}. One of the notable experiences was {best_description}.' ")
             # GPT-2 모델을 사용하여 텍스트 생성
             model_name = "gpt2"
             model = GPT2LMHeadModel.from_pretrained(model_name)
@@ -147,12 +130,11 @@ def generate_diary(request):
                 place=place,
                 emotion=translated_emotion,
                 withfriend=withfriend,
-                content=translated_text,
+                content=extracted_content,
             )
             diary_entry.save()
 
             # 대표 이미지 처리
-            # representative_image = request.FILES.get('image_file')
             if representative_image:
                 image_model = ImageModel(is_representative=True)
                 image_model.save_image(Image.open(representative_image))
@@ -177,6 +159,106 @@ def generate_diary(request):
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
+"""GPT3로 일기 생성"""
+# def generate_diary(request):
+#     if request.method == 'POST':
+#         form = DiaryForm(request.POST, request.FILES)
+#         image_form = ImageUploadForm(request.POST, request.FILES)
+#
+#         if form.is_valid() and image_form.is_valid():
+#             diarytitle = form.cleaned_data['diarytitle']
+#             place = form.cleaned_data['place']
+#             emotion = form.cleaned_data['emotion']
+#             withfriend = form.cleaned_data['withfriend']
+#             content = form.cleaned_data['content']
+#             representative_image = request.FILES.get('image_file')
+#
+#             user_email = settings.DEFAULT_FROM_EMAIL
+#             # user_email = request.user.email if request.user.is_authenticated else None
+#
+#             # place 번역
+#             translated_place = translate_to_English(place)
+#
+#             # CLIP 모델과 전처리기 로드
+#             model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
+#
+#             # 적절한 반환 값을 사용하도록 수정
+#             clip_model = model_info[0]
+#             preprocess = model_info[1]
+#
+#             image = Image.open(representative_image)
+#             image = preprocess(image).unsqueeze(0)
+#
+#             # 이미지 설명 후보 생성
+#             descriptions = generate_dynamic_descriptions()
+#
+#             # 설명 후보들을 CLIP 모델로 처리
+#             tokens = open_clip.tokenize(descriptions)
+#             with torch.no_grad():
+#                 image_features = clip_model.encode_image(image)
+#                 text_features = clip_model.encode_text(tokens)
+#                 similarity = torch.softmax((100.0 * image_features @ text_features.T), dim=-1)
+#                 best_description_idx = similarity.argmax().item()
+#                 best_description = descriptions[best_description_idx]
+#
+#             prompt = (
+#                 f"Please draft my travel diary based on this information. "
+#                 f"I recently visited {translated_place} in korea and I felt a strong sense of {emotion}. "
+#                 f"One of the notable experiences was {best_description}.I want answers in Korean. I hope the answer doesn't exceed five lines")
+#
+#             # GPT-3.5 모델을 사용하여 다이어리 생성
+#             completion = openai.ChatCompletion.create(
+#                 model="gpt-3.5-turbo",
+#                 messages=[
+#                     {"role": "user", "content": prompt}
+#                 ],
+#                 max_tokens=1000,
+#                 temperature=1
+#             )
+#             GPT3content = completion['choices'][0]['message']['content']
+#
+#             # emotion 번역
+#             translated_emotion = translate_to_korean(emotion)
+#
+#             # 일기 저장
+#             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
+#             diary_entry = AiwriteModel.objects.create(
+#                 unique_diary_id=unique_diary_id,
+#                 user_email=user_email,
+#                 diarytitle=diarytitle,
+#                 place=place,
+#                 emotion=translated_emotion,
+#                 withfriend=withfriend,
+#                 content=GPT3content,
+#             )
+#             diary_entry.save()
+#
+#             # 대표 이미지 처리
+#             if representative_image:
+#                 image_model = ImageModel(is_representative=True)
+#                 image_model.save_image(Image.open(representative_image))
+#                 image_model.save()
+#                 diary_entry.representative_image = image_model
+#                 diary_entry.save()
+#
+#             # 추가 이미지 처리
+#             images = request.FILES.getlist('images')
+#             for img in images:
+#                 additional_image_model = ImageModel(is_representative=False)
+#                 additional_image_model.save_image(Image.open(img))
+#                 additional_image_model.save()
+#                 diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
+#
+#             return redirect('list_diary')
+#         else:
+#             return render(request, 'diaryapp/list_diary.html', {'form': form, 'image_form': image_form})
+#
+#     else:
+#         form = DiaryForm()
+#         image_form = ImageUploadForm()
+#
+#     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
+
 
 # 직접 일기 부분 작성
 def write_diary(request):
@@ -191,6 +273,7 @@ def write_diary(request):
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
+            # user_email = request.user.email if request.user.is_authenticated else None
             user_email = settings.DEFAULT_FROM_EMAIL
 
             # emotion 번역
@@ -219,7 +302,7 @@ def write_diary(request):
                 diary_entry.save()
 
 
-                # 추가 이미지 처리
+            # 추가 이미지 처리
             images = request.FILES.getlist('images')
             for img in images:
                 additional_image_model = ImageModel(is_representative=False)
@@ -239,7 +322,7 @@ def write_diary(request):
 
 # 블로그 글 리스트
 def list_diary(request):
-    # user_email = request.user.email #if request.user.is_authenticated else None
+    # user_email = request.user.email if request.user.is_authenticated else None
     user_email = settings.DEFAULT_FROM_EMAIL
     diary_list = AiwriteModel.objects.all().order_by('-created_at')
     return render(request, 'diaryapp/list_diary.html', {'diary_list': diary_list})
@@ -255,8 +338,6 @@ def detail_diary_by_id(request, unique_diary_id):
 def update_diary(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 
-
-
     if request.method == 'POST':
 
         # emotion 번역
@@ -267,6 +348,7 @@ def update_diary(request, unique_diary_id):
         diary.withfriend = request.POST['withfriend']
         diary.content = request.POST['content']
 
+        # user_email = request.user.email if request.user.is_authenticated else None
         user_email = settings.DEFAULT_FROM_EMAIL
         diary.save()
 
@@ -309,11 +391,13 @@ def update_diary(request, unique_diary_id):
         'form': form,
         'image_form': image_form,
     })
+
 # 일기 내용 삭제
 def delete_diary(request, unique_diary_id):
-  diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-  if request.method == 'POST':
-      diary.delete()
-      return redirect('list_diary')
-
-  return redirect('list_diary')
+    # user_email = request.user.email if request.user.is_authenticated else None
+    user_email = settings.DEFAULT_FROM_EMAIL
+    diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+    if request.method == 'POST':
+        diary.delete()
+        return redirect('list_diary')
+    return redirect('list_diary')
