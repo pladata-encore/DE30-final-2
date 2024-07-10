@@ -9,8 +9,12 @@ from django.utils import timezone
 from djongo import models
 import base64
 
+from myproject import settings
+
+
+# 이미지 모델
 class ImageModel(models.Model):
-    image_id = models.CharField(max_length=255, unique=True)
+    image_id = models.CharField(max_length=255, unique=True)    # 주식별자 아이디
     diary = models.ManyToManyField('AiwriteModel', related_name='diary_images')
     image_file = models.TextField()  # base64 인코딩된 이미지 문자열을 저장할 필드
     is_representative = models.BooleanField(default=False)
@@ -33,7 +37,7 @@ class ImageModel(models.Model):
     def __str__(self):
         return f"Image for {self.diary.unique_diary_id}"
 
-
+# 다이어리 모델
 class AiwriteModel(models.Model):
     EMOTION_CHOICES = [
         ('Happiness', '행복'),
@@ -46,7 +50,7 @@ class AiwriteModel(models.Model):
         ('Anxiety', '불안  '),
     ]
 
-    unique_diary_id = models.CharField(max_length=255, unique=True)  # 실제 사용하는 아이디
+    unique_diary_id = models.CharField(max_length=255, unique=True)  # 주식별자 아이디
     user_email = models.EmailField()
     diarytitle = models.CharField(max_length=100, default='제목')
     emotion = models.CharField(max_length=100, choices=EMOTION_CHOICES)
@@ -70,3 +74,23 @@ class AiwriteModel(models.Model):
 
     def __str__(self):
         return f"{self.unique_diary_id}"
+
+# 댓글 모델
+class CommentModel(models.Model):
+    unique_comment_id = models.CharField(max_length=255, unique=True)  # 주식별자 아이디
+    diary = models.ManyToManyField(AiwriteModel, related_name='comments', on_delete=models.CASCADE)
+    author = models.ManyToManyField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    comenttext = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+
+        if not self.unique_comment_id:
+            self.unique_comment_id = f"{self.created_at.strftime('%Y%m%d%H%M%S')}{self.author.id}" # 일단은 id로 함 테스트 만
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'Comment by {self.author} on {self.diary}'

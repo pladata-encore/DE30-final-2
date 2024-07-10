@@ -401,3 +401,30 @@ def delete_diary(request, unique_diary_id):
         diary.delete()
         return redirect('list_diary')
     return redirect('list_diary')
+
+# 댓글 작성
+def create_comments(request, unique_diary_id):
+    if request.user.is_authenticated:
+        diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+        if request.method == "POST":
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.diary = diary
+                comment.user = request.user
+                comment.save()
+            return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
+        else:
+            return render(request, 'diaryapp/detail_diary.html', {'diary': diary})
+    else:
+        form = CommentForm()
+    return render(request, 'diaryapp/detail_diary.html', {'form': form})
+
+# 댓글 삭제
+def delete_comments(request, unique_diary_id,unique_comment_id):
+    if request.user.is_authenticated:
+        comment = get_object_or_404(CommentModel, unique_comment_id=unique_comment_id)
+        if request.method == 'POST':
+            comment.delete()
+            return redirect('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})
+        return redirect('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})

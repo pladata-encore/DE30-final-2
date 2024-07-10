@@ -65,3 +65,10 @@ class ImageUploadForm(forms.Form):
                 image_model = ImageModel(diary=diary_instance, is_representative=False)  # 항상 False로 설정
                 image_model.save_image(img)
                 image_model.save()
+
+class CommentForm(forms.ModelForm):
+
+    class Meta:
+        model = Comment
+        # fields = '__all__'
+        exclude = ('article', 'user',)
