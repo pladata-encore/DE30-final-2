@@ -55,7 +55,8 @@ def get_data(request):
         'middlecategories': middlecategories,
         'smallcategories' : smallcategories,
         'Areacodes': Areacodes,
-        'citydistricts': citydistricts
+        'citydistricts': citydistricts,
+        'places': places
     }
 
     # 템플릿 렌더링
