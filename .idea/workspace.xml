@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_diary.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/write_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/write_diary.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/settings.py" afterDir="false" />
-    </list>
+    <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
