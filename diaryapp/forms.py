@@ -46,7 +46,7 @@ class MultipleFileField(forms.FileField):
         return result
 
 class ImageUploadForm(forms.Form):
-    images = MultipleFileField()
+    images = MultipleFileField(required=False)
 
     def clean_images(self):
         images = self.cleaned_data.get('images')
@@ -65,3 +65,19 @@ class ImageUploadForm(forms.Form):
                 image_model = ImageModel(diary=diary_instance, is_representative=False)  # 항상 False로 설정
                 image_model.save_image(img)
                 image_model.save()
+
+# class CommentForm(forms.ModelForm):
+#     class Meta:
+#         model = CommentModel
+#         fields = ['comment']
+#
+#     def save(self, commit=True):
+#         instance = super(CommentForm, self).save(commit=False)
+#
+#         if not instance.comment_id:
+#             instance.comment_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{instance.user_email}"
+#
+#         if commit:
+#             instance.save()
+#
+#         return instance

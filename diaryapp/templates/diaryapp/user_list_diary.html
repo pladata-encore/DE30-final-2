@@ -3,10 +3,10 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Diary List</title>
+    <title>My Diary List</title>
 </head>
 <body>
-    <h1>Diary List</h1>
+    <h1>My Diary List</h1>
     <ul>
         {% for diary in diary_list %}
             <li>
@@ -20,7 +20,7 @@
             <li>No diaries found.</li>
         {% endfor %}
     </ul>
-    <!-- 일기 작성 화면으로 가는 버튼 추가 (user기능이 생기면 삭제)-->
+    <!-- 일기 작성 화면으로 가는 버튼 추가 (로그인한 사용자의 경우만 가능)-->
         <a href="{% url 'write_diary' %}">
             <button>Write a New Diary</button>
         </a>

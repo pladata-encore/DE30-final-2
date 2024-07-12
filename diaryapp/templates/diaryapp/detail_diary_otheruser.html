@@ -1,12 +1,12 @@
-<!-- detail_diary.html -->
+<!--로그인을 하지 않은 다른 사용자의 블로그-->
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>{{ diary.diarytitle }}</title>
-    </head>
-    <body>
-        <h1>{{ diary.diarytitle }}</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ diary.diarytitle }}</title>
+</head>
+<body>
+    <h1>{{ diary.diarytitle }}</h1>
         <p><strong>Place:</strong> {{ diary.place }}</p>
         <p><strong>Withfriend:</strong> {{ diary.withfriend }}</p>
         <p><strong>Content:</strong> {{ diary.content }}</p>
@@ -27,19 +27,11 @@
             <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
         </button>
 
-            <!-- 수정 버튼 -->
-        <button>
-            <a href="{% url 'update_diary' unique_diary_id=diary.unique_diary_id %}">일기수정하기</a>
-        </button>
-        <!-- 삭제 버튼 -->
-        <form action="{% url 'delete_diary' unique_diary_id=diary.unique_diary_id %}" method="post">
-            {% csrf_token %}
-            <input type="submit" value="삭제하기">
-        </form>
 
-        <!--댓글 작성 폼 추가-->
+    <!-- 댓글 작성 폼 -->
 
 
-        <!-- 댓글 리스트 폼 추가 -->
-    </body>
+    <!-- 댓글 리스트 -->
+
+</body>
 </html>

@@ -148,5 +148,5 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DEFAULT_FROM_EMAIL = "aaa@gmail.com"
+DEFAULT_FROM_EMAIL = "new@gmail.com"
 DEBUG = True

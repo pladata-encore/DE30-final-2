@@ -12,6 +12,7 @@ urlpatterns = [
     path('detail_diary/<str:unique_diary_id>/', views.detail_diary_by_id, name='detail_diary_by_id'),
     path('update_diary/<str:unique_diary_id>/', views.update_diary, name='update_diary'),
     path('delete_diary/<str:unique_diary_id>/', views.delete_diary, name='delete_diary'),
+#    path('create_comments/<str:unique_diary_id>/', views.create_comments, name='create_comments'),
 ]
 
 if settings.DEBUG:
