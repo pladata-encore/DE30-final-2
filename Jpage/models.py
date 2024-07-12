@@ -43,6 +43,8 @@ class areaBaseList(models.Model):
     sigungucode = models.CharField(max_length=10)
     cat3 = models.CharField(max_length=10)
     title = models.CharField(max_length=50)
+    mapx = models.CharField(max_length=50)
+    mapy = models.CharField(max_length=50)
 
     def __str__(self):
         return self.title
