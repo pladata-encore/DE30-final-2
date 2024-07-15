@@ -267,7 +267,7 @@ def write_diary(request):
         if form.is_valid() and image_form.is_valid():
             diarytitle = form.cleaned_data['diarytitle']
             place = form.cleaned_data['place']
-            # withfriend = form.cleaned_data['withfriend']
+            withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
             # user_email = request.user.email
