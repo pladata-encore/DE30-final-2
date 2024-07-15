@@ -22,7 +22,11 @@ urlpatterns = [
     # 다이어리 삭제
     path('delete_diary/<str:unique_diary_id>/', views.delete_diary, name='delete_diary'),
 
-#    path('create_comments/<str:unique_diary_id>/', views.create_comments, name='create_comments'),
+    # 댓글 달기
+    # path('create_comments/<str:unique_diary_id>/', views.create_comments, name='create_comments'),
+
+    # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
+    # path('maindiary', views.delete_diary, name='main_diary'),
 
 ]
 

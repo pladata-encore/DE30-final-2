@@ -11,7 +11,8 @@ class DiaryForm(forms.ModelForm):
     class Meta:
         model = AiwriteModel
         fields = ['diarytitle', 'place', 'emotion', 'withfriend', 'content']
-
+        # fields = ['diarytitle', 'place', 'emotion', 'tags', 'friends', 'content']
+        # widgets = { 'tags': TagWidget(), }
     def save(self, commit=True):
         instance = super(DiaryForm, self).save(commit=False)
 

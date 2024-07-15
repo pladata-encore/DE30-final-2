@@ -8,7 +8,12 @@ from django.urls import reverse
 from django.utils import timezone
 from djongo import models
 import base64
+from taggit.managers import TaggableManager
+from taggit.models import TagBase, TaggedItemBase
+from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify as default_slugify
 
+'''이미지 모델'''
 class ImageModel(models.Model):
     image_id = models.CharField(max_length=255, unique=True)
     diary = models.ManyToManyField('AiwriteModel', related_name='diary_images')
@@ -33,7 +38,37 @@ class ImageModel(models.Model):
     def __str__(self):
         return f"Image for {self.diary.unique_diary_id}"
 
+'''태그 모델'''
+# class TagFriend(TagBase):
+#     slug = models.SlugField(  # SlugField를 사용하여 slug 필드 정의
+#         verbose_name=_('slug'),  # 필드의 verbose_name 설정
+#         unique=True,  # 유니크한 값이어야 함
+#         max_length=100,  # 최대 길이는 100
+#         allow_unicode=True,  # 유니코드 문자 허용
+#     )
+#     class Meta:
+#         verbose_name = _("tag")  # 단수형 이름 설정
+#         verbose_name_plural = _("tags")  # 복수형 이름 설정
+#
+#     def slugify(self, tag, i=None):  # slugify 메서드 재정의
+#         return default_slugify(tag, allow_unicode=True)  # 유니코드 허용하여 slug 생성
+#
+# class Taggedfriend(TaggedItemBase):  # TaggedItemBase 클래스를 상속받는 TaggedPost 모델 정의
+#     content_friend = models.ManyToManyField(  # Post 모델과 관계를 맺는 외래키 필드
+#         'FriendModel',  # 관련된 모델의 이름
+#         on_delete=models.CASCADE,  # 연결된 객체가 삭제될 때 동작 설정
+#     )
+#
+#     tag = models.ManyToManyField(  # TagModel 모델과 관계를 맺는 외래키 필드
+#         'TagFriend',  # 관련된 모델의 이름
+#         related_name="%(app_label)s_%(class)s_items",  # 역참조 이름 설정
+#         on_delete=models.CASCADE,  # 연결된 객체가 삭제될 때 동작 설정
+#     )
+#     class Meta:
+#         verbose_name = _("tagged friend")  # 단수형 이름 설정
+#         verbose_name_plural = _("tagged friend")  # 복수형 이름 설정
 
+'''다이어리 모델'''
 class AiwriteModel(models.Model):
     EMOTION_CHOICES = [
         ('null', '없음'),
@@ -56,6 +91,10 @@ class AiwriteModel(models.Model):
     place = models.CharField(max_length=100, default='Unknown')
     created_at = models.DateTimeField(auto_now_add=True)
     withfriend = models.CharField(max_length=100, blank=True, null=True)
+    # tags = TaggableManager(
+    #     blank=True,
+    # )
+    # friends = models.ManyToManyField(User, related_name="tagged_friends")
     images = models.ManyToManyField(ImageModel, related_name='aiwrite_models')
     representative_image = models.OneToOneField('ImageModel', on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -71,7 +110,7 @@ class AiwriteModel(models.Model):
     def __str__(self):
         return f"{self.unique_diary_id}"
 
-#
+'''댓글 모델'''
 # class CommentModel(models.Model):
 #     comment_id = models.CharField(max_length=255, unique=True)      # 실제 사용하는 아이디
 #     user_email = models.EmailField()

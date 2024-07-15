@@ -95,8 +95,6 @@ def generate_diary(request):
                 best_description_idx = similarity.argmax().item()
                 best_description = descriptions[best_description_idx]
 
-            korea_description = translate_to_korean(best_description)
-            translated_emotion = translate_to_korean(emotion)
             prompt = (
                 f"Please draft my travel diary based on this information. 'I recently visited {translated_place} in korea and i felt a strong sense of {emotion}. One of the notable experiences was {best_description}.' ")
             # GPT-2 모델을 사용하여 텍스트 생성
@@ -118,9 +116,6 @@ def generate_diary(request):
 
             translated_text = translate_to_korean(extracted_content)
 
-            # emotion 번역
-            translated_emotion = translate_to_korean(emotion)
-
             # 일기 저장
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
             diary_entry = AiwriteModel.objects.create(
@@ -130,7 +125,7 @@ def generate_diary(request):
                 place=place,
                 #emotion=translated_emotion,
                 withfriend=withfriend,
-                content=extracted_content,
+                content=translated_text,
             )
             diary_entry.save()
 
@@ -263,6 +258,7 @@ def generate_diary(request):
 
 # 직접 일기 부분 작성
 #@login_required
+"""사용자가 일기 작성"""
 def write_diary(request):
     if request.method == 'POST':
         form = DiaryForm(request.POST, request.FILES)
@@ -271,15 +267,24 @@ def write_diary(request):
         if form.is_valid() and image_form.is_valid():
             diarytitle = form.cleaned_data['diarytitle']
             place = form.cleaned_data['place']
-            #emotion = form.cleaned_data['emotion']
-            withfriend = form.cleaned_data['withfriend']
+            # withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
             # user_email = request.user.email
             user_email = settings.DEFAULT_FROM_EMAIL
 
-            # emotion 번역
-            #translated_emotion = translate_to_korean(emotion)
+            # # 친구 태그 파싱
+            # friend_nicknames = request.POST.get('friends', '').split(',')
+            # friends = []
+            # # 친구태그
+            # for nickname in friend_nicknames:
+            #     if nickname.startswith('@'):
+            #         nickname = nickname[1:].strip()  # @제거하고 닉네임만 인식
+            #         # DB에서 해당 닉네임 사용자 검색 - users_collection위치에 몽고DB 유저모델로 생성된 컬렉션 위치
+            #         user_data = users_collection.find_one({'username': nickname})
+            #         if user_data:
+            #             user = User.objects.get(username=user_data['username'])
+            #             friends.append(user)
 
             # 일기 저장
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
@@ -288,11 +293,13 @@ def write_diary(request):
                 user_email=user_email,
                 diarytitle=diarytitle,
                 place=place,
-                #emotion=translated_emotion,
                 withfriend=withfriend,
+                # friends=friends,
                 content=content,
             )
             diary_entry.save()
+            # diary_entry.friends.set(friends)
+            # form.save_m2m()
 
             # 대표 이미지 처리
             representative_image = request.FILES.get('image_file')
@@ -302,7 +309,6 @@ def write_diary(request):
                 image_model.save()
                 diary_entry.representative_image = image_model
                 diary_entry.save()
-
 
             # 추가 이미지 처리
             images = request.FILES.getlist('images')
@@ -321,8 +327,13 @@ def write_diary(request):
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
+'''태그된 다른 사용자의 메인 다이어리로 이동'''
+# def user_diary_main(request, username):
+#     user = get_object_or_404(User, username=username)
+#     diary_entries = AiwriteModel.objects.filter(friends=user)
+#     return render(request, 'user_diary_main.html', {'user': user, 'diary_entries': diary_entries})
 
-# 전체 일기 리스트 - 유저 인증이 필요 없을 듯
+'''전체 일기 리스트 - 유저 인증이 필요 없을 듯'''
 def list_diary(request):
     diary_list = AiwriteModel.objects.all().order_by('-created_at')
     return render(request, 'diaryapp/list_diary.html', {'diary_list': diary_list})
@@ -359,6 +370,8 @@ user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일�
 
 # 일기 내용 수정
 #@login_required
+
+'''일기 내용 업데이트'''
 def update_diary(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 
@@ -416,7 +429,7 @@ def update_diary(request, unique_diary_id):
         'image_form': image_form,
     })
 
-# 일기 내용 삭제
+'''일기 내용 삭제'''
 def delete_diary(request, unique_diary_id):
     # user_email = request.user.email
     user_email = settings.DEFAULT_FROM_EMAIL
@@ -426,59 +439,57 @@ def delete_diary(request, unique_diary_id):
         return redirect('list_diary')
     return redirect('list_diary')
 
-'''
-# 뱃지 아이디 가져오기
-def get_user_badge_id(user):
-    # 사용자 모델에서 뱃지 정보를 가져오는 예시 함수
-    # 실제로는 사용자 모델에 따라 필드 이름이나 접근 방식이 다를 수 있습니다.
-    return user.profile.badge_id  # 예시: Profile 모델에 badge_id 필드가 있는 경우
+'''뱃지 아이디 가져오기'''
+# def get_user_badge_id(user):
+#     # 사용자 모델에서 뱃지 정보를 가져오는 예시 함수
+#     # 실제로는 사용자 모델에 따라 필드 이름이나 접근 방식이 다를 수 있습니다.
+#     return user.profile.badge_id  # 예시: Profile 모델에 badge_id 필드가 있는 경우
 
-# 댓글 생성
-def create_comment(request, unique_diary_id):
-    if request.method == 'POST':
-        form = CommentForm(request.POST, request.FILES)
-        if form.is_valid():
-            user_email = settings.DEFAULT_FROM_EMAIL
-            # user_email = request.user.email
+'''댓글 생성'''
+# def create_comment(request, unique_diary_id):
+#     if request.method == 'POST':
+#         form = CommentForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             user_email = settings.DEFAULT_FROM_EMAIL
+#             # user_email = request.user.email
+#
+#             comment = form.cleaned_data['comment']
+#
+#             # 현재 사용자의 뱃지 아이디 가져오기
+#             user = request.user  # 현재 로그인한 사용자 객체
+#             badge_id = get_user_badge_id(user)
+#
+#             # 댓글 저장
+#             comment_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{user_email}"
+#             comment_text = CommentModel.objects.create(
+#                 comment_id=comment_id,
+#                 user_email=user_email,
+#                 comment=comment,
+#                 badge_id=badge_id,
+#                 diary_id=unique_diary_id,
+#             )
+#             return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
+#         else:
+#             form = CommentForm()
+#         return render(request, 'diaryapp/detail_diary_by_id.html', {'form': form})
 
-            comment = form.cleaned_data['comment']
 
-            # 현재 사용자의 뱃지 아이디 가져오기
-            user = request.user  # 현재 로그인한 사용자 객체
-            badge_id = get_user_badge_id(user)
+'''해당 다이어리에 달린 댓글들 리스트 확인
+    # CommentModel 컬렉션에서 해당 다이어리의 unique_diary_id가 저장되어있는 데이터들을 모두 반환'''
+# def list_comment(request):
+#     # user_email = request.user.email if request.user.is_authenticated else None
+#     user_email = settings.DEFAULT_FROM_EMAIL
+#     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+#     comment_list = CommentModel.objects.all().order_by('-created_at')
+#     return render(request, 'diaryapp/detail_diary_by_id.html', {'comment_list': comment_list})
 
-            # 댓글 저장
-            comment_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{user_email}"
-            comment_text = CommentModel.objects.create(
-                comment_id=comment_id,
-                user_email=user_email,
-                comment=comment,
-                badge_id=badge_id,
-                diary_id=unique_diary_id,
-            )
-            return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
-        else:
-            form = CommentForm()
-        return render(request, 'diaryapp/detail_diary_by_id.html', {'form': form})
-
-
-# 해당 다이어리에 달린 댓글들 리스트 확인
-    # CommentModel 컬렉션에서 해당 다이어리의 unique_diary_id가 저장되어있는 데이터들을 모두 반환
-def list_comment(request):
-    # user_email = request.user.email if request.user.is_authenticated else None
-    user_email = settings.DEFAULT_FROM_EMAIL
-    diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-    comment_list = CommentModel.objects.all().order_by('-created_at')
-    return render(request, 'diaryapp/detail_diary_by_id.html', {'comment_list': comment_list})
-
-# 댓글 삭제하기
-    # 로그인된 사용자와 해당 댓글 작성자의 이메일이 일치할 경우에만 삭제버튼 활성화
-def delete_comment(request, comment_id):
-    # user_email = request.user.email
-    user_email = settings.DEFAULT_FROM_EMAIL
-    comment = get_object_or_404(CommentModel, comment_id=comment_id)
-    if request.method == 'POST':
-        comment.delete()
-        return redirect('detail_diary_by_id')
-    return redirect('detail_diary_by_id')
-'''
+''' 댓글 삭제하기
+    # 로그인된 사용자와 해당 댓글 작성자의 이메일이 일치할 경우에만 삭제버튼 활성화 '''
+# def delete_comment(request, comment_id):
+#     # user_email = request.user.email
+#     user_email = settings.DEFAULT_FROM_EMAIL
+#     comment = get_object_or_404(CommentModel, comment_id=comment_id)
+#     if request.method == 'POST':
+#         comment.delete()
+#         return redirect('detail_diary_by_id')
+#     return redirect('detail_diary_by_id')
