@@ -7,10 +7,10 @@
 </head>
 <body>
     <h1>{{ diary.diarytitle }}</h1>
-        <p><strong>Place:</strong> {{ diary.place }}</p>
-        <p><strong>Withfriend:</strong> {{ diary.withfriend }}</p>
-        <p><strong>Content:</strong> {{ diary.content }}</p>
-        <p><strong>Created at:</strong> {{ diary.created_at }}</p>
+        <p><strong>여행 장소:</strong> {{ diary.place }}</p>
+        <p><strong>동행자:</strong> {{ diary.withfriend }}</p>
+        <p><strong>내용:</strong> {{ diary.content }}</p>
+        <p><strong>작성 날짜:</strong> {{ diary.created_at }}</p>
 
         {% if diary.representative_image %}
             <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image" width="150">
@@ -26,12 +26,5 @@
         <button>
             <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
         </button>
-
-
-    <!-- 댓글 작성 폼 -->
-
-
-    <!-- 댓글 리스트 -->
-
 </body>
 </html>

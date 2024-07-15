@@ -3,7 +3,6 @@ from django import forms
 from .models import *
 from .storage import *
 
-
 class DiaryForm(forms.ModelForm):
     image_file = forms.FileField(required=False)
     emotion = forms.ChoiceField(choices=AiwriteModel.EMOTION_CHOICES)

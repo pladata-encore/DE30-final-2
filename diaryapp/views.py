@@ -129,6 +129,11 @@ def generate_diary(request):
             )
             diary_entry.save()
 
+            # # 태그 처리
+            # tags = form.cleaned_data['tags']
+            # for tag in tags:
+            #     diary_entry.tags.add(tag)
+
             # 대표 이미지 처리
             if representative_image:
                 image_model = ImageModel(is_representative=True)
@@ -298,8 +303,11 @@ def write_diary(request):
                 content=content,
             )
             diary_entry.save()
-            # diary_entry.friends.set(friends)
-            # form.save_m2m()
+
+            # # 태그 처리
+            # tags = form.cleaned_data['tags']
+            # for tag in tags:
+            #     diary_entry.tags.add(tag)
 
             # 대표 이미지 처리
             representative_image = request.FILES.get('image_file')
@@ -327,10 +335,10 @@ def write_diary(request):
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
-'''태그된 다른 사용자의 메인 다이어리로 이동'''
+'''태그된 다른 사용자의 메인 다이어리로 이동 - 메인화면 html주소 변동 필요'''
 # def user_diary_main(request, username):
 #     user = get_object_or_404(User, username=username)
-#     diary_entries = AiwriteModel.objects.filter(friends=user)
+#     diary_entries = AiwriteModel.objects.filter(tags__name__startswith='@', tags__name=username)
 #     return render(request, 'user_diary_main.html', {'user': user, 'diary_entries': diary_entries})
 
 '''전체 일기 리스트 - 유저 인증이 필요 없을 듯'''
@@ -347,14 +355,38 @@ def list_diary(request):
 #     diary_list = AiwriteModel.objects.filter(writer=user).order_by('-created_at')
 #     return render(request, 'diaryapp/user_list_diary.html', {'diary_list': diary_list})
 
-# 일기 내용 확인
-
-# 로그인한 사용자가 보는 다른 사용자들이 작성한 일기
+# 태그된 다이어리까지 전부 가져오기
+# @login_required
+# def tag_list_user_diary(request):
+#     user = request.user
+#     write_diary = AiwriteModel.objects.filter(writer=user).order_by('-created_at')
+#     tag_diary = AiwriteModel.objects.filter(tags__name__startswith='@').filter(tags__name__in=[tag.name for tag in user.tags.all()]).exclude(writer=user).order_by('-created_at')
+#
+#
+#     # 쓴 다이어리, 태그한 다이어리 따로 불러오기
+#     # context = {
+#     #     'write_diary': write_diary,
+#     #     'tag_diary': tag_diary
+#     # }
+#
+#     # 쓴 다이어리, 태그한 다이어리 합쳐서 시간 순으로 불러오기
+#     diary = (write_diary | tag_diary).order_by('-created_at')
+#     context = {
+#         'diary' : diary
+#     }
+#     return render(request, 'diaryapp/user_list_diary.html', context)
+'''
+일기 내용 확인
+로그인한 사용자가 보는 다른 사용자들이 작성한 일기
+'''
 def detail_diary_by_id(request, unique_diary_id):
     # user_email = request.user.email
     user_email = settings.DEFAULT_FROM_EMAIL
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     return render(request, 'diaryapp/detail_diary.html', {'diary': diary})
+
+    # tagged_users = diary.get_tagged_users()
+    # return render(request, 'diaryapp/detail_diary.html', {'diary': diary, 'tagged_users': tagged_users})
 '''
 user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일기와 다른 사용자의 일기를 볼 때 화면이 다름
 '''
@@ -362,11 +394,18 @@ user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일�
 # def detail_diary_by_id(request, unique_diary_id):
 #     user = request.user
 #     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+#     tagged = diary.get_tagged_users()
+#     comments = diary.comments.all()
 #     if diary.writer == user:
 #         template = 'diaryapp/detail_diary.html'
 #     else:
 #         template = 'diaryapp/detail_diary_otheruser.html'
-#     return render(request, template, {'diary': diary})
+#     context = {
+#         'diary':diary,
+#         'tagged':tagged,
+#         'comments':comments
+#     }
+#     return render(request, template, context)
 
 # 일기 내용 수정
 #@login_required
@@ -441,9 +480,16 @@ def delete_diary(request, unique_diary_id):
 
 '''뱃지 아이디 가져오기'''
 # def get_user_badge_id(user):
-#     # 사용자 모델에서 뱃지 정보를 가져오는 예시 함수
-#     # 실제로는 사용자 모델에 따라 필드 이름이나 접근 방식이 다를 수 있습니다.
-#     return user.profile.badge_id  # 예시: Profile 모델에 badge_id 필드가 있는 경우
+#     # 사용자의 프로필 정보를 가져오는 예시 코드
+#     try:
+#         # 사용자 모델에 profile 필드가 있다고 가정
+#         profile = user.profile  # 사용자의 프로필 정보 가져오기
+#         badge_id = profile.badge_id  # 프로필에서 뱃지 ID 가져오기
+#     except AttributeError:
+#         # 프로필 정보나 뱃지 ID가 없는 경우에 대한 에러 처리
+#         badge_id = None  # 또는 기본값 설정 등
+#     return badge_id
+
 
 '''댓글 생성'''
 # def create_comment(request, unique_diary_id):
@@ -451,12 +497,11 @@ def delete_diary(request, unique_diary_id):
 #         form = CommentForm(request.POST, request.FILES)
 #         if form.is_valid():
 #             user_email = settings.DEFAULT_FROM_EMAIL
-#             # user_email = request.user.email
+#             # user = request.user  # 현재 로그인한 사용자 객체
 #
 #             comment = form.cleaned_data['comment']
 #
 #             # 현재 사용자의 뱃지 아이디 가져오기
-#             user = request.user  # 현재 로그인한 사용자 객체
 #             badge_id = get_user_badge_id(user)
 #
 #             # 댓글 저장
@@ -475,8 +520,8 @@ def delete_diary(request, unique_diary_id):
 
 
 '''해당 다이어리에 달린 댓글들 리스트 확인
-    # CommentModel 컬렉션에서 해당 다이어리의 unique_diary_id가 저장되어있는 데이터들을 모두 반환'''
-# def list_comment(request):
+    CommentModel 컬렉션에서 해당 다이어리의 unique_diary_id가 저장되어있는 데이터들을 모두 반환'''
+# def list_comment(request,unique_diary_id):
 #     # user_email = request.user.email if request.user.is_authenticated else None
 #     user_email = settings.DEFAULT_FROM_EMAIL
 #     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)

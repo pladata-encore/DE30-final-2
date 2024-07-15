@@ -39,8 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "diaryapp",
-    "taggit.apps.TaggitAppconfig",
-    "taggit_templatetags",
+    "taggit.apps.TaggitAppConfig",
 ]
 TAGGIT_CASE_INSENSITIVE = True
 TAGGIT_LIMIT = 50
