@@ -38,18 +38,22 @@ class ImageModel(models.Model):
     def __str__(self):
         return f"Image for {self.diary.unique_diary_id}"
 
+'''다이어리-일정 모델'''
+class DiaryPlanModel(models.Model):
+    unique_diary_id = models.OneToOneField('AiwriteModel', on_delete=models.SET_NULL, blank=True, null=True)
+
 '''다이어리 모델'''
 class AiwriteModel(models.Model):
     EMOTION_CHOICES = [
         ('null', '없음'),
         ('Happiness', '행복'),
+        ('Joy', '기쁨'),
+        ('Fun', '즐거움 '),
+        ('Relief', '안도 '),
+        ('Excitement', '신남'),
         ('Sadness', '슬픔'),
         ('Anger', '화남'),
         ('Annoyance', '짜증'),
-        ('Joy', '기쁨'),
-        ('Fear', '두려움 '),
-        ('Relief', '안도 '),
-        ('Anxiety', '불안  '),
     ]
 
     unique_diary_id = models.CharField(max_length=255, unique=True)  # 실제 사용하는 아이디
@@ -100,27 +104,33 @@ class AiwriteModel(models.Model):
     #     return self.comments.all()
 
 '''댓글 모델'''
-# class CommentModel(models.Model):
-#     comment_id = models.CharField(max_length=255, unique=True)      # 실제 사용하는 아이디
-#     user_email = models.EmailField()
-#     # author = models.ManyToManyField(UserModel, related_name='user_models')
-#     comment = models.TextField(blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     class Meta:
-#         ordering = ['-created_at']
-#
-#     def save(self, *args, **kwargs):
-#         if not self.created_at:
-#             self.created_at = timezone.now()
-#
-#         if not self.comment_id:
-#             self.comment_id = f"{self.created_at.strftime('%Y%m%d%H%M%S')}{self.user_email}"
-#
-#         super().save(*args, **kwargs)
-#
-#     def __str__(self):
-#         return f'{self.user.username}의 댓글 - {self.diary.diarytitle}'
-#
-#     def can_delete(self, user):
-#         return user == self.user
+class CommentModel(models.Model):
+    comment_id = models.CharField(max_length=255, unique=True)      # 실제 사용하는 아이디
+    user_email = models.EmailField()
+    # author = models.ManyToManyField(UserModel, related_name='user_models')
+    diary_id = models.ManyToManyField('AiwriteModel', related_name='diary_comments')
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+
+        if not self.comment_id:
+            self.comment_id = f"{self.created_at.strftime('%Y%m%d%H%M%S')}{self.user_email}"
+
+        super().save(*args, **kwargs)
+
+    # def __str__(self):
+    #     return f'{self.user.username}의 댓글 - {self.diary_id.unique_diary_id}'
+
+    def __str__(self):
+        return f'{self.user_email}의 댓글 - {self.diary_id.unique_diary_id}'
+
+    # def can_delete(self, user):
+    #     return user == self.user
+    def can_delete(self, user):
+        return user == self.user_email

@@ -22,12 +22,16 @@ urlpatterns = [
     # 다이어리 삭제
     path('delete_diary/<str:unique_diary_id>/', views.delete_diary, name='delete_diary'),
 
-    # 댓글 달기
-    # path('create_comments/<str:unique_diary_id>/', views.create_comments, name='create_comments'),
+    # 일정 모달창
+    path('plan_modal/<str:unique_diary_id>/', views.plan_modal, name='plan_modal'),
 
+    # 댓글 달기
+    path('create_comment/<str:unique_diary_id>/', views.create_comment, name='create_comment'),
+
+    # 댓글 삭제
+    path('diaryapp/delete_comment/<str:comment_id>/', views.delete_comment, name='delete_comment'),
     # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
     # path('maindiary', views.delete_diary, name='main_diary'),
-
 ]
 
 if settings.DEBUG:

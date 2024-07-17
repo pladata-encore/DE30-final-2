@@ -66,18 +66,25 @@ class ImageUploadForm(forms.Form):
                 image_model.save_image(img)
                 image_model.save()
 
-# class CommentForm(forms.ModelForm):
-#     class Meta:
-#         model = CommentModel
-#         fields = ['comment']
-#
-#     def save(self, commit=True):
-#         instance = super(CommentForm, self).save(commit=False)
-#
-#         if not instance.comment_id:
-#             instance.comment_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{instance.user_email}"
-#
-#         if commit:
-#             instance.save()
-#
-#         return instance
+# 댓글 모델
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = CommentModel
+        fields = ['comment']
+        widgets = {
+            'comment': forms.Textarea(attrs={'cols': 80, 'rows': 5}),
+        }
+        labels = {
+            'comment': '댓글',
+        }
+
+    def save(self, commit=True):
+        instance = super(CommentForm, self).save(commit=False)
+
+        if not instance.comment_id:
+            instance.comment_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{instance.user_email}"
+
+        if commit:
+            instance.save()
+
+        return instance
