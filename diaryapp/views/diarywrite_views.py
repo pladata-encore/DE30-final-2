@@ -428,13 +428,11 @@ def update_diary(request, unique_diary_id):
         # emotion 번역
         diary.diarytitle = request.POST['diarytitle']
         diary.place = request.POST['place']
-        diary.emotion = request.POST['emotion']
-        diary.emotion = translate_to_korean(diary.emotion)
         diary.withfriend = request.POST['withfriend']
         diary.content = request.POST['content']
 
         # user_email = request.user.email
-        ser_email = settings.DEFAULT_FROM_EMAIL
+        user_email = settings.DEFAULT_FROM_EMAIL
         diary.save()
 
         # 대표 이미지 처리 (대표 이미지 변경)
