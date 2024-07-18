@@ -30,7 +30,7 @@ urlpatterns = [
     path('create_comment/<str:unique_diary_id>/', comment_views.create_comment, name='create_comment'),
 
     # 댓글 삭제
-    path('delete_comment/<str:comment_id>/', comment_views.delete_comment, name='delete_comment'),
+    path('comment/delete/<str:diary_id>/<int:comment_id>/', comment_views.delete_comment, name='delete_comment'),
 
     # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
     # path('maindiary', views.delete_diary, name='main_diary'),

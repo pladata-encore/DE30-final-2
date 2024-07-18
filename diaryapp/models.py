@@ -58,7 +58,7 @@ class AiwriteModel(models.Model):
 
     unique_diary_id = models.CharField(max_length=255, unique=True)  # 실제 사용하는 아이디
     user_email = models.EmailField()    # user가 생기면 writer 변경
-    #writer = models.ManyToManyField(UserModel, related_name='user_models', on_delete=models.SET_NULL, blank=True, null=True)
+    # writer = models.ManyToManyField(UserModel, related_name='user_models', on_delete=models.SET_NULL, blank=True, null=True)
     diarytitle = models.CharField(max_length=100, default='제목')
     emotion = models.CharField(max_length=100, choices=EMOTION_CHOICES)
     content = models.TextField(blank=True, null=True)

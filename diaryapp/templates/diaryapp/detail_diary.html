@@ -57,7 +57,10 @@
     </form>
 
     {% for comment in diary.diary_comments.all %}
-        <p><strong>{{ comment.user_email }}:</strong> {{ comment.comment }}</p>
+        <div>
+            <p><strong>{{ comment.user_email }}:</strong> {{ comment.comment }}</p>
+            <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
+        </div>
     {% empty %}
         <p>댓글이 없습니다.</p>
     {% endfor %}

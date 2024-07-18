@@ -14,15 +14,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from myproject import settings
 from ..forms import *
 from ..models import *
+from ..clip_model import clip_model, preprocess
 from googletrans import Translator
 import base64
 
 from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
 
-# GPTAPI키 가져오기
-load_dotenv()
-openai.api_key = "${OPEN_API_KEY}"
+
 
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
@@ -162,6 +161,7 @@ def translate_to_English(text): # 입력한 감정,장소 영어로 번역
 """GPT3로 일기 생성"""
 # @login_required
 def generate_diary(request):
+
     if request.method == 'POST':
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
@@ -171,21 +171,20 @@ def generate_diary(request):
             place = form.cleaned_data['place']
             emotion = form.cleaned_data['emotion']
             withfriend = form.cleaned_data['withfriend']
-            content = form.cleaned_data['content']
             representative_image = request.FILES.get('image_file')
 
             user_email = settings.DEFAULT_FROM_EMAIL
             # user_email = request.user.email
 
             # place 번역
-            translated_place = translate_to_English(place)
+            #translated_place = translate_to_English(place)
 
-            # CLIP 모델과 전처리기 로드
-            model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
-
-            # 적절한 반환 값을 사용하도록 수정
-            clip_model = model_info[0]
-            preprocess = model_info[1]
+            # # CLIP 모델과 전처리기 로드
+            # model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
+            #
+            # # 적절한 반환 값을 사용하도록 수정
+            # clip_model = model_info[0]
+            # preprocess = model_info[1]
 
             image = Image.open(representative_image)
             image = preprocess(image).unsqueeze(0)
@@ -204,8 +203,8 @@ def generate_diary(request):
 
             prompt = (
                 f"Please draft my travel diary based on this information. "
-                f"I recently visited {translated_place} in korea and I felt a strong sense of {emotion}. "
-                f"One of the notable experiences was {best_description}.I want answers in Korean. I hope it's about 7 sentences long")
+                f"I recently visited {place} in korea and I felt a strong sense of {emotion}. "
+                f"One of the notable experiences was {best_description}.I want answers in Korean. I hope it's about 5sentences long")
 
             # GPT-3.5 모델을 사용하여 다이어리 생성
             completion = openai.ChatCompletion.create(
@@ -213,7 +212,7 @@ def generate_diary(request):
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=1000,
+                max_tokens=400,
                 temperature=1
             )
             GPT3content = completion['choices'][0]['message']['content']
@@ -417,7 +416,7 @@ user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일�
 #     return render(request, template, context)
 
 # 일기 내용 수정
-#@login_required
+# @login_required
 
 '''일기 내용 업데이트'''
 def update_diary(request, unique_diary_id):
