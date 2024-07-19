@@ -51,7 +51,7 @@
 <!--        <p>{{ user.username }}</p>-->
 <!--    </div>-->
 
-    {% if diary.user_email == settings.DEFAULT_FROM_EMAIL %}
+
 
         <button>
             <a href="{% url 'update_diary' unique_diary_id=diary.unique_diary_id %}">일기수정하기</a>
@@ -64,7 +64,7 @@
             <input type="submit" value="삭제하기">
         </form>
 
-    {% endif %}
+
 
     <h2>댓글</h2>
     <form method="post" action="{% url 'create_comment' diary.unique_diary_id %}">
@@ -72,18 +72,13 @@
         {{ form.as_p }}
         <button type="submit">댓글 작성</button>
     </form>
-
-    {% for comment in diary.diary_comments.all %}
-
-
+    {% for comment in comments %}
         <div>
             <p><strong>{{ comment.user_email }}:</strong> {{ comment.comment }}</p>
             <p>{{comment.user_email}}</p>
-<!---->     {% if comment.user_email == settings.DEFAULT_FROM_EMAIL %}
                 <button>
                 <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
                 </button>
-<!---->     {% endif %}
         </div>
 
     {% empty %}

@@ -23,9 +23,7 @@ from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
 
 load_dotenv()
-openai.api_key ="${OPEN_API_KEY}"
-
-
+# openai.api_key ="${OPEN_API_KEY}"
 
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
@@ -163,7 +161,6 @@ def translate_to_korean(text): # 일기 내용 한국어로 번역
 #     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
 """GPT3로 일기 생성"""
-# @login_required
 def generate_diary(request):
     if request.method == 'POST':
         start_time = time.time()
@@ -284,7 +281,6 @@ def generate_diary(request):
 
 
 # 직접 일기 부분 작성
-#@login_required
 """사용자가 일기 작성"""
 def write_diary(request):
     if request.method == 'POST':
@@ -315,7 +311,7 @@ def write_diary(request):
 
             # 일기 저장
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
-            diary_entry = AiwriteModel.objects.create(
+            diary_entry = AiwriteModel.objects.create(  # 저장되는 다이어리
                 unique_diary_id=unique_diary_id,
                 user_email=user_email,
                 diarytitle=diarytitle,
@@ -368,9 +364,7 @@ def list_diary(request):
     diary_list = AiwriteModel.objects.all().order_by('-created_at')
     return render(request, 'diaryapp/list_diary.html', {'diary_list': diary_list})
 
-'''
-로그인한 사용자 확인 가능한 본인 일기 리스트 
-'''
+'''로그인한 사용자 확인 가능한 본인 일기 리스트'''
 # @login_required
 # def list_user_diary(request):
 #     user = request.user
@@ -397,9 +391,8 @@ def list_diary(request):
 #         'diary' : diary
 #     }
 #     return render(request, 'diaryapp/user_list_diary.html', context)
-'''
-일기 내용 확인
-'''
+
+'''일기 내용 확인'''
 def detail_diary_by_id(request, unique_diary_id):
     # user_email = request.user.email
     user_email = settings.DEFAULT_FROM_EMAIL
@@ -409,9 +402,7 @@ def detail_diary_by_id(request, unique_diary_id):
     # return render(request, 'diaryapp/detail_diary.html', {'diary': diary, 'tagged_users': tagged_users})
     return render(request, 'diaryapp/detail_diary.html', {'diary': diary,'form': form})
 
-'''
-다이어리 여행일정 모달 창
-'''
+'''다이어리 여행일정 모달 창'''
 def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     return render(request,  'diaryapp/plan_modal.html', {'diary': diary})
@@ -438,7 +429,7 @@ user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일�
 #     return render(request, template, context)
 
 '''일기 내용 업데이트'''
-# @login_required
+# @login_required # html에서 할 수 있으면 삭제
 def update_diary(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 
@@ -497,7 +488,7 @@ def update_diary(request, unique_diary_id):
     })
 
 '''일기 내용 삭제'''
-# @login_required
+# @login_required   # html에서 할 수 있으면 삭제
 def delete_diary(request, unique_diary_id):
     # user_email = request.user.email
     user_email = settings.DEFAULT_FROM_EMAIL

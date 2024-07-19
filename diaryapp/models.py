@@ -59,10 +59,10 @@ class AiwriteModel(models.Model):
     unique_diary_id = models.CharField(max_length=255, unique=True)  # diary 아이디
     user_email = models.EmailField()    # user가 생기면 writer로 변경
     # writer = models.ManyToManyField(UserModel, related_name='user_models', on_delete=models.SET_NULL, blank=True, null=True)
-    diarytitle = models.CharField(max_length=100, default='제목')
+    diarytitle = models.CharField(max_length=100, default='한옥마을')
     emotion = models.CharField(max_length=100, choices=EMOTION_CHOICES)
     content = models.TextField(blank=True, null=True)   # 다이어리 내용, GPT 내용과 사용자 작성 일기 둘 다 여기 들어감
-    place = models.CharField(max_length=100, default='입력해주세요')  # 장소 입력 변경 예정
+    place = models.CharField(max_length=100, default='전주 한옥마을')  # 장소 입력 변경 예정
     created_at = models.DateTimeField(auto_now_add=True)
     withfriend = models.CharField(max_length=100, blank=True, null=True)    # 친구 태그 기능 변경 예정
     # tags = TaggableManager(
