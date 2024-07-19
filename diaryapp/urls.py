@@ -1,8 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from . import views
-from diaryapp.views import diarywrite_views, comment_views
+from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views
 
 urlpatterns = [
     #### diarywrite_views.py ####
@@ -23,8 +22,6 @@ urlpatterns = [
     # 다이어리 삭제
     path('delete_diary/<str:unique_diary_id>/', diarywrite_views.delete_diary, name='delete_diary'),
 
-    # 다이어리 메인
-    path('',diarywrite_views.viewDiary),
 
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),
@@ -40,10 +37,15 @@ urlpatterns = [
     # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
     # path('maindiary', views.delete_diary, name='main_diary'),
 
+
+    # diary_views.py
+    path('',diary_views.viewDiary),
+
+    # base_views.py
     # Bootstrap 테마 예시 페이지
-    # path('index', views.viewIndex),
-    # path('elements', views.viewElements),
-    # path('generic', views.viewGeneric),
+    path('index', base_views.viewIndex),
+    path('elements', base_views.viewElements),
+    path('generic', base_views.viewGeneric)
 ]
 
 if settings.DEBUG:

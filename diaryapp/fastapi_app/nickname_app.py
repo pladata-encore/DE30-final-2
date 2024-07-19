@@ -1,0 +1,247 @@
+import os
+import django
+import pymongo
+from fastapi import FastAPI
+from pydantic import BaseModel
+from gensim.models import FastText
+from sklearn.metrics.pairwise import cosine_similarity
+import random
+from collections import Counter
+from konlpy.tag import Komoran
+from django.http import JsonResponse
+
+
+
+app = FastAPI()
+
+class NicknameRequest(BaseModel):
+    plan_id: str
+    content : str
+
+class NicknameResponse(BaseModel):
+    title : str
+    nickname: str
+
+import sys
+# Django 프로젝트 루트 디렉토리를 sys.path에 추가
+sys.path.append(r'C:/projects/Encore_Final_Project')
+
+
+# 프로젝트의 루트 디렉토리 경로 설정
+PROJECT_ROOT = 'myproject.settings'
+
+# Django 설정 로드
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', PROJECT_ROOT)
+django.setup()
+from django.conf import settings
+
+# MongoDB 클라이언트 설정
+mongo_client = pymongo.MongoClient(settings.DATABASES['default']['CLIENT']['host'],
+                                   username=settings.DATABASES['default']['CLIENT']['username'],
+                                   password=settings.DATABASES['default']['CLIENT']['password'])
+db = mongo_client[settings.DATABASES['default']['NAME']]
+
+# 여행지 컬렉션
+collection = db['areaBaseList']
+
+# 카테고리 컬렉션
+cat1_collection = db['categoryCode1']
+cat2_collection = db['categoryCode2']
+cat3_collection = db['categoryCode3']
+
+
+# komoran 초기화 / fasttext model 로드
+komoran = Komoran()
+model_path = os.path.join(settings.BASE_DIR, 'diaryapp/models', 'fasttext_model.model')
+model = FastText.load(model_path)
+
+
+# 다이어리 형용사 추출 함수
+def extract_adjectives(words):
+    xr_xsa_etm = []
+    va_etm = []
+    etc_etm = ['특별한', '신선한', '아름다운', '기분좋은', '해맑은', '활기찬', '재밌는', '반짝이는']
+
+    for word in words:
+        pos_tags_words = komoran.pos(word)  # 각 단어의 품사 태깅
+        prev_pos = None
+
+        for token, pos in pos_tags_words:
+            # VA ETM 조합
+            if prev_pos == 'VA' and pos == 'ETM':
+                va_etm.append(word)
+
+            # XR XSA ETM 조합
+            elif prev_pos == 'XR' and pos == 'XSA':
+                prev_word = word  # 현재 단어 저장
+            elif prev_pos == 'XSA' and pos == 'ETM':
+                xr_xsa_etm.append(prev_word)
+
+            # 현재 품사 업데이트
+            prev_pos = pos
+
+    # 우선순위에 따라 랜덤 선택
+    if xr_xsa_etm:
+        selected_adjective = random.choice(xr_xsa_etm)
+    else:
+        selected_adjective = random.choice(va_etm) if va_etm else random.choice(etc_etm)
+
+    return selected_adjective
+
+
+# 다이어리 명사 추출 함수
+def extract_nouns(pos_tags):
+    nouns = []
+    current_noun = []
+
+    for word, pos in pos_tags:
+        if pos in ['NA', 'NF', 'NNG', 'NNP', 'NV']:
+            current_noun.append(word)
+        else:
+            if current_noun:  # 이전에 쌓인 명사가 있다면
+                nouns.append(" ".join(current_noun))  # 현재 명사를 합쳐서 추가
+                current_noun = []  # 현재 명사 초기화
+
+    # 마지막으로 쌓인 명사가 있을 경우 추가
+    if current_noun:
+        nouns.append(" ".join(current_noun))
+
+    return nouns
+
+
+# 빈도 높은 일정 추출 함수 (빈도 높은 순 > 전체)
+def frequent_category(plan_data):
+    updated_documents = []
+
+    for document in plan_data:
+        for cat in ['cat1', 'cat2', 'cat3']:
+            cat_code = document.get(cat)
+            # 카테고리 컬렉션 이름을 동적으로 설정
+            category_collection = db[f'categoryCode{cat[-1]}']
+
+            category = category_collection.find_one({'code': cat_code}, {'name': 1, '_id': 0})
+            document[cat] = category['name'] if category else cat_code
+
+        updated_documents.append(document)
+
+    for cat in ['cat1', 'cat2', 'cat3']:
+        # 카테고리 값 수집
+        cat_values = [doc[cat] for doc in updated_documents]
+        # 빈도 계산
+        cat_counter = Counter(cat_values)
+        max_count = max(cat_counter.values())
+        most_frequent = [item for item, count in cat_counter.items() if count == max_count]
+
+        # 모든 항목이 다를 경우 전체 항목 반환
+        if len(most_frequent) == len(cat_counter):
+            most_frequent = list(cat_counter.keys())
+
+        # 조건에 맞는 문서 필터링
+        updated_documents = [doc for doc in updated_documents if doc[cat] in most_frequent]
+
+    return updated_documents
+
+
+# 유사도 계산 명사 추출 함수
+def select_noun(nouns, final_documents, model):
+    # 각 우선 순위에 따른 명사 저장
+    selected_nouns = []
+
+    # 타이틀 유사도 0.999 이상 우선 처리
+    for doc in final_documents:
+        title = doc.get('title', '')
+        if title in model.wv:
+            for noun in nouns:
+                if noun in model.wv:
+                    noun_vector = model.wv[noun].reshape(1, -1)
+                    title_vector = model.wv[title].reshape(1, -1)
+
+                    similarity = cosine_similarity(title_vector, noun_vector)[0][0]
+                    if similarity >= 0.999:
+                        selected_nouns.append((title, noun))
+
+    # 타이틀 유사도 높은 명사 반환
+    if selected_nouns:
+        return random.choice(selected_nouns)  # 랜덤으로 하나 선택
+
+    # 카테고리 유사도로 우선순위 처리
+    for cat in ['cat3', 'cat2', 'cat1']:
+        for doc in final_documents:
+            title = doc.get('title', '')
+            cat_value = doc.get(cat, '')
+            if cat_value in model.wv:
+                for noun in nouns:
+                    if noun in model.wv:
+                        noun_vector = model.wv[noun].reshape(1, -1)
+                        cat_vector = model.wv[cat_value].reshape(1, -1)
+
+                        similarity = cosine_similarity(cat_vector, noun_vector)[0][0]
+                        if similarity >= 0.9 :
+                            selected_nouns.append((title, cat_value, noun))
+
+        # 유사도 기준으로 정렬
+        print(selected_nouns.sort(key=lambda x: x[2], reverse=True))
+
+        if selected_nouns:
+            return random.choice(selected_nouns)  # 랜덤으로 하나 선택
+
+    return ('','여행자') # 그 외
+
+# 별명 추출 함수
+def extract_words(plan_data, content):
+    pos_tags = komoran.pos(content)
+    words = content.split()
+
+    # 다이어리 형용사 추출
+    selected_adjective = extract_adjectives(words)
+
+    # 다이어리 명사 추출
+    nouns = extract_nouns(pos_tags)
+
+    # 빈도 높은 일정 추출
+    final_documents = frequent_category(plan_data)
+
+    # 유사도 계산 명사 추출
+    selected_noun = select_noun(nouns, final_documents, model)
+
+    return selected_noun[0], selected_adjective + ' ' + selected_noun[-1].replace(" ", "")
+
+
+
+# @app.get("/generate-nickname/", response_model=NicknameResponse)
+# async def generate_nickname(request: NicknameRequest):
+@app.get("/generate-nickname/")
+async def generate_nickname():
+
+    # 일정 여행지 list
+    # plan_id = request.plan_id
+    # plan_id를 이용해서 일정 컬렉션의 여행지 list를 가져와서 사용
+    plan_id = 'test'
+    print('------------------', plan_id)
+
+
+    # 일정 여행지 list (예시)
+    cursor = collection.find({"title": {"$regex": "우도해수욕장|세화해변|협재해수욕장|성산일출봉"}},
+                             {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0})
+    plan_data = list(cursor)
+
+    # 다이어리 content
+    # content = request.content
+
+    # 일정 여행지 list (예시)
+    content = '''제주도의 푸른 바다와 하얀 모래는 정말 멋지고 차갑고 빨갛다 좋다. 세화 해변을 걷는 것만으로도 마음이 편안해졌어요.
+            유채꽃 필 때 방문한 우도는 한국의 아름다움을 다시 한 번 느낄 수 있었던 곳이에요.
+            제주의 풍경은 정말 매력적이었고, 특히 성산 일출봉에서 일출을 보는 것은 잊지 못할 순간이었어요.
+            협재 해수욕장의 파도 소리와 시원한 바람은 제주에서의 시간을 더욱 특별하게 만들어 주었어요.
+            제주에서 맛본 흑돼지고기와 감귤은 정말 맛있었고, 다시 방문하고 싶은 마음이 들 정도로 여행이 즐거웠어요.'''
+
+    title, nickname = extract_words(plan_data, content)
+
+    return title, nickname
+    # data = {"title": title, "nickname": nickname}
+    # return JsonResponse(data)  # 리스트를 JSON으로 반환
+
+
+import uvicorn
+if __name__ == "__main__":
+    uvicorn.run("nickname_app:app", host='0.0.0.0', port=5000, reload=True)
