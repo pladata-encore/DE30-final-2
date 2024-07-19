@@ -1,0 +1,38 @@
+<!--로그인 한 사용자가 보는 자신의 리스트-->
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>My Diary List</title>
+</head>
+<body>
+    <h1>My Diary List</h1>
+    <ul>
+        {% for diary in diary_list %}
+            <li>
+                <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}">{{ diary.diarytitle }}</a>
+                <br/>
+                {% if diary.representative_image %}
+                    <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image" width="150">
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No diaries found.</li>
+        {% endfor %}
+    </ul>
+
+<!--        &lt;!&ndash; diary_list.html &ndash;&gt;-->
+<!--    <h2>내 다이어리와 태그된 다이어리</h2>-->
+<!--    <ul>-->
+<!--        {% for diary in diaries %}-->
+<!--            <li>{{ diary.title }}</li>-->
+<!--            &lt;!&ndash; 원하는 다이어리의 정보 표시 &ndash;&gt;-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
+
+    <!-- 일기 작성 화면으로 가는 버튼 추가 (로그인한 사용자의 경우만 가능)-->
+        <a href="{% url 'write_diary' %}">
+            <button>Write a New Diary</button>
+        </a>
+</body>
+</html>

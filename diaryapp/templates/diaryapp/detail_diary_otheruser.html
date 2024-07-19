@@ -1,0 +1,93 @@
+<!--로그인을 하지 않은 다른 사용자의 블로그-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ diary.diarytitle }}</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        /* Additional CSS styles for modal */
+        .modal-content {
+            padding: 20px;
+        }
+    </style>
+</head>
+    <body>
+    <h1>{{ diary.diarytitle }}</h1>
+        <p><strong>여행 장소:</strong> <a href="#" class="open-modal" data-diary-id="{{ diary.id }}">{{ diary.place }}</a></p>
+        <p><strong>동행자:</strong> {{ diary.withfriend }}</p>
+        <p><strong>내용:</strong> {{ diary.content }}</p>
+        <p><strong>작성 날짜:</strong> {{ diary.created_at }}</p>
+
+        {% if diary.representative_image %}
+            <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image" width="150">
+        {% endif %}
+
+        {% for image in diary.images.all %}
+            {% if not image.is_representative %}
+                <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image" width="150">
+            {% endif %}
+        {% empty %}
+        {% endfor %}
+
+        <h2>댓글</h2>
+        <form method="post" action="{% url 'create_comment' diary.unique_diary_id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">댓글 작성</button>
+        </form>
+
+        {% for comment in diary.diary_comments.all %}
+            <p><strong>{{ comment.user_email }}:</strong> {{ comment.comment }}</p>
+            <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id">댓글 삭제</a>
+        {% empty %}
+            <p>댓글이 없습니다.</p>
+        {% endfor %}
+
+        <button>
+            <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
+        </button>
+        <!-- 모달 창 -->
+        <div class="modal fade" id="diaryModal" tabindex="-1" role="dialog" aria-labelledby="diaryModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="diaryModalLabel">일기 세부 정보</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modal-body-content">
+                            <!-- 모달 내용이 들어갈 자리 -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        $(document).ready(function() {
+            $('.open-modal').click(function(e) {
+                e.preventDefault();
+                var uniqueDiaryId = $(this).data('unique-diary-id');
+                var url = '/plan_modal/' + uniqueDiaryId + '/';
+
+                // AJAX를 통해 일기의 세부 정보를 가져와서 모달에 채워 넣기
+                $.get(url, function(data) {
+                    $('#modal-body-content').html(data);
+                    $('#diaryModal').modal('show');
+                });
+            });
+        });
+        </script>
+    </body>
+</html>

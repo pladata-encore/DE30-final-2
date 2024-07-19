@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>diary</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	{% load static %}
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
+	<link rel="stylesheet" href="{% static 'assets/css/app.css' %}" />
+	<noscript><link rel="stylesheet" href="{% static 'assets/css/noscript.css' %}" /></noscript>
+</head>
+<body>
+<div id="wrapper">
+<header id="head" class="navbar navbar-dark head_tour">
+	<div class="container-fluid">
+		<h1 class="tit_tour">
+			<a href="/" class="link_tit"><span class="ico_tit">tourdiary</span></a>
+		</h1>
+		<button class="btn_nav" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+		  <span class="navbar-toggler-icon">메뉴 열기</span>
+		</button>
+		<div class="flex-shrink-0 p-3 bg-white offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" style="width: 280px;">
+			<h2 class="tit_tour tit_nav">
+				<a href="/" class="link_tit"><span class="ico_tit">tourdiary</span></a>
+				<span class="screen_out">메뉴</span>
+			</h2>
+			<ul class="list-unstyled ps-0">
+				<li class="mb-1">
+					<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+						여행 계획
+					</button>
+					<div class="collapse show" id="home-collapse" style="">
+						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+							<li><a href="#" class="link-dark rounded">여행 계획 만들기</a></li>
+							<li><a href="#" class="link-dark rounded">여행 계획</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="mb-1">
+					<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="true">
+						여행 다이어리
+					</button>
+					<div class="collapse show" id="dashboard-collapse" style="">
+						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+							<li><a href="#" class="link-dark rounded">여행 다이어리 만들기</a></li>
+							<li><a href="#" class="link-dark rounded">여행 다이어리</a></li>
+						</ul>
+					</div>
+				</li>
+				<li class="border-top my-3"></li>
+				<li class="mb-1">
+					<button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
+						Account
+					</button>
+					<div class="collapse show" id="account-collapse" style="">
+						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+							<li><a href="#" class="link-dark rounded">프로필 수정</a></li>
+							<li><a href="#" class="link-dark rounded">찜한 여행지</a></li>
+							<li><a href="#" class="link-dark rounded">여행 뱃지</a></li>
+							<li><a href="#" class="link-dark rounded">Sign out</a></li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+			<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+	</div>
+	<div class="badge_tour">
+		<a href="#" class="link_badge">
+			<strong class="screen_out">대표 뱃지 : </strong>
+			<span class="scope_badge"><img src="" class="img_badge">성산일출봉 뱃지</span>
+			<strong class="tit_badge">반짝이는 성산일출봉</strong>
+		</a>
+	</div>
+</header>
+<div id="main" class="cont_tour">

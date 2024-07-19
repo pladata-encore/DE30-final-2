@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Write Diary</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* 로딩 화면 스타일 */
+        #loadingOverlay {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1000; /* 다른 요소보다 위에 표시 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #loadingSpinner {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        $(document).ready(function() {
+            $('#ai-button').click(function(event) {
+                event.preventDefault();
+                var formData = new FormData($('#diary-form')[0]);
+                $.ajax({
+                    url: "{% url 'generate_diary' %}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $('#id_content').val(response.generated_content);
+                    },
+                    error: function(response) {
+                        alert("Error generating content");
+                    }
+                });
+            });
+
+            $('#diary-form').submit(function(event) {
+                var emotionFieldVisible = $('#emotion-field').is(':visible');
+                var emotionValue = $('#id_emotion').val();
+
+                if (emotionFieldVisible && emotionValue) {
+                    this.action = "{% url 'generate_diary' %}";
+                } else {
+                    this.action = "{% url 'write_diary' %}";
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('diary-form');
+            form.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                }
+            });
+            form.addEventListener('submit', function(event) {
+                // 폼 제출 시 로딩 화면 표시
+                document.getElementById('loadingOverlay').style.display = 'flex';
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Write Diary</h1>
+    <form id="diary-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <p>
+            <label for="id_diarytitle">일기 제목:</label>
+            {{ form.diarytitle }}
+        </p>
+        <p>
+            <label for="id_place">장소:</label>
+            {{ form.place }}
+        </p>
+        <p>
+            <label for="id_withfriend">친구와 함께:</label>
+            {{ form.withfriend }}
+        </p>
+        <p>
+            <label for="id_content">내용:</label>
+            {{ form.content }}
+        </p>
+        <p>
+            <label for="id_repreimg">대표이미지:</label>
+            {{ form.image_file }}
+        </p>
+
+        <button type="button" id="ai-button">AI로 작성하기</button>
+        <div id="emotion-field" style="display: none;">
+            <label for="id_emotion">감정:</label>
+            {{ form.emotion }}
+        </div>
+
+        {{ image_form.as_p }}
+
+        <button type="submit">일기 작성</button>
+    </form>
+    <!-- 일기 리스트 링크 -->
+    <button id="list-button">
+        <a href="{% url 'list_diary' %}">리스트</a>
+    </button>
+
+    <!-- 로딩 화면 -->
+    <div id="loadingOverlay">
+        <div id="loadingSpinner"></div>
+    </div>
+</body>
+</html>
