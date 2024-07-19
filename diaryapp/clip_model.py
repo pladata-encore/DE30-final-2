@@ -1,4 +1,5 @@
 import open_clip
+from googletrans import Translator
 
 # 전역 변수로 모델과 전처리기 설정
 clip_model = None

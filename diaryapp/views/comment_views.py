@@ -44,18 +44,18 @@ def create_comment(request, unique_diary_id):
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.user_email = request.user.email  # 로그인한 사용자의 이메일로 설정 - 계정이 요상하게 들어감
+            # comment.user_email = request.user.email  # 로그인한 사용자의 이메일로 설정 - 계정이 요상하게 들어감
+            comment.user_email = settings.DEFAULT_FROM_EMAIL  # 로그인한 사용자의 이메일로 설정 - 계정이 요상하게 들어감
             comment.save()
             comment.diary_id.set([diary])  # ManyToMany 관계 설정
             return redirect('detail_diary_by_id', unique_diary_id=unique_diary_id)
-
+        else:
+            form = CommentForm()
     return render(request, 'diaryapp/detail_diary.html', {'diary': diary, 'form': form})
 
 '''해당 다이어리에 달린 댓글들 리스트 확인
     CommentModel 컬렉션에서 해당 다이어리의 unique_diary_id가 저장되어있는 데이터들을 모두 반환'''
 def list_comment(request,unique_diary_id):
-    # user_email = request.user.email if request.user.is_authenticated else None
-    # user_email = settings.DEFAULT_FROM_EMAIL
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     comment_list = CommentModel.objects.all().order_by('-created_at')
     return render(request, 'diaryapp/detail_diary_by_id.html', {'comment_list': comment_list})
@@ -65,7 +65,8 @@ def list_comment(request,unique_diary_id):
 # @login_required
 def delete_comment(request, diary_id, comment_id):
     comment = get_object_or_404(CommentModel, comment_id=comment_id)
-    if comment.user != request.user:
+    # if comment.user_email != request.user.email:
+    if comment.user_email != settings.DEFAULT_FROM_EMAIL:
         raise PermissionDenied("You do not have permission to delete this comment.")
     comment.delete()
     return redirect('detail_diary_by_id', unique_diary_id=diary_id)

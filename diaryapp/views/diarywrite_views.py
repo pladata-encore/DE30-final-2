@@ -14,12 +14,16 @@ from django.shortcuts import render, get_object_or_404, redirect
 from myproject import settings
 from ..forms import *
 from ..models import *
-from ..clip_model import clip_model, preprocess
+from ..clip_model import *
 from googletrans import Translator
 import base64
+import time
 
 from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
+
+load_dotenv()
+openai.api_key ="${OPEN_API_KEY}"
 
 
 
@@ -46,10 +50,10 @@ def translate_to_korean(text): # 일기 내용 한국어로 번역
     translator = Translator()
     translated = translator.translate(text, src='en', dest='ko')
     return translated.text
-def translate_to_English(text): # 입력한 감정,장소 영어로 번역
-    translator = Translator()
-    translated = translator.translate(text, src='ko', dest='en')
-    return translated.text
+# def translate_to_English(text): # 입력한 감정,장소 영어로 번역
+#     translator = Translator()
+#     translated = translator.translate(text, src='ko', dest='en')
+#     return translated.text
 
 # GPT2 API사용해서 일기 가져오는 부분
 #@login_required
@@ -161,8 +165,8 @@ def translate_to_English(text): # 입력한 감정,장소 영어로 번역
 """GPT3로 일기 생성"""
 # @login_required
 def generate_diary(request):
-
     if request.method == 'POST':
+        start_time = time.time()
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
 
@@ -189,6 +193,7 @@ def generate_diary(request):
             image = Image.open(representative_image)
             image = preprocess(image).unsqueeze(0)
 
+            CLIP_start_time = time.time()
             # 이미지 설명 후보 생성
             descriptions = generate_dynamic_descriptions()
 
@@ -200,7 +205,10 @@ def generate_diary(request):
                 similarity = torch.softmax((100.0 * image_features @ text_features.T), dim=-1)
                 best_description_idx = similarity.argmax().item()
                 best_description = descriptions[best_description_idx]
+            CLIP_end_time = time.time()
+            print('------------- CLIP image --------', CLIP_end_time - CLIP_start_time)
 
+            GPT_start_time = time.time()
             prompt = (
                 f"Please draft my travel diary based on this information. "
                 f"I recently visited {place} in korea and I felt a strong sense of {emotion}. "
@@ -216,6 +224,8 @@ def generate_diary(request):
                 temperature=1
             )
             GPT3content = completion['choices'][0]['message']['content']
+            GPT_end_time = time.time()
+            print('------------- gpt image --------', GPT_end_time - GPT_start_time)
 
             # emotion 번역
             translated_emotion = translate_to_korean(emotion)
@@ -233,13 +243,7 @@ def generate_diary(request):
             )
             diary_entry.save()
 
-            # 대표 이미지 처리
-            if representative_image:
-                image_model = ImageModel(is_representative=True)
-                image_model.save_image(Image.open(representative_image))
-                image_model.save()
-                diary_entry.representative_image = image_model
-                diary_entry.save()
+            image_start_time = time.time()
 
             # 추가 이미지 처리
             images = request.FILES.getlist('images')
@@ -249,7 +253,26 @@ def generate_diary(request):
                 additional_image_model.save()
                 diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
 
-            return redirect('list_diary')
+            # 대표 이미지 처리
+            if representative_image:
+                image_model = ImageModel(is_representative=True)
+                image_model.save_image(Image.open(representative_image))
+                image_model.save()
+                diary_entry.representative_image = image_model
+                diary_entry.save()
+
+            # # 추가 이미지 처리
+            # images = request.FILES.getlist('images')
+            # for img in images:
+            #     additional_image_model = ImageModel(is_representative=False)
+            #     additional_image_model.save_image(Image.open(img))
+            #     additional_image_model.save()
+            #     diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
+            image_end_time = time.time()
+            print('------------- get image --------', image_end_time - image_start_time)
+            end_time = time.time()
+            print('------------- total end --------', end_time - start_time)
+            return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
         else:
             return render(request, 'diaryapp/list_diary.html', {'form': form, 'image_form': image_form})
 
@@ -325,7 +348,7 @@ def write_diary(request):
                 additional_image_model.save()
                 diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
 
-            return redirect('list_diary')
+            return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
         else:
             return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
     else:
@@ -382,10 +405,9 @@ def detail_diary_by_id(request, unique_diary_id):
     user_email = settings.DEFAULT_FROM_EMAIL
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     form = CommentForm()
-    return render(request, 'diaryapp/detail_diary.html', {'diary': diary,'form': form})
-
     # tagged_users = diary.get_tagged_users()
     # return render(request, 'diaryapp/detail_diary.html', {'diary': diary, 'tagged_users': tagged_users})
+    return render(request, 'diaryapp/detail_diary.html', {'diary': diary,'form': form})
 
 '''
 다이어리 여행일정 모달 창
@@ -415,10 +437,8 @@ user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일�
 #     }
 #     return render(request, template, context)
 
-# 일기 내용 수정
-# @login_required
-
 '''일기 내용 업데이트'''
+# @login_required
 def update_diary(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 
@@ -431,6 +451,8 @@ def update_diary(request, unique_diary_id):
         diary.content = request.POST['content']
 
         # user_email = request.user.email
+        # from django.contrib.auth import authenticate, login
+        # user = authenticate(request, username=username)
         user_email = settings.DEFAULT_FROM_EMAIL
         diary.save()
 
@@ -475,6 +497,7 @@ def update_diary(request, unique_diary_id):
     })
 
 '''일기 내용 삭제'''
+# @login_required
 def delete_diary(request, unique_diary_id):
     # user_email = request.user.email
     user_email = settings.DEFAULT_FROM_EMAIL

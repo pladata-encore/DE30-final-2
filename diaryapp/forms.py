@@ -72,7 +72,7 @@ class CommentForm(forms.ModelForm):
         model = CommentModel
         fields = ['comment']
         widgets = {
-            'comment': forms.Textarea(attrs={'cols': 80, 'rows': 5}),
+            'comment': forms.Textarea(attrs={'cols': 80, 'rows': 3}),
         }
         labels = {
             'comment': '댓글',

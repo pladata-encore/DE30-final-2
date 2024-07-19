@@ -59,10 +59,10 @@ class AiwriteModel(models.Model):
     unique_diary_id = models.CharField(max_length=255, unique=True)  # 실제 사용하는 아이디
     user_email = models.EmailField()    # user가 생기면 writer 변경
     # writer = models.ManyToManyField(UserModel, related_name='user_models', on_delete=models.SET_NULL, blank=True, null=True)
-    diarytitle = models.CharField(max_length=100, default='제목')
+    diarytitle = models.CharField(max_length=100, default='역사여행')
     emotion = models.CharField(max_length=100, choices=EMOTION_CHOICES)
     content = models.TextField(blank=True, null=True)
-    place = models.CharField(max_length=100, default='Unknown')
+    place = models.CharField(max_length=100, default='남한산성')
     created_at = models.DateTimeField(auto_now_add=True)
     withfriend = models.CharField(max_length=100, blank=True, null=True)
     # tags = TaggableManager(
@@ -109,7 +109,7 @@ class CommentModel(models.Model):
     user_email = models.EmailField()
     # author = models.ManyToManyField(UserModel, related_name='user_models')
     diary_id = models.ManyToManyField('AiwriteModel', related_name='diary_comments')
-    comment = models.TextField(blank=True, null=True)
+    comment = models.TextField(blank=True, null=True, default='댓글이욤')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
