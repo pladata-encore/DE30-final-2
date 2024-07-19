@@ -32,7 +32,7 @@ load_dotenv(dotenv_path=env_path)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-a&)gx3mp+#9epz5&okvg@x6e*a#z%9%#p(k_uwl7w%bkwcntve"
 OPEN_API_KEY = os.environ.get('OPEN_API_KEY')
-DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = 'True'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 # ALLOWED_HOSTS = []
@@ -51,8 +51,6 @@ INSTALLED_APPS = [
     "diaryapp",
     "taggit.apps.TaggitAppConfig",
     'django.contrib.humanize',
-    "app",
-    "diaryapp"
 ]
 TAGGIT_CASE_INSENSITIVE = True
 TAGGIT_LIMIT = 50
@@ -128,7 +126,7 @@ DATABASES = {
 
 # 미디어 파일 저장 경로
 MEDIA_URL = '/media/'
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 이미지 DB
@@ -171,9 +169,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    BASE_DIR / "static",
     ]
 
 

@@ -14,7 +14,6 @@ urlpatterns = [
     # 리스트 다이어리
     path('list_diary/', diarywrite_views.list_diary, name='list_diary'),
 
-    path('',views.viewDiary),
     # 다이어리 상세화면
     path('detail_diary/<str:unique_diary_id>/', diarywrite_views.detail_diary_by_id, name='detail_diary_by_id'),
 
@@ -42,9 +41,6 @@ urlpatterns = [
     # path('maindiary', views.delete_diary, name='main_diary'),
 
     # Bootstrap 테마 예시 페이지
-    path('index',views.viewIndex),
-    path('elements',views.viewElements),
-    path('generic',views.viewGeneric)
     # path('index', views.viewIndex),
     # path('elements', views.viewElements),
     # path('generic', views.viewGeneric),
