@@ -22,6 +22,10 @@ import time
 from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
 
+# Create your views here.
+def viewDiary(request):
+    return render(request, 'diaryapp/diary.html')
+
 load_dotenv()
 # openai.api_key ="${OPEN_API_KEY}"
 

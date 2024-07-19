@@ -34,17 +34,15 @@ class ImageModel(models.Model):
         image_data = base64.b64decode(self.image_file)
         image = Image.open(BytesIO(image_data))
         return image
+from django.db import models
 
-    def __str__(self):
-        return f"Image for {self.diary.unique_diary_id}"
-
+# Create your models here.
 '''다이어리-일정 모델'''
-# class DiaryPlanModel(models.Model):
-#     unique_diary_id = models.OneToOneField('AiwriteModel', on_delete=models.SET_NULL, blank=True, null=True)
-
+class DiaryPlanModel(models.Model):
+    unique_diary_id = models.OneToOneField('AiwriteModel', on_delete=models.SET_NULL, blank=True, null=True)
 '''다이어리 모델'''
 class AiwriteModel(models.Model):
-    EMOTION_CHOICES = [ # 감정 선택지
+    EMOTION_CHOICES = [
         ('null', '없음'),
         ('Happiness', '행복'),
         ('Joy', '기쁨'),
@@ -55,36 +53,29 @@ class AiwriteModel(models.Model):
         ('Anger', '화남'),
         ('Annoyance', '짜증'),
     ]
-
-    unique_diary_id = models.CharField(max_length=255, unique=True)  # diary 아이디
-    user_email = models.EmailField()    # user가 생기면 writer로 변경
+    unique_diary_id = models.CharField(max_length=255, unique=True)  # 실제 사용하는 아이디
+    user_email = models.EmailField()    # user가 생기면 writer 변경
     # writer = models.ManyToManyField(UserModel, related_name='user_models', on_delete=models.SET_NULL, blank=True, null=True)
-    diarytitle = models.CharField(max_length=100, default='한옥마을')
+    diarytitle = models.CharField(max_length=100, default='역사여행')
     emotion = models.CharField(max_length=100, choices=EMOTION_CHOICES)
-    content = models.TextField(blank=True, null=True)   # 다이어리 내용, GPT 내용과 사용자 작성 일기 둘 다 여기 들어감
-    place = models.CharField(max_length=100, default='전주 한옥마을')  # 장소 입력 변경 예정
+    content = models.TextField(blank=True, null=True)
+    place = models.CharField(max_length=100, default='남한산성')
     created_at = models.DateTimeField(auto_now_add=True)
-    withfriend = models.CharField(max_length=100, blank=True, null=True)    # 친구 태그 기능 변경 예정
+    withfriend = models.CharField(max_length=100, blank=True, null=True)
     # tags = TaggableManager(
     #     blank=True,
     # )
     # friends = models.ManyToManyField(User, related_name="tagged_friends")
-    images = models.ManyToManyField(ImageModel, related_name='aiwrite_models')  # 여러장 들어가는 이미지
-    representative_image = models.OneToOneField('ImageModel', on_delete=models.SET_NULL, blank=True, null=True) # GPT에 들어가는 대표 이미지
-
+    images = models.ManyToManyField(ImageModel, related_name='aiwrite_models')
+    representative_image = models.OneToOneField('ImageModel', on_delete=models.SET_NULL, blank=True, null=True)
     def save(self, *args, **kwargs):
-        if not self.created_at: # 일기 작성 시간
+        if not self.created_at:
             self.created_at = timezone.now()
-
-        if not self.unique_diary_id:    # 다이어리 아이디 생성
+        if not self.unique_diary_id:
             self.unique_diary_id = f"{self.created_at.strftime('%Y%m%d%H%M%S')}{self.diarytitle}"
-
         super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self.unique_diary_id}"
-
-    # 함께 간 사용자 태그
     # def get_tagged_user(self):
     #     tagged_users = []
     #     tagged_items = TaggedItem.objects.filter(content_object=self)
@@ -100,37 +91,29 @@ class AiwriteModel(models.Model):
     #                 pass
     #
     #     return tagged_users
-
     # def get_comments(self):
     #     return self.comments.all()
-
 '''댓글 모델'''
 class CommentModel(models.Model):
-    comment_id = models.CharField(max_length=255, unique=True)      # comment 아이디
-    user_email = models.EmailField()    # user모델 생성시 author로 변경
+    comment_id = models.CharField(max_length=255, unique=True)      # 실제 사용하는 아이디
+    user_email = models.EmailField()
     # author = models.ManyToManyField(UserModel, related_name='user_models')
     diary_id = models.ManyToManyField('AiwriteModel', related_name='diary_comments')
-    comment = models.TextField(blank=True, null=True, default='댓글을 작성해주세요')   # 댓글 내용
+    comment = models.TextField(blank=True, null=True, default='댓글이욤')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
-
-    def save(self, *args, **kwargs):    # 일기 작성 시간
+    def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = timezone.now()
-
-        if not self.comment_id:     # 다이어리 아이디 생성
+        if not self.comment_id:
             self.comment_id = f"{self.created_at.strftime('%Y%m%d%H%M%S')}{self.user_email}"
-
         super().save(*args, **kwargs)
-
     # def __str__(self):
     #     return f'{self.user.username}의 댓글 - {self.diary_id.unique_diary_id}'
-
     def __str__(self):
         return f'{self.user_email}의 댓글 - {self.diary_id.unique_diary_id}'
-
     # def can_delete(self, user):
     #     return user == self.user
     def can_delete(self, user):

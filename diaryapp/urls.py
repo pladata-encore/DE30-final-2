@@ -22,8 +22,12 @@ urlpatterns = [
     # 다이어리 삭제
     path('delete_diary/<str:unique_diary_id>/', diarywrite_views.delete_diary, name='delete_diary'),
 
+    # 다이어리 메인
+    path('',diarywrite_views.viewDiary),
+
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),
+
 
     #### comment_views.py ####
     # 댓글 달기
@@ -34,7 +38,13 @@ urlpatterns = [
 
     # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
     # path('maindiary', views.delete_diary, name='main_diary'),
+
+    # Bootstrap 테마 예시 페이지
+    # path('index', views.viewIndex),
+    # path('elements', views.viewElements),
+    # path('generic', views.viewGeneric),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
