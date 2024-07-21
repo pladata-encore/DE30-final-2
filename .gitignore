@@ -2,3 +2,7 @@
 /shelf/
 .idea/workspace.xml
 diaryapp/models
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

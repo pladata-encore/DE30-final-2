@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66fb4d72-e793-489e-b109-633a82a13a0a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diaryapp/fastapi_app/nickname_app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/myproject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/myproject.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/fastapi_app/nickname_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/fastapi_app/nickname_app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/views/nickname_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/nickname_views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,29 +34,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.nickname_app.executor": "Run",
-    "Python.urls.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "diary",
-    "last_opened_file_path": "C:/projects/Encore_Final_Project/diaryapp/fastapi_app",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.nickname_app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.urls.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;diary&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/projects/Encore_Final_Project/diaryapp/fastapi_app&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\projects\Encore_Final_Project\diaryapp\fastapi_app" />
       <recent name="C:\projects\Encore_Final_Project\diaryapp\views" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/diaryapp/models" />
       <recent name="C:\projects\Encore_Final_Project\diaryapp\models" />
     </key>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-5b207ade9991-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17890.14" />
+        <option value="bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
       </set>
     </attachedChunks>
   </component>

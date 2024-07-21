@@ -13,6 +13,7 @@ from taggit.models import TagBase, TaggedItemBase, TaggedItem
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify as default_slugify
 
+
 '''이미지 모델'''
 class ImageModel(models.Model):
     image_id = models.CharField(max_length=255, unique=True)    # image모델
@@ -118,3 +119,59 @@ class CommentModel(models.Model):
     #     return user == self.user
     def can_delete(self, user):
         return user == self.user_email
+
+
+# 여행지 카테고리1 모델
+# class CategoryCode1(models.Model):
+#     code = models.CharField(max_length=50, unique=True)
+#     name = models.CharField(max_length=255)
+#     rnum = models.IntegerField()
+#
+#     def __str__(self):
+#         return self.code
+#
+#     class Meta:
+#         db_table = 'categoryCode1'
+
+
+# 여행지 카테고리3 모델
+# class CategoryCode3(models.Model):
+#     code = models.CharField(max_length=50, unique=True)
+#     name = models.CharField(max_length=255)
+#     rnum = models.IntegerField()
+#     cat1_code = models.CharField(max_length=50)
+#     cat2_code = models.CharField(max_length=50)
+#
+#     def __str__(self):
+#         return self.code
+#
+#     class Meta:
+#         db_table = 'categoryCode3'
+
+
+# 뱃지 모델
+# class Badge(models.Model):
+#     badge_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+#     name = models.CharField(max_length=255)
+#     badge = models.BinaryField()
+#     categoryCode1 = models.ForeignKey(CategoryCode1, related_name='category1_badges', on_delete=models.SET_NULL, null=True,
+#                                       blank=True)
+#     categoryCode3 = models.ForeignKey(CategoryCode3, related_name='category3_badges', on_delete=models.SET_NULL, null=True,
+#                                       blank=True)
+#     def __str__(self):
+#         return self.name
+#
+#     class Meta:
+#         db_table = 'diaryapp_badge'
+
+
+# 별명 모델
+# class Nickname(models.Model):
+#     nickname_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     nickname = models.CharField(max_length=255)
+#     unique_diary_id = models.OneToOneField('AiwriteModel', on_delete=models.SET_NULL, blank=True, null=True, related_name='nickname')
+#     badge = models.ForeignKey(Badge, on_delete=models.SET_NULL, null=True, blank=True, related_name='nicknames')
+#     related_title = models.CharField(max_length=255)
+#
+#     def __str__(self):
+#         return self.nickname

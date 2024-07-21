@@ -25,6 +25,7 @@ class NicknameResponse(BaseModel):
 import sys
 # Django 프로젝트 루트 디렉토리를 sys.path에 추가
 sys.path.append(r'C:/projects/Encore_Final_Project')
+# sys.path.append(r'/Users/ychun/projects/Encore_Final_Project')
 
 
 # 프로젝트의 루트 디렉토리 경로 설정
@@ -237,9 +238,8 @@ async def generate_nickname():
 
     title, nickname = extract_words(plan_data, content)
 
-    return title, nickname
-    # data = {"title": title, "nickname": nickname}
-    # return JsonResponse(data)  # 리스트를 JSON으로 반환
+    data = {"title": title, "nickname": nickname}
+    return JsonResponse(data)
 
 
 import uvicorn
