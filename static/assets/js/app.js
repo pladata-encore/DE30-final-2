@@ -110,4 +110,3 @@ window.addEventListener('load', adjustCardWidth);
 window.addEventListener('resize', adjustCardWidth);
 
 
-

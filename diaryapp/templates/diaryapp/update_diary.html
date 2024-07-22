@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Write Diary</title>
+{% include 'header.html' %}
+<section id="diary" class="main main_diary">
+    <h2 class="screen_out">여행 다이어리 수정</h2>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
          <script>
-            $(document).ready(function() {
+             $(document).ready(function() {
                 $('#generate-button').click(function(event) {
                     event.preventDefault();
                     var formData = new FormData($('#diary-form')[0]);
@@ -25,8 +23,6 @@
                 });
             });
          </script>
-    </head>
-    <body>
         <h1>Write Diary</h1>
         <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -69,5 +65,5 @@
 
         <button type="submit">Update Diary</button>
     </form>
-    </body>
-</html>
+</section>
+{% include 'footer.html' %}

@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from djongo import models
 import base64
+
 from taggit.managers import TaggableManager
 from taggit.models import TagBase, TaggedItemBase, TaggedItem
 from django.utils.translation import gettext_lazy as _
@@ -34,12 +35,11 @@ class ImageModel(models.Model):
         image_data = base64.b64decode(self.image_file)
         image = Image.open(BytesIO(image_data))
         return image
-from django.db import models
 
-# Create your models here.
 '''다이어리-일정 모델'''
 class DiaryPlanModel(models.Model):
     unique_diary_id = models.OneToOneField('AiwriteModel', on_delete=models.SET_NULL, blank=True, null=True)
+
 '''다이어리 모델'''
 class AiwriteModel(models.Model):
     EMOTION_CHOICES = [
@@ -93,13 +93,14 @@ class AiwriteModel(models.Model):
     #     return tagged_users
     # def get_comments(self):
     #     return self.comments.all()
+
 '''댓글 모델'''
 class CommentModel(models.Model):
     comment_id = models.CharField(max_length=255, unique=True)      # 실제 사용하는 아이디
     user_email = models.EmailField()
     # author = models.ManyToManyField(UserModel, related_name='user_models')
     diary_id = models.ManyToManyField('AiwriteModel', related_name='diary_comments')
-    comment = models.TextField(blank=True, null=True, default='댓글이욤')
+    comment = models.TextField(blank=True, null=True, default='댓글을 작성해주세요.')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

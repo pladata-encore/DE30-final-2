@@ -6,7 +6,7 @@ import gridfs
 import torch
 import open_clip
 from PIL import Image
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from pymongo import MongoClient
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
@@ -27,7 +27,7 @@ def viewDiary(request):
     return render(request, 'diaryapp/diary.html')
 
 load_dotenv()
-# openai.api_key ="${OPEN_API_KEY}"
+openai.api_key ="${OPEN_API_KEY}"
 
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
@@ -283,7 +283,6 @@ def generate_diary(request):
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
-
 # 직접 일기 부분 작성
 """사용자가 일기 작성"""
 def write_diary(request):
@@ -402,14 +401,23 @@ def detail_diary_by_id(request, unique_diary_id):
     user_email = settings.DEFAULT_FROM_EMAIL
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     form = CommentForm()
+    comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
     # tagged_users = diary.get_tagged_users()
     # return render(request, 'diaryapp/detail_diary.html', {'diary': diary, 'tagged_users': tagged_users})
-    return render(request, 'diaryapp/detail_diary.html', {'diary': diary,'form': form})
+    # 디버깅을 위해 댓글 수를 출력
+    print(f"Number of comments: {comment_list.count()}")
+
+    context = {
+        'diary': diary,
+        'comment_list': comment_list,
+        'form': CommentForm(),
+    }
+    return render(request, 'diaryapp/detail_diary.html', context)
 
 '''다이어리 여행일정 모달 창'''
 def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-    return render(request,  'diaryapp/plan_modal.html', {'diary': diary})
+    return render(request, 'diaryapp/plan_modal.html', {'diary': diary})
 
 
 '''

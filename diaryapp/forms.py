@@ -88,3 +88,10 @@ class CommentForm(forms.ModelForm):
             instance.save()
 
         return instance
+
+class DateFilterForm(forms.Form):
+    year = forms.IntegerField(label='Year', min_value=2000, max_value=2100)
+    month = forms.ChoiceField(
+        label='Month',
+        choices=[(str(i), f"{i}월") for i in range(1, 13)]
+    )

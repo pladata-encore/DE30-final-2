@@ -4,93 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/common_templates/footer.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common_templates/header.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diaryapp/management/commands/update_badge.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/diary.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/elements.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/generic.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/css/app.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/css/fontawesome-all.min.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/css/images/overlay.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/css/main.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/css/noscript.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/js/app.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/js/breakpoints.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/js/browser.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/js/jquery.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/js/jquery.scrollex.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/js/jquery.scrolly.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/js/main.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/js/util.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/base/_page.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/base/_reset.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/base/_typography.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_actions.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_box.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_button.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_features.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_form.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_icon.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_icons.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_image.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_list.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_row.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_section.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_spotlight.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_statistics.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/components/_table.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/layout/_footer.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/layout/_header.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/layout/_main.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/layout/_nav.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/layout/_wrapper.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/libs/_breakpoints.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/libs/_functions.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/libs/_html-grid.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/libs/_mixins.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/libs/_vars.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/libs/_vendor.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/main.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/sass/noscript.scss" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-brands-400.eot" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-brands-400.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-brands-400.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-brands-400.woff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-brands-400.woff2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-regular-400.eot" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-regular-400.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-regular-400.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-regular-400.woff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-regular-400.woff2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-solid-900.eot" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-solid-900.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-solid-900.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-solid-900.woff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/assets/webfonts/fa-solid-900.woff2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/logo.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/pic01.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/pic02.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/pic03.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/pic04.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/pic05.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/static/images/pic06.jpg" afterDir="false" />
+    <list default="true" id="dcd1f622-9fbd-4330-9ce0-b25d3f40d667" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common_templates/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/common_templates/footer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common_templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/common_templates/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary_otheruser.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary_otheruser.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_diary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/plan_modal.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/plan_modal.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/update_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/update_diary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/write_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/write_diary.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/views/comment_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/comment_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/views/diarywrite_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/diarywrite_views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myproject/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myproject/wsgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/wsgi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-    </list>
-    <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/diaryapp/management/commands/update_badge.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/assets/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/assets/js/app.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,32 +31,17 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
-    <excluded-from-favorite>
-      <branch-storage>
-        <map>
-          <entry type="LOCAL">
-            <value>
-              <list>
-                <branch-info repo="$PROJECT_DIR$" source="main" />
-              </list>
-            </value>
-          </entry>
-        </map>
-      </branch-storage>
-    </excluded-from-favorite>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 6
-}</component>
-  <component name="ProjectId" id="2iAL7KUd1LZbLQIytOIVoj7pw12" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="2jZtK6zvS8w02FKJ76Dyk1c7ga5" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
@@ -133,73 +49,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Python.Django.executor&quot;: &quot;Run&quot;,
-    &quot;Python.apps.executor&quot;: &quot;Run&quot;,
-    &quot;Python.forms.executor&quot;: &quot;Run&quot;,
-    &quot;Python.manage.executor&quot;: &quot;Run&quot;,
-    &quot;Python.models.executor&quot;: &quot;Run&quot;,
-    &quot;Python.settings.executor&quot;: &quot;Run&quot;,
-    &quot;Python.storage.executor&quot;: &quot;Run&quot;,
-    &quot;Python.views.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;jjwdiary&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/fx567/PycharmProjects/myproject&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Python.runserver.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;diary&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/projects/Encore_Final_Project/static/assets/js&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.django.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "jjwdiary",
+    "last_opened_file_path": "C:/Users/fx567/PycharmProjects/myproject/myproject",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\projects\Encore_Final_Project\static\assets\js" />
-      <recent name="C:\projects\Encore_Final_Project\static\assets\css" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\projects\Encore_Final_Project" />
-      <recent name="C:\projects\Encore_Final_Project\static\templates" />
-      <recent name="C:\projects\Encore_Final_Project\diaryapp\templates" />
-      <recent name="C:\projects\Encore_Final_Project\templates" />
-      <recent name="C:\projects\Encore_Final_Project\diaryapp\static" />
-    </key>
-  </component>
+}]]></component>
   <component name="RunManager">
-    <configuration name="runserver" type="PythonConfigurationType" factoryName="Python">
-      <module name="myproject" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (Encore_Final_Project)" />
-      <option name="WORKING_DIRECTORY" value="C:\projects\Encore_Final_Project" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
-      <option name="PARAMETERS" value="runserver" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-  </component>
-  <component name="RunManager">
-    <configuration name="Django" type="PythonConfigurationType" factoryName="Python">
+    <configuration name="django" type="PythonConfigurationType" factoryName="Python">
       <module name="myproject" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -209,7 +69,7 @@
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="SDK_NAME" value="Python 3.12 (myproject)" />
-      <option name="WORKING_DIRECTORY" value="C:\Users\fx567\PycharmProjects\myproject" />
+      <option name="WORKING_DIRECTORY" value="C:\Users\fx567\PycharmProjects\myproject\myproject" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -233,23 +93,12 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="" />
-      <created>1718928267546</created>
+      <changelist id="dcd1f622-9fbd-4330-9ce0-b25d3f40d667" name="Changes" comment="" />
+      <created>1721606361562</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1718928267546</updated>
+      <updated>1721606361562</updated>
     </task>
     <servers />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
 </project>
