@@ -56,8 +56,8 @@ DATABASES = {
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
             'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',
-            'username': 'Hyunna',
-            'password': '1234',
+            'username': '아이디',
+            'password': '비번',
             'authMechanism': 'SCRAM-SHA-1',  # MongoDB 클라우드에 맞는 인증 메커니즘 설정
         }
     }
