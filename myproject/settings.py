@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "app",
-    "diaryapp"
+    "travel_recommend",
+    "diaryapp",
 ]
 
 MIDDLEWARE = [
@@ -92,8 +92,9 @@ DATABASES = {
         'CLIENT': {
             'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
             'username': 'Bora',
-            'password': '1234'
-        }
+            'password': '1234',
+        },
+        'CONN_MAX_AGE': 0
     }
 }
 
@@ -143,3 +144,5 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+MONGO_DB_URI = 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority'
