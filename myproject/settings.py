@@ -98,30 +98,30 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'diary',  # 사용할 MongoDB 데이터베이스 이름
-        'ENFORCE_SCHEMA': False,
-        'CLIENT': {
-            'host': 'mongodb://localhost',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-            'port': 27017,  # MongoDB 포트 (기본적으로는 27017)
-        }
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'djongo',
-#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+#         'NAME': 'diary',  # 사용할 MongoDB 데이터베이스 이름
 #         'ENFORCE_SCHEMA': False,
 #         'CLIENT': {
-#             'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-#             'username': os.getenv('username'),
-#             'password': os.getenv('password'),
+#             'host': 'mongodb://localhost',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+#             'port': 27017,  # MongoDB 포트 (기본적으로는 27017)
 #         }
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+            'username': os.getenv('username'),
+            'password': os.getenv('password'),
+        }
+    }
+}
 
 
 # 미디어 파일 저장 경로
