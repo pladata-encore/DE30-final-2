@@ -1,26 +1,42 @@
 from pymongo import MongoClient
 from datetime import datetime
 
-# MongoDB 클라이언트 연결
 client = MongoClient('mongodb://localhost:27017/')
 db = client['diary']
-collection = db['diaryapp_aiwritemodel']
+aiwritemodel_collection = db['diaryapp_aiwritemodel']
+imagemodel_collection = db['diaryapp_imagemodel']
 
 def filter_diaries(year=None, month=None):
-    # 조건이 없으면 모든 다이어리를 반환
-    if not year or not month:
-        return collection.find()
+    match_condition = {}
+    if year and month:
+        start_date = datetime(year=int(year), month=int(month), day=1)
+        if int(month) == 12:
+            end_date = datetime(year=int(year) + 1, month=1, day=1)
+        else:
+            end_date = datetime(year=int(year), month=int(month) + 1, day=1)
+        match_condition['created_at'] = {'$gte': start_date, '$lt': end_date}
 
-    # 월별로 필터링
-    start_date = datetime(year=int(year), month=int(month), day=1)
-    if int(month) == 12:
-        end_date = datetime(year=int(year) + 1, month=1, day=1)
-    else:
-        end_date = datetime(year=int(year), month=int(month) + 1, day=1)
+    pipeline = [
+        {'$match': match_condition},
+        {'$lookup': {
+            'from': 'diaryapp_imagemodel',
+            'localField': 'representative_image_id',
+            'foreignField': 'id',
+            'as': 'representative_image'
+        }},
+        {'$project': {
+            'unique_diary_id': 1,
+            'diarytitle': 1,
+            'created_at': 1,
+            'representative_image': {'$arrayElemAt': ['$representative_image', 0]}
+        }},
+        {'$sort': {'created_at': -1}}
+    ]
 
-    return collection.find({
-        'created_at': {
-            '$gte': start_date,
-            '$lt': end_date
-        }
-    })
+    result = list(aiwritemodel_collection.aggregate(pipeline))
+    print(f"Total diaries found: {len(result)}")
+    for diary in result:
+        print(f"Diary: {diary.get('diarytitle', 'No title')}, "
+              f"Created: {diary.get('created_at', 'No date')}, "
+              f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
+    return result

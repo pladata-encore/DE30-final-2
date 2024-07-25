@@ -3,22 +3,36 @@
     <h2 class="screen_out">여행 다이어리 화면</h2>
 
     <div class="write-container">
-        <h1>{{ diary.diarytitle }}</h1>
-        <p>   {{ diary.user_email }}&nbsp;&nbsp;&nbsp;{{ diary.created_at|date:"Y년 n월 j일" }}</p>
+        <h1 style="color: #636363; font-weight: bold;">{{ diary.diarytitle }}</h1>
+        <div class="badge_tour">
+            <span class="scope_badge">
+                <!-- Add any additional badge content here if needed -->
+                <img src="" class="img_badge">성산일출봉 뱃지
+            </span>
+            <strong class="tit_badge">반짝이는 성산일출봉</strong>
+            &nbsp;&nbsp;&nbsp;{{ diary.created_at|date:"Y년 n월 j일" }}
+        </div>
         <hr/>
         <p><strong>장소:</strong> <a href="#" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
-        <p><strong>함께간 친구:</strong> {{ diary.withfriend }}</p>
-        <!-- 태그된 사용자를 보여주는 게 필요함 -->
+        <p><strong>함께 한 친구:</strong>
+            {{ diary.withfriend }}
+<!--            {% for username in diary.withfriend.split %}-->
+<!--                <a href="{% url 'user_diary_main' social_id=username %}">{{ username }}</a>-->
+<!--            {% endfor %}-->
+        </p>
+
         <p>{{ diary.content }}</p>
         {% load humanize %}
 
         {% if diary.representative_image %}
-            <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image" width="150">
+            <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" width="300" alt="Representative Image">
+        {% else %}
+            <span class="txt_noimg">No image</span>
         {% endif %}
 
         {% for image in diary.images.all %}
             {% if not image.is_representative %}
-                <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image" width="150">
+                <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image" width="300">
             {% endif %}
         {% empty %}
         {% endfor %}
@@ -41,25 +55,33 @@
                 <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
             </button>
         </div>
+        <br/><br/>
 
 
         <!-- 댓글 버튼 -->
         <div class="diary-comment-actions">
             <form method="post" action="{% url 'create_comment' diary.unique_diary_id %}">
+                <h3>댓글</h3>
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form.comment }}
                 <button type="submit" class="btn-diary-action">댓글 작성</button>
             </form>
         </div>
-
+        <br/>
         <!-- 댓글 내용 및 삭제 버튼 -->
         <div class="diary-comment-actions">
             <ul>
                 {% for comment in comment_list %}
                     <li>
-                        <strong>{{ comment.user_email }}</strong>:
+                        <div class="badge_tour">
+                            <span class="scope_badge">
+                                <!-- Add any additional badge content here if needed -->
+                                <img src="" class="img_badge">성산일출봉 뱃지
+                            </span>
+                            <strong class="tit_badge">반짝이는 성산일출봉</strong>
+                            &nbsp;&nbsp;&nbsp;{{ comment.created_at|date:"Y년 n월 j일" }}
+                        </div>
                         <p>{{ comment.comment }}</p>
-                        <p> ({{ comment.created_at|date:"Y년 n월 j일" }})</p>
                         <button class="btn-diary-action">
                             <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
                         </button>
@@ -90,7 +112,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {

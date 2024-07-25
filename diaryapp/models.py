@@ -55,17 +55,13 @@ class AiwriteModel(models.Model):
     ]
     unique_diary_id = models.CharField(max_length=255, unique=True)  # 실제 사용하는 아이디
     user_email = models.EmailField()    # user가 생기면 writer 변경
-    # writer = models.ManyToManyField(UserModel, related_name='user_models', on_delete=models.SET_NULL, blank=True, null=True)
-    diarytitle = models.CharField(max_length=100, default='역사여행')
+    # writer = models.CharField(max_length=255, blank=True, null=True)
+    diarytitle = models.CharField(max_length=100, default='제목을 작성해주세요.')
     emotion = models.CharField(max_length=100, choices=EMOTION_CHOICES)
     content = models.TextField(blank=True, null=True)
-    place = models.CharField(max_length=100, default='남한산성')
+    place = models.CharField(max_length=100, default='장소는 일정에서 불러옵니다.')
     created_at = models.DateTimeField(auto_now_add=True)
     withfriend = models.CharField(max_length=100, blank=True, null=True)
-    # tags = TaggableManager(
-    #     blank=True,
-    # )
-    # friends = models.ManyToManyField(User, related_name="tagged_friends")
     images = models.ManyToManyField(ImageModel, related_name='aiwrite_models')
     representative_image = models.OneToOneField('ImageModel', on_delete=models.SET_NULL, blank=True, null=True)
     def save(self, *args, **kwargs):
@@ -76,23 +72,7 @@ class AiwriteModel(models.Model):
         super().save(*args, **kwargs)
     def __str__(self):
         return f"{self.unique_diary_id}"
-    # def get_tagged_user(self):
-    #     tagged_users = []
-    #     tagged_items = TaggedItem.objects.filter(content_object=self)
-    #
-    #     for tagged_item in tagged_items:
-    #         if tagged_item.tag.name.startswith('@'):
-    #             username = tagged_item.tag.name[1:]  # @ 제거
-    #             try:
-    #                 user = User.objects.get(username=username)
-    #                 tagged_users.append(user)
-    #             except User.DoesNotExist:
-    #                 # 해당 사용자가 존재하지 않는 경우
-    #                 pass
-    #
-    #     return tagged_users
-    # def get_comments(self):
-    #     return self.comments.all()
+
 
 '''댓글 모델'''
 class CommentModel(models.Model):

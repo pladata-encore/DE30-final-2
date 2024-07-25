@@ -1,43 +1,51 @@
 {% include 'header.html' %}
-<section id="write_diary" class="diary detail_diary" xmlns="http://www.w3.org/1999/html">
+<section id="write_diary" class="writediary detail_diary" xmlns="http://www.w3.org/1999/html">
     <h2 class="screen_out">다이어리 작성</h2>
     <div class="write-container">
+        <h1 style="color: #636363; font-weight: bold;">다이어리 작성하기</h1>
         <form id="diary-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
             <p>
-                <label for="id_diarytitle">일기 제목:</label>
+                <label for="id_diarytitle" style="color: #636363; font-size: 22px;">일기 제목:</label>
                 {{ form.diarytitle }}
             </p>
             <p>
-                <label for="id_place">장소:</label>
+                <label for="id_place" style="color: #636363; font-size: 22px;">장소:</label>
                 {{ form.place }}
             </p>
             <p>
-                <label for="id_withfriend">친구와 함께:</label>
+                <label for="id_withfriend" style="color: #636363; font-size: 22px;">함께한 친구:</label>
                 {{ form.withfriend }}
             </p>
             <p>
-                <label for="id_content">내용:</label>
+                <label for="id_content" style="color: #636363; font-size: 22px;">내용:</label>
+                * 'AI로 작성하기' 기능을 이용해 자동 일기 생성을 원하시면 해당 칸을 비워두셔야 합니다.
                 {{ form.content }}
             </p>
             <p>
-                <label for="id_repreimg">대표이미지:</label>
+                <label for="id_repreimg" style="color: #636363; font-size: 22px;">대표이미지:</label>
                 {{ form.image_file }}
             </p>
 
             <button type="button" id="ai-button" class="btn-diary-action">AI로 작성하기</button>
             <div id="emotion-field" style="display: none;">
-                <label for="id_emotion">감정:</label>
+                <label for="id_emotion" style="color: #636363; font-size: 22px;">감정:</label>
                 {{ form.emotion }}
             </div>
 
-            {{ image_form.as_p }}
+            <p>
+                <label for="id_img" style="color: #636363; font-size: 22px; margin-top:20px;">이미지:</label>
+                {{ image_form.images }}
+            </p>
+
+            <!-- 로딩 스크린 -->
+            <div id="loading-screen">일기 생성 중...</div>
 
             <button type="submit" class="btn-diary-action">일기 작성</button>
         </form>
         <!-- 일기 리스트 링크 -->
-        <button id="list-button" class="btn-diary-action">
+        <button id="list-button" class="btn-diary-action" style="margin-bottom: 40px">
             <a href="{% url 'list_diary' %}">리스트</a>
         </button>
     </div>
@@ -57,7 +65,44 @@
                 }
             });
         });
-    </script>
 
+        document.getElementById('diary-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var content = document.getElementById('id_content').value;
+            var form = event.target;
+            var formData = new FormData(form);
+            var url;
+
+            // 로딩 스크린 표시
+            document.getElementById('loading-screen').style.display = 'block';
+
+            if (content.trim() === '') {
+                url = '{% url "generate_diary" %}';
+            } else {
+                url = '{% url "write_diary" %}';
+            }
+
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value
+                }
+            }).then(response => response.json())
+            .then(data => {
+            // 로딩 스크린 숨기기
+                document.getElementById('loading-screen').style.display = 'none';
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    // Handle form errors
+                }
+            }).catch(error => {
+                document.getElementById('loading-screen').style.display = 'none';
+                console.error('Error:', error);
+            });
+        });
+    </script>
 </section>
 {% include 'footer.html' %}

@@ -284,12 +284,6 @@ main {
     background-color: #f9f9f9; /* 배경색 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 미세한 그림자 */
 }
-#detail_diary h1 {
-    font-size: 2.5rem !important;
-    font-weight: 600 !important;
-    margin-bottom: 1rem !important;
-    padding-top: 2rem !important;
-}
 #detail_diary p {
     margin: 0 0 1em 0 !important;
 }
@@ -315,12 +309,13 @@ main {
     font-weight: 600 !important;
     background-color: transparent !important;
     color: #636363, .85) !important;
-    border: 0.3px solid #dddddd !important;
+    border: 0.05px solid #dddddd !important;
     text-decoration: none !important;
     text-align: center !important;
     transition: all 0.3s ease !important;
     vertical-align: middle !important;
     cursor: pointer !important;
+    margin-top: 20px;
 }
 .btn-diary-action:hover,
 .btn-diary-action:focus {
@@ -370,7 +365,7 @@ main {
     font-weight: 600 !important;
     background-color: transparent !important;
     color: #636363 !important;
-    border: 0.3px solid #dddddd !important;
+    border: 0.05px solid #dddddd !important;
     text-decoration: none !important;
     text-align: center !important;
     transition: all 0.3s ease !important;
@@ -394,3 +389,31 @@ main {
     margin-right: 0.5em;
     text-align: center;
 }
+#list_diary .form-row {
+    display: flex;
+    align-items: center;
+}
+#list_diary .form-group {
+    margin-right: 10px; /* 필드 간의 간격을 조정합니다 */
+}
+#list_diary .btn {
+    margin-left: 15px; /* 버튼과 필드 간의 간격을 조정합니다 */
+    border: 0.15px solid #dddddd;
+    font-weight: 600;
+    font-size: 1.0rem;
+    text-align: center;
+}
+#loading-screen {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            line-height: 100vh;
+            font-size: 2em;
+            z-index: 1000;
+        }

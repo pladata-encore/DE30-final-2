@@ -9,6 +9,7 @@ from PIL import Image
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from pymongo import MongoClient
+from torchvision import transforms
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from django.shortcuts import render, get_object_or_404, redirect
 from myproject import settings
@@ -22,18 +23,22 @@ import time
 from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
 
-# Create your views here.
-def viewDiary(request):
-    return render(request, 'diaryapp/diary.html')
+from ..mongo_queries import filter_diaries
 
+"""태그된 사용자 자동 완성 기능"""
+# def user_suggestions(request):
+#     query = request.GET.get('query', '')
+#     users = User.objects.filter(username__icontains=query)  # 사용자가 'social_id'로 정의되어 있다면 필드를 변경하세요.
+#     suggestions = [{'username': user.username} for user in users]
+#     return JsonResponse({'suggestions': suggestions})
+
+"""GPT3.5 처리에 필요한 코드들"""
 load_dotenv()
-openai.api_key ="${OPEN_API_KEY}"
-
+openai.api_key =""
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
     image_data = base64.b64decode(image_model.image_file)
     return HttpResponse(image_data, content_type="image/png")
-
 def generate_dynamic_descriptions():
     descriptions = [
         "dog", "park", "cat", "sunset", "ocean", "island", 'Village', 'Campsite', 'Lodge', "Safari", "Fountain",
@@ -46,123 +51,10 @@ def generate_dynamic_descriptions():
         "Hiking trail", "Bike trail", "Ski slope", "Golf course"
     ]
     return descriptions
-
-# 번역 API
 def translate_to_korean(text): # 일기 내용 한국어로 번역
     translator = Translator()
     translated = translator.translate(text, src='en', dest='ko')
     return translated.text
-# def translate_to_English(text): # 입력한 감정,장소 영어로 번역
-#     translator = Translator()
-#     translated = translator.translate(text, src='ko', dest='en')
-#     return translated.text
-
-# GPT2 API사용해서 일기 가져오는 부분
-#@login_required
-# def generate_diary(request):
-#     if request.method == 'POST':
-#         #writer = request.user
-#         form = DiaryForm(request.POST, request.FILES)
-#         image_form = ImageUploadForm(request.POST, request.FILES)
-#
-#         if form.is_valid() and image_form.is_valid():
-#             diarytitle = form.cleaned_data['diarytitle']
-#             place = form.cleaned_data['place']
-#             emotion = form.cleaned_data['emotion']
-#             withfriend = form.cleaned_data['withfriend']
-#             content = form.cleaned_data['content']
-#             representative_image = request.FILES.get('image_file')
-#             user_email = settings.DEFAULT_FROM_EMAIL # user생기면 user_email없애고 상단의 writer 사용
-#
-#             # place 번역
-#             translated_place = translate_to_English(place)
-#
-#             # CLIP 모델과 전처리기 로드
-#             model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
-#             # print(model_info)  # 반환 값을 확인하기 위해 출력
-#
-#             # 적절한 반환 값을 사용하도록 수정
-#             clip_model = model_info[0]
-#             preprocess = model_info[1]
-#
-#             image = Image.open(representative_image)
-#             image = preprocess(image).unsqueeze(0)
-#
-#             # 이미지 설명 후보 생성
-#             descriptions = generate_dynamic_descriptions()
-#
-#             # 설명 후보들을 CLIP 모델로 처리
-#             tokens = open_clip.tokenize(descriptions)
-#             with torch.no_grad():
-#                 image_features = clip_model.encode_image(image)
-#                 text_features = clip_model.encode_text(tokens)
-#                 similarity = torch.softmax((100.0 * image_features @ text_features.T), dim=-1)
-#                 best_description_idx = similarity.argmax().item()
-#                 best_description = descriptions[best_description_idx]
-#
-#             prompt = (
-#                 f"Please draft my travel diary based on this information. 'I recently visited {translated_place} in korea and i felt a strong sense of {emotion}. One of the notable experiences was {best_description}.' ")
-#             # GPT-2 모델을 사용하여 텍스트 생성
-#             model_name = "gpt2"
-#             model = GPT2LMHeadModel.from_pretrained(model_name)
-#             tokenizer = GPT2Tokenizer.from_pretrained(model_name)
-#             inputs = tokenizer.encode(prompt, return_tensors='pt')
-#             outputs = model.generate(inputs, max_length=1000, num_return_sequences=1, no_repeat_ngram_size=2,
-#                                      early_stopping=True)
-#
-#             diary_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-#
-#             # 프롬프트 내용 제외
-#             diary_text_parts = diary_text.split(prompt)
-#             if len(diary_text_parts) > 1:
-#                 extracted_content = diary_text_parts[1].strip()
-#             else:
-#                 extracted_content = diary_text.strip()
-#
-#             translated_text = translate_to_korean(extracted_content)
-#
-#             # 일기 저장
-#             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
-#             diary_entry = AiwriteModel.objects.create(
-#                 unique_diary_id=unique_diary_id,
-#                 user_email=user_email,
-#                 diarytitle=diarytitle,
-#                 place=place,
-#                 #emotion=translated_emotion,
-#                 withfriend=withfriend,
-#                 content=translated_text,
-#             )
-#             diary_entry.save()
-#
-#             # # 태그 처리
-#             # tags = form.cleaned_data['tags']
-#             # for tag in tags:
-#             #     diary_entry.tags.add(tag)
-#
-#             # 대표 이미지 처리
-#             if representative_image:
-#                 image_model = ImageModel(is_representative=True)
-#                 image_model.save_image(Image.open(representative_image))
-#                 image_model.save()
-#                 diary_entry.representative_image = image_model
-#                 diary_entry.save()
-#
-#                 # 추가 이미지 처리
-#             images = request.FILES.getlist('images')
-#             for img in images:
-#                 additional_image_model = ImageModel(is_representative=False)
-#                 additional_image_model.save_image(Image.open(img))
-#                 additional_image_model.save()
-#                 diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
-#
-#             return redirect('list_diary', permanent=True)
-#         else:
-#             return render(request, 'diaryapp/list_diary.html', {'form': form, 'image_form': image_form})
-#     else:
-#         form = DiaryForm()
-#         image_form = ImageUploadForm()
-#
-#     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
 """GPT3로 일기 생성"""
 def generate_diary(request):
@@ -192,7 +84,8 @@ def generate_diary(request):
             # preprocess = model_info[1]
 
             image = Image.open(representative_image)
-            image = preprocess(image).unsqueeze(0)
+            image = image.resize((128, 128), Image.LANCZOS)
+            processed_image = preprocess(image).unsqueeze(0)
 
             CLIP_start_time = time.time()
             # 이미지 설명 후보 생성
@@ -201,7 +94,7 @@ def generate_diary(request):
             # 설명 후보들을 CLIP 모델로 처리
             tokens = open_clip.tokenize(descriptions)
             with torch.no_grad():
-                image_features = clip_model.encode_image(image)
+                image_features = clip_model.encode_image(processed_image)
                 text_features = clip_model.encode_text(tokens)
                 similarity = torch.softmax((100.0 * image_features @ text_features.T), dim=-1)
                 best_description_idx = similarity.argmax().item()
@@ -262,21 +155,20 @@ def generate_diary(request):
                 diary_entry.representative_image = image_model
                 diary_entry.save()
 
-            # # 추가 이미지 처리
-            # images = request.FILES.getlist('images')
-            # for img in images:
-            #     additional_image_model = ImageModel(is_representative=False)
-            #     additional_image_model.save_image(Image.open(img))
-            #     additional_image_model.save()
-            #     diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
             image_end_time = time.time()
             print('------------- get image --------', image_end_time - image_start_time)
             end_time = time.time()
             print('------------- total end --------', end_time - start_time)
-            return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
-        else:
-            return render(request, 'diaryapp/list_diary.html', {'form': form, 'image_form': image_form})
 
+            return JsonResponse({
+                'success': True,
+                'redirect_url': reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'errors': form.errors
+            })
     else:
         form = DiaryForm()
         image_form = ImageUploadForm()
@@ -296,21 +188,18 @@ def write_diary(request):
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
-            # user_email = request.user.email
+            # writer = request.user.social_id
             user_email = settings.DEFAULT_FROM_EMAIL
 
-            # # 친구 태그 파싱
-            # friend_nicknames = request.POST.get('friends', '').split(',')
-            # friends = []
-            # # 친구태그
-            # for nickname in friend_nicknames:
-            #     if nickname.startswith('@'):
-            #         nickname = nickname[1:].strip()  # @제거하고 닉네임만 인식
-            #         # DB에서 해당 닉네임 사용자 검색 - users_collection위치에 몽고DB 유저모델로 생성된 컬렉션 위치
-            #         user_data = users_collection.find_one({'username': nickname})
-            #         if user_data:
-            #             user = User.objects.get(username=user_data['username'])
-            #             friends.append(user)
+            # # 태그된 사용자 목록에 다이어리 추가
+            # tags = form.cleaned_data['withfriend'].split()
+            # for tag in tags:
+            #     try:
+            #         user = User.objects.get(username=tag)  # social_id를 username으로 사용
+            #         user.diaries.add(diary)
+            #         user.save()
+            #     except User.DoesNotExist:
+            #         pass  # 비회원 처리
 
             # 일기 저장
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
@@ -324,11 +213,6 @@ def write_diary(request):
                 content=content,
             )
             diary_entry.save()
-
-            # # 태그 처리
-            # tags = form.cleaned_data['tags']
-            # for tag in tags:
-            #     diary_entry.tags.add(tag)
 
             # 대표 이미지 처리
             representative_image = request.FILES.get('image_file')
@@ -347,25 +231,64 @@ def write_diary(request):
                 additional_image_model.save()
                 diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
 
-            return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
+            return JsonResponse({
+                'success': True,
+                'redirect_url': reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})
+            })
         else:
-            return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
+            return JsonResponse({
+                'success': False,
+                'errors': form.errors
+            })
     else:
         form = DiaryForm()
         image_form = ImageUploadForm()
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
+'''다이어리 메인 화면'''
+def viewDiary(request):
+    return render(request, 'diaryapp/diary.html')
+
+# def viewDiary(request, social_id):
+#     user = get_object_or_404(User, writer=social_id)  # social_id를 통해 사용자 조회
+#     diaries = Diary.objects.filter(writer=user)  # 작성자 필드를 통해 사용자의 다이어리 조회
+#
+#     context = {
+#         'user': user,
+#         'diaries': diaries,
+#     }
+#
+#     return render(request, 'diaryapp/diary.html', context)
+
 '''태그된 다른 사용자의 메인 다이어리로 이동 - 메인화면 html주소 변동 필요'''
-# def user_diary_main(request, username):
-#     user = get_object_or_404(User, username=username)
-#     diary_entries = AiwriteModel.objects.filter(tags__name__startswith='@', tags__name=username)
-#     return render(request, 'user_diary_main.html', {'user': user, 'diary_entries': diary_entries})
+# def user_diary_main(request, social_id):
+#     user = get_object_or_404(User, writer=social_id)
+#     diary_entries = AiwriteModel.objects.filter(tags__name__startswith='@', tags__name=social_id)
+#     return render(request, 'diaryapp/diary.html', {'user': user, 'diary_entries': diary_entries})
 
 '''전체 일기 리스트 - 유저 인증이 필요 없을 듯'''
 def list_diary(request):
-    diary_list = AiwriteModel.objects.all().order_by('-created_at')
-    return render(request, 'diaryapp/list_diary.html', {'diary_list': diary_list})
+    form = DateFilterForm(request.GET or None)
+    year = None
+    month = None
+    if form.is_valid():
+        year = form.cleaned_data['year']
+        month = form.cleaned_data['month']
+
+    diary_list = filter_diaries(year, month)
+    print(f"Diaries returned to view: {len(diary_list)}")
+
+    for diary in diary_list:
+        print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
+              f"Created: {diary.get('created_at', 'No date')}, "
+              f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
+
+    context = {
+        'form': form,
+        'diary_list': diary_list
+    }
+    return render(request, 'diaryapp/list_diary.html', context)
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
 # @login_required

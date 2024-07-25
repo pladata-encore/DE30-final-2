@@ -5,10 +5,19 @@ from googletrans import Translator
 clip_model = None
 preprocess = None
 
-def load_model():
+# def load_model(model_name='ViT-B-32'):
+#     global clip_model, preprocess
+#     model_info = open_clip.create_model_and_transforms(model_name, pretrained='openai')
+#     clip_model = model_info[0]
+#     preprocess = model_info[1]
+#
+# # 기본 모델을 'ViT-B-32'로 로드
+# load_model('ViT-B-32')
+def load_model(model_name='RN50'):
     global clip_model, preprocess
-    model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
+    model_info = open_clip.create_model_and_transforms(model_name, pretrained='openai')
     clip_model = model_info[0]
     preprocess = model_info[1]
 
-load_model()
+# 더 작은 모델을 로드
+load_model('RN50')

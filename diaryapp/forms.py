@@ -1,4 +1,6 @@
 # diaryapp/forms.py
+import datetime
+import re
 from django import forms
 from .models import *
 from .storage import *
@@ -10,8 +12,18 @@ class DiaryForm(forms.ModelForm):
     class Meta:
         model = AiwriteModel
         fields = ['diarytitle', 'place', 'emotion', 'withfriend', 'content']
-        # fields = ['diarytitle', 'place', 'emotion', 'tags', 'friends', 'content']
-        # widgets = { 'tags': TagWidget(), }
+        # fields = ['diarytitle', 'emotion', 'content', 'withfriend]
+
+    # 태그 데이터 처리
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     withfriend = cleaned_data.get("withfriend")
+    #
+    #     # @social_id 형식으로 태그된 사용자 추출
+    #     tags = re.findall(r'@(\w+)', withfriend)
+    #     cleaned_data['withfriend'] = ' '.join(tags)
+    #     return cleaned_data
+
     def save(self, commit=True):
         instance = super(DiaryForm, self).save(commit=False)
 
@@ -46,7 +58,7 @@ class MultipleFileField(forms.FileField):
         return result
 
 class ImageUploadForm(forms.Form):
-    images = MultipleFileField(required=False)
+    images = MultipleFileField(required=False, label="이미지")
 
     def clean_images(self):
         images = self.cleaned_data.get('images')
@@ -71,12 +83,13 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = CommentModel
         fields = ['comment']
-        widgets = {
-            'comment': forms.Textarea(attrs={'cols': 80, 'rows': 3}),
-        }
         labels = {
             'comment': '댓글',
         }
+        widgets = {
+            'comment': forms.Textarea(attrs={'cols': 80, 'rows': 3}),
+        }
+
 
     def save(self, commit=True):
         instance = super(CommentForm, self).save(commit=False)
@@ -90,7 +103,14 @@ class CommentForm(forms.ModelForm):
         return instance
 
 class DateFilterForm(forms.Form):
-    year = forms.IntegerField(label='Year', min_value=2000, max_value=2100)
+    current_year = datetime.datetime.now().year
+    year_choices = [(year, year) for year in range(2020, 2101)]
+
+    year = forms.ChoiceField(
+        label='Year',
+        choices=year_choices,
+        initial=current_year
+    )
     month = forms.ChoiceField(
         label='Month',
         choices=[(str(i), f"{i}월") for i in range(1, 13)]

@@ -1,10 +1,13 @@
 {% include 'header.html' %}
-<section id="list_diary" class="list list_diary" xmlns="http://www.w3.org/1999/html">
+
+<section id="list_diary" class="list list_diary">
     <h2 class="screen_out">다이어리 리스트</h2>
     <div class="write-container">
         <div class="list-actions">
             <div class="list-actions-header">
-                <h1>다이어리 목록</h1>
+                <a href="{% url 'list_diary' %}">
+                <h1 style="color: #636363; font-weight: bold;">다이어리 목록</h1>
+                </a>
             </div>
             <div class="list-actions-buttons">
                 <button class="btn-list-action">
@@ -12,25 +15,47 @@
                 </button>
             </div>
         </div>
+        <form method="GET" action="{% url 'list_diary' %}">
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form.year }}
+                </div>
+                <div class="form-group">
+                    {{ form.month }}
+                </div>
+                <button type="submit" class="btn btn-primary">검색</button>
+            </div>
+        </form>
 
         <hr/>
-        <br/>
-
-        <ul class="diary-grid">
+        <div class="diary-grid">
             {% for diary in diary_list %}
-                <li>
-                    {% if diary.representative_image %}
-                        <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image" width="300">
-                        <br/>
-                        <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}">[{{ diary.created_at|date:"Y년 n월 j일" }}]&nbsp;&nbsp;&nbsp;{{ diary.diarytitle }}</a>
-                        <br/>
-                    {% endif %}
-                </li>
+                <div class="card">
+                    <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}" class="link_card">
+                        <div class="card-img">
+                            {% if diary.representative_image %}
+                                <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" width="300" alt="Representative Image">
+                            {% else %}
+                                <span class="txt_noimg">No image</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <strong class="card-title">{{ diary.diarytitle }}</strong>
+                            <div class="badge_tour">
+                                <span class="scope_badge">
+                                    <img src="" class="img_badge">성산일출봉 뱃지
+                                </span>
+                                <strong class="tit_badge">반짝이는 성산일출봉</strong>
+                            </div>
+                            <p class="card-date">{{ diary.created_at|date:"Y년 n월 j일" }}</p>
+                        </div>
+                    </a>
+                </div>
             {% empty %}
-                <li>No diaries found.</li>
+                <p>No diaries found.</p>
             {% endfor %}
-        </ul>
+        </div>
     </div>
-
 </section>
+
 {% include 'footer.html' %}
