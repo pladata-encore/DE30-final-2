@@ -34,7 +34,6 @@ from django.contrib.auth.models import User
 #         badge_id = None  # 또는 기본값 설정 등
 #     return badge_id
 
-
 '''댓글 생성'''
 # @login_required
 def create_comment(request, unique_diary_id):
@@ -57,8 +56,8 @@ def create_comment(request, unique_diary_id):
     CommentModel 컬렉션에서 해당 다이어리의 unique_diary_id가 저장되어있는 데이터들을 모두 반환'''
 def list_comment(request,unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-    comment_list = CommentModel.objects.all().order_by('-created_at')
-    return render(request, 'diaryapp/detail_diary_by_id.html', {'comment_list': comment_list})
+    comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
+    return render(request, 'diaryapp/detail_diary.html', {'comment_list': comment_list})
 
 ''' 댓글 삭제하기
     # 로그인된 사용자와 해당 댓글 작성자가 일치할 경우에만 삭제버튼 활성화 '''

@@ -22,8 +22,9 @@ urlpatterns = [
     # 다이어리 삭제
     path('delete_diary/<str:unique_diary_id>/', diarywrite_views.delete_diary, name='delete_diary'),
 
-    # 별명 생성
-    path('generate-nickname/', nickname_views.create_nickname, name='create_nickname'),
+    # 다이어리 메인
+    path('',diarywrite_views.viewDiary),
+    # path('<str:social_id>/', diarywrite_views.viewDiary, name='user_diary_main'),
 
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),

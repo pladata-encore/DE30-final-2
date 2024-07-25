@@ -5,14 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66fb4d72-e793-489e-b109-633a82a13a0a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/diaryapp/management/commands/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diaryapp/management/commands/update_badge_categories.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diaryapp/migrations/0005_alter_aiwritemodel_diarytitle_and_more.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diaryapp/mongo_queries.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/management/commands/update_badge.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/migrations/0005_badge_categorycode1_categorycode3_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/common_templates/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/common_templates/footer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common_templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/common_templates/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/clip_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/clip_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary_otheruser.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/detail_diary_otheruser.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_diary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/plan_modal.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/plan_modal.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/update_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/update_diary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/write_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/write_diary.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/views/nickname_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/nickname_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/views/comment_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/comment_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/views/diarywrite_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/diarywrite_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/assets/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/assets/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/assets/js/app.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,20 +46,23 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="2jSQGpvZb26cmWZPMIOvROQMhDi" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.nickname_app.executor&quot;: &quot;Run&quot;,
-    &quot;Python.urls.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;diary&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/projects/Encore_Final_Project/diaryapp/fastapi_app&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.nickname_app.executor": "Run",
+    "Python.urls.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "Merging diary",
+    "last_opened_file_path": "C:/projects/Encore_Final_Project/diaryapp/fastapi_app",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\projects\Encore_Final_Project\diaryapp\fastapi_app" />

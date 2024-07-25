@@ -31,7 +31,7 @@ load_dotenv(dotenv_path=env_path)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-a&)gx3mp+#9epz5&okvg@x6e*a#z%9%#p(k_uwl7w%bkwcntve"
-OPEN_API_KEY = os.environ.get('OPEN_API_KEY')
+OPEN_API_KEY = os.getenv('OPEN_API_KEY')
 DEBUG = 'True'
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -97,15 +97,15 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+        'NAME': 'diary',  # 사용할 MongoDB 데이터베이스 이름
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-            'username': 'Bora',
-            'password': '1234'
+            'host': 'mongodb://localhost',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+            'port': 27017,  # MongoDB 포트 (기본적으로는 27017)
         }
     }
 }

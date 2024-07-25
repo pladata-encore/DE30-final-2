@@ -1,137 +1,182 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ diary.diarytitle }}</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <style>
-        /* Additional CSS styles for modal */
-        .modal-content {
-            padding: 20px;
-        }
-    </style>
+{% include 'header.html' %}
+<section id="detail_diary" class="diary detail_diary">
+    <h2 class="screen_out">여행 다이어리 화면</h2>
 
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'admin/css/nav_sidebar.css' %}">
-</head>
-<body>
-    <script src="{% static 'admin/js/nav_sidebar.js' %}"></script>
-    <h1>{{ diary.diarytitle }}</h1>
-    <p><strong>Place:</strong> <a href="#" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
-    <p><strong>Withfriend:</strong> {{ diary.withfriend }}</p>
-    <!-- 태그된 사용자를 보여주는 게 필요함 -->
-    <p><strong>Content:</strong> {{ diary.content }}</p>
-    {% load humanize %}
-    <p><strong>Created at:</strong> {{ diary.created_at|date:"Y년 n월 j일" }}</p>
-
-    {% if diary.representative_image %}
-        <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image" width="150">
-    {% endif %}
-
-    {% for image in diary.images.all %}
-        {% if not image.is_representative %}
-            <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image" width="150">
-        {% endif %}
-    {% empty %}
-    {% endfor %}
-
-    <button>
-        <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
-    </button>
-    <p>diary:{{diary.user_email}}</p>
-    <p>settings:{{settings.DEFAULT_FROM_EMAIL}}</p>
-
-    <!-- 수정 버튼 -->
-<!--    <div>-->
-<!--        <p>{{ user.username }}</p>-->
-<!--    </div>-->
-
-
-
-        <button>
-            <a href="{% url 'update_diary' unique_diary_id=diary.unique_diary_id %}">일기수정하기</a>
-        </button>
-
-<!-- 삭제 버튼 -->
-
-        <form action="{% url 'delete_diary' unique_diary_id=diary.unique_diary_id %}" method="post">
-            {% csrf_token %}
-            <input type="submit" value="삭제하기">
-        </form>
-
-
-
-    <h2>댓글</h2>
-    <form method="post" action="{% url 'create_comment' diary.unique_diary_id %}">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">댓글 작성</button>
-    </form>
-    {% for comment in comments %}
-        <div>
-            <p><strong>{{ comment.user_email }}:</strong> {{ comment.comment }}</p>
-            <p>{{comment.user_email}}</p>
-                <button>
-                <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
-                </button>
+    <div class="write-container">
+        <h1 style="color: #636363; font-weight: bold;">{{ diary.diarytitle }}</h1>
+        <div class="badge_tour">
+            <span class="scope_badge">
+                <!-- Add any additional badge content here if needed -->
+                <img src="" class="img_badge">성산일출봉 뱃지
+            </span>
+            <strong class="tit_badge">반짝이는 성산일출봉</strong>
+            &nbsp;&nbsp;&nbsp;{{ diary.created_at|date:"Y년 n월 j일" }}
         </div>
+        <hr/>
+        <p><strong>장소:</strong> <a href="#" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
+        <p><strong>함께 한 친구:</strong>
+            {{ diary.withfriend }}
+<!--            {% for username in diary.withfriend.split %}-->
+<!--                <a href="{% url 'user_diary_main' social_id=username %}">{{ username }}</a>-->
+<!--            {% endfor %}-->
+        </p>
 
-    {% empty %}
-        <p>댓글이 없습니다.</p>
-    {% endfor %}
+        <p>{{ diary.content }}</p>
+        {% load humanize %}
+
+        {% if diary.representative_image %}
+            <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" width="300" alt="Representative Image">
+        {% else %}
+            <span class="txt_noimg">No image</span>
+        {% endif %}
+
+        {% for image in diary.images.all %}
+            {% if not image.is_representative %}
+                <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image" width="300">
+            {% endif %}
+        {% empty %}
+        {% endfor %}
 
 
+        <div class="diary-actions">
+            <!-- 수정 버튼 -->
+            <button class="btn-diary-action">
+                <a href="{% url 'update_diary' unique_diary_id=diary.unique_diary_id %}">일기수정하기</a>
+            </button>
 
-    <!-- 모달 창 -->
-    <div class="modal fade" id="planModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="planModalLabel">여행 일정 상세 정보</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div id="modal-body-content">
-                        <!-- 모달 내용이 들어갈 자리 -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                </div>
-            </div>
+            <!-- 삭제 버튼 -->
+            <form action="{% url 'delete_diary' unique_diary_id=diary.unique_diary_id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="삭제하기" class="btn-diary-action">
+            </form>
+
+            <!-- 리스트로 돌아가는 버튼 -->
+            <button class="btn-diary-action">
+                <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
+            </button>
+        </div>
+        <br/><br/>
+
+
+        <!-- 댓글 버튼 -->
+        <div class="diary-comment-actions">
+            <form method="post" action="{% url 'create_comment' diary.unique_diary_id %}">
+                <h3>댓글</h3>
+                {% csrf_token %}
+                {{ form.comment }}
+                <button type="submit" class="btn-diary-action">댓글 작성</button>
+            </form>
+        </div>
+        <br/>
+        <!-- 댓글 내용 및 삭제 버튼 -->
+        <div class="diary-comment-actions">
+            <ul>
+                {% for comment in comment_list %}
+                    <li>
+                        <div class="badge_tour">
+                            <span class="scope_badge">
+                                <!-- Add any additional badge content here if needed -->
+                                <img src="" class="img_badge">성산일출봉 뱃지
+                            </span>
+                            <strong class="tit_badge">반짝이는 성산일출봉</strong>
+                            &nbsp;&nbsp;&nbsp;{{ comment.created_at|date:"Y년 n월 j일" }}
+                        </div>
+                        <p>{{ comment.comment }}</p>
+                        <button class="btn-diary-action">
+                            <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
+                        </button>
+                        <hr/>
+                    </li>
+                {% empty %}
+                    <li>댓글이 없습니다.</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 
+        <!-- 모달 창 -->
+        <div class="modal fade" id="planModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="planModalLabel">여행 일정 상세 정보</h5>
+                            <span aria-hidden="true">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modal-body-content">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
     <script>
-    $(document).ready(function() {
-        // .open-modal 클래스를 가진 요소가 동적으로 생성될 수 있기 때문에 on() 메서드를 사용하여 이벤트를 바인딩합니다.
-        $(document).on('click', '.open-modal', function(e) {
-            e.preventDefault();
-            var uniqueDiaryId = $(this).data('unique-diary-id');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM fully loaded and parsed');
 
-            // uniqueDiaryId가 정의되어 있지 않은 경우 처리
-            if (typeof uniqueDiaryId !== 'undefined' && uniqueDiaryId !== '') {
-                var url = '/diaryapp/plan_modal/' + uniqueDiaryId + '/';
+        var openModalButtons = document.querySelectorAll('.open-modal');
+        console.log('Found open-modal elements:', openModalButtons.length);
 
-                // AJAX를 통해 일기의 세부 정보를 가져와서 모달에 채워 넣기
-                $.get(url, function(data) {
-                    $('#modal-body-content').html(data);
-                    $('#planModal').modal('show');
+        if (openModalButtons.length > 0) {
+            openModalButtons.forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var uniqueDiaryId = encodeURIComponent(this.getAttribute('data-unique-diary-id'));
+                    var url = '/diary/plan_modal/' + uniqueDiaryId + '/';
+                    console.log('Fetching URL:', url);
+
+                    fetch(url)
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok: ' + response.status);
+                            }
+                            return response.text(); // HTML로 응답받기
+                        })
+                        .then(function(data) {
+                            console.log('Received data:', data);
+                            var modalBodyContent = document.getElementById('modal-body-content');
+                            if (modalBodyContent) {
+                                modalBodyContent.innerHTML = data;
+                                var planModal = new bootstrap.Modal(document.getElementById('planModal'));
+                                planModal.show();
+                            } else {
+                                console.error('Modal body content element not found');
+                            }
+                        })
+                        .catch(function(error) {
+                            console.error("Fetch error:", error);
+                        });
                 });
-            } else {
-                console.error('uniqueDiaryId is undefined or empty.');
-            }
-        });
+            });
+        } else {
+            console.error('No .open-modal elements found');
+        }
+
+        // 모달이 닫혔을 때 내용 비우기
+        var planModalElement = document.getElementById('planModal');
+        if (planModalElement) {
+            var planModal = new bootstrap.Modal(planModalElement);
+            planModalElement.addEventListener('hidden.bs.modal', function () {
+                var modalBodyContent = document.getElementById('modal-body-content');
+                if (modalBodyContent) {
+                    modalBodyContent.innerHTML = '';
+                }
+            });
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('planModal'));
+
+         document.getElementById('planModal').addEventListener('shown.bs.modal', function () {
+           const modalBody = document.querySelector('#planModal .modal-body');
+           const bodyHeight = window.innerHeight * 0.5; // 화면 50% 높이
+           modalBody.style.maxHeight = `${bodyHeight}px`;
+           modalBody.style.overflowY = 'auto';
+         });
     });
     </script>
-</body>
-</html>
+</section>
+{% include 'footer.html' %}
