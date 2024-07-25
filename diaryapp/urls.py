@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views
+from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views, nickname_views
 
 urlpatterns = [
     #### diarywrite_views.py ####
@@ -22,6 +22,8 @@ urlpatterns = [
     # 다이어리 삭제
     path('delete_diary/<str:unique_diary_id>/', diarywrite_views.delete_diary, name='delete_diary'),
 
+    # 별명 생성
+    path('generate-nickname/', nickname_views.create_nickname, name='create_nickname'),
 
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),
@@ -38,10 +40,10 @@ urlpatterns = [
     # path('maindiary', views.delete_diary, name='main_diary'),
 
 
-    # diary_views.py
+    # 다이어리 메인
     path('',diary_views.viewDiary),
 
-    # base_views.py
+
     # Bootstrap 테마 예시 페이지
     path('index', base_views.viewIndex),
     path('elements', base_views.viewElements),

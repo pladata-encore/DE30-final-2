@@ -5,10 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66fb4d72-e793-489e-b109-633a82a13a0a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diaryapp/management/commands/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diaryapp/management/commands/update_badge_categories.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/fastapi_app/nickname_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/fastapi_app/nickname_app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/management/commands/update_badge.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/migrations/0005_badge_categorycode1_categorycode3_and_more.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/views/nickname_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/nickname_views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +60,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
+        <option value="bundled-python-sdk-5b207ade9991-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17890.14" />
       </set>
     </attachedChunks>
   </component>
