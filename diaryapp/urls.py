@@ -40,10 +40,8 @@ urlpatterns = [
     # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
     # path('maindiary', views.delete_diary, name='main_diary'),
 
-
-    # 다이어리 메인
-    path('',diary_views.viewDiary),
-
+    # 별명 생성
+    path('create_nickname/', nickname_views.create_nickname, name='create_nickname'),
 
     # Bootstrap 테마 예시 페이지
     path('index', base_views.viewIndex),
