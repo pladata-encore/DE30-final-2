@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +29,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CSRF_COOKIE_NAME = 'csrftoken'  # CSRF 쿠키 이름 설정
+CSRF_COOKIE_SECURE = True       # HTTPS에서만 쿠키 전송
+CSRF_COOKIE_HTTPONLY = True     # JavaScript에서 접근 불가
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # CSRF 토큰을 포함할 헤더 이름
 
 ROOT_URLCONF = 'project.urls'
 
@@ -79,5 +85,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 STATIC_URL = '/static/'  # 정적 파일 URL 끝에 슬래시 추가
+STATICFILES_DIRS = [
+    BASE_DIR / 'Jpage' / 'static',  # 정적 파일이 있는 폴더 경로 설정
+]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

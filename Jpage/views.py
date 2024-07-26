@@ -1,11 +1,17 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from pymongo import MongoClient
-from .models import categoryCode1, categoryCode2, categoryCode3, areaCode, cityDistrict, areaBaseList
+from .models import categoryCode1, categoryCode2, categoryCode3, areaCode, cityDistrict, areaBaseList, jPlan
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 
 
 client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority', 27017)
 db = client.MyDiary
+
+def Stella(request):
+    return render(request, 'Jpage/stella.html')
 
 def get_data(request):
     # 모든 대분류 데이터를 가져옴
@@ -49,6 +55,13 @@ def get_data(request):
     else:
         places = areaBaseList.objects.none()
 
+    place_name = request.GET.get('placeName')
+    if place_name:
+        coordinates = areaBaseList.objects.filter(title = place_name).values('mapx', 'mapy')
+    else:
+        coordinates = []
+
+
     # 컨텍스트에 대분류와 중분류 데이터를 추가
     context = {
         'largecategories': largecategories,
@@ -56,7 +69,8 @@ def get_data(request):
         'smallcategories' : smallcategories,
         'Areacodes': Areacodes,
         'citydistricts': citydistricts,
-        'places': places
+        'places': places,
+        'coordinates': coordinates
     }
 
     # 템플릿 렌더링
@@ -115,3 +129,43 @@ def get_places(request):
 
     print("get_places : ", places)
     return JsonResponse({'places': list(places)})
+
+def get_coordinate(request):
+    place_name = request.GET.get('placeName')
+
+    if place_name:
+        coordinates = areaBaseList.objects.filter(title=place_name).values('mapx', 'mapy').first()
+    else:
+        coordinates = None
+
+    print("get_coordinate:", coordinates)
+    if coordinates:
+        return JsonResponse({'mapx': coordinates['mapx'], 'mapy': coordinates['mapy']})
+    else:
+        return JsonResponse({'error': 'Place not found'}, status=404)
+
+@csrf_exempt
+def get_Jplan(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print("Received data:", data)
+            city = data.get('city')
+            province = data.get('province')
+            places = data.get('places')
+
+            if city and province:
+                plan = jPlan(
+                    province=province,
+                    city=city,
+                    days=places
+                )
+                document = plan.to_dict()
+                result = db['J_plan'].insert_one(document)  # MongoDB에 저장
+                return JsonResponse({"message": "Location saved successfully", "id": str(result.inserted_id)},
+                                    status=200)
+            else:
+                return JsonResponse({"message": "Invalid data"}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"message": "Invalid JSON"}, status=400)
+    return JsonResponse({"message": "Method not allowed"}, status=405)

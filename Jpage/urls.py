@@ -6,9 +6,10 @@ urlpatterns = [
     path('middlecategory/', views.get_middle_category, name='get_middle_category'),
     path('smallcategory/', views.get_small_category, name='get_small_category'),
     path('citydistrict/', views.get_cityDistrict, name='get_cityDistrict'),
-    path('place/', views.get_places, name='get_places')
+    path('place/', views.get_places, name='get_places'),
+    path('coordinate/', views.get_coordinate, name='get_coordinate'),
+    path('save_Plan/', views.get_Jplan, name='get_Jplan'),
+    path('stella/', views.Stella, name='views.Stella')
 ]
-
-
 
 

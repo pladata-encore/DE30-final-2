@@ -1,4 +1,5 @@
 from djongo import models
+from mongoengine import Document, StringField, DictField
 
 class categoryCode1(models.Model):
     _id = models.CharField(max_length=24, primary_key=True)
@@ -72,3 +73,24 @@ class cityDistrict(models.Model):
 
     class Meta:
         db_table = 'cityDistrict'
+
+class jPlan:
+    def __init__(self, city, province, days):
+        self.province = province
+        self.city = city
+        self.days = days
+
+    def to_dict(self):
+        return {
+            'province': self.province,
+            'city': self.city,
+            'days': self.days
+        }
+
+    @staticmethod
+    def from_dict(data):
+        return jPlan(
+            province=data.get('province'),
+            city=data.get('city'),
+            days=data.get('days')
+        )

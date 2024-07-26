@@ -4,13 +4,13 @@ from django.shortcuts import render
 from django.shortcuts import render
 
 # def index(request):
-#     return render(request, 'app/index.html')
+#     return render(request, 'app/stella.html')
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import YourModel
 from .forms import YourModelForm
 def index(request):
     objects = YourModel.objects.all()
-    return render(request, 'app/index.html', {'objects': objects})
+    return render(request, 'app/stella.html', {'objects': objects})
 
 def detail(request, id):
     try:
