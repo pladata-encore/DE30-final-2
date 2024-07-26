@@ -29,6 +29,9 @@ urlpatterns = [
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),
 
+    # 별명 생성 테스트?
+    path('create_nickname/', nickname_views.create_nickname, name='create_nickname'),
+
 
     #### comment_views.py ####
     # 댓글 달기
@@ -40,8 +43,6 @@ urlpatterns = [
     # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
     # path('maindiary', views.delete_diary, name='main_diary'),
 
-    # 별명 생성
-    path('create_nickname/', nickname_views.create_nickname, name='create_nickname'),
 
     # Bootstrap 테마 예시 페이지
     path('index', base_views.viewIndex),

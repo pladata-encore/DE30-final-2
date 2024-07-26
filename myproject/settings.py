@@ -16,6 +16,7 @@ import os
 
 from dotenv import load_dotenv
 
+
 # Build paths inside the myproject like this: BASE_DIR / 'subdir'.
 # Build paths inside the myproject like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -116,9 +117,9 @@ DATABASES = {
         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-            'username': os.getenv('username'),
-            'password': os.getenv('password'),
+            'host': os.getenv('DB_HOST'),  # MongoDB 호스트 주소 (기본적으로는 localhost)
+            'username': os.getenv('DB_USERNAME'),
+            'password': os.getenv('DB_PASSWORD'),
         }
     }
 }

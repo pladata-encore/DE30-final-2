@@ -1,7 +1,7 @@
 import os
 import django
 import pymongo
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from gensim.models import FastText
 from sklearn.metrics.pairwise import cosine_similarity
@@ -14,13 +14,6 @@ from django.http import JsonResponse
 
 app = FastAPI()
 
-class NicknameRequest(BaseModel):
-    plan_id: str
-    content : str
-
-class NicknameResponse(BaseModel):
-    title : str
-    nickname: str
 
 import sys
 # Django 프로젝트 루트 디렉토리를 sys.path에 추가
@@ -208,18 +201,18 @@ def extract_words(plan_data, content):
     return selected_noun[0], selected_adjective + ' ' + selected_noun[-1].replace(" ", "")
 
 
+class NicknameResponse(BaseModel):
+    title : str
+    nickname: str
 
-# @app.get("/generate-nickname/", response_model=NicknameResponse)
-# async def generate_nickname(request: NicknameRequest):
-@app.get("/generate-nickname/")
-async def generate_nickname():
 
-    # 일정 여행지 list
-    # plan_id = request.plan_id
-    # plan_id를 이용해서 일정 컬렉션의 여행지 list를 가져와서 사용
+@app.get("/generate-nickname/", response_model=NicknameResponse)
+async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)):
+
+    # 일정 여행지 plan_id
+    # 일정 id를 받아 와서 일정 데이터를 불러와 title, cat1, cat2, cat3를 뽑기->plan_data
     plan_id = 'test'
     print('------------------', plan_id)
-
 
     # 일정 여행지 list (예시)
     cursor = collection.find({"title": {"$regex": "우도해수욕장|세화해변|협재해수욕장|성산일출봉"}},
@@ -227,14 +220,13 @@ async def generate_nickname():
     plan_data = list(cursor)
 
     # 다이어리 content
-    # content = request.content
 
     # 일정 여행지 list (예시)
-    content = '''제주도의 푸른 바다와 하얀 모래는 정말 멋지고 차갑고 빨갛다 좋다. 세화 해변을 걷는 것만으로도 마음이 편안해졌어요.
-            유채꽃 필 때 방문한 우도는 한국의 아름다움을 다시 한 번 느낄 수 있었던 곳이에요.
-            제주의 풍경은 정말 매력적이었고, 특히 성산 일출봉에서 일출을 보는 것은 잊지 못할 순간이었어요.
-            협재 해수욕장의 파도 소리와 시원한 바람은 제주에서의 시간을 더욱 특별하게 만들어 주었어요.
-            제주에서 맛본 흑돼지고기와 감귤은 정말 맛있었고, 다시 방문하고 싶은 마음이 들 정도로 여행이 즐거웠어요.'''
+    # content = '''제주도의 푸른 바다와 하얀 모래는 정말 멋지고 차갑고 빨갛다 좋다. 세화 해변을 걷는 것만으로도 마음이 편안해졌어요.
+    #         유채꽃 필 때 방문한 우도는 한국의 아름다움을 다시 한 번 느낄 수 있었던 곳이에요.
+    #         제주의 풍경은 정말 매력적이었고, 특히 성산 일출봉에서 일출을 보는 것은 잊지 못할 순간이었어요.
+    #         협재 해수욕장의 파도 소리와 시원한 바람은 제주에서의 시간을 더욱 특별하게 만들어 주었어요.
+    #         제주에서 맛본 흑돼지고기와 감귤은 정말 맛있었고, 다시 방문하고 싶은 마음이 들 정도로 여행이 즐거웠어요.'''
 
     title, nickname = extract_words(plan_data, content)
 

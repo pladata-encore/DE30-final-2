@@ -16,9 +16,6 @@
         <p><strong>장소:</strong> <a href="#" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
         <p><strong>함께 한 친구:</strong>
             {{ diary.withfriend }}
-<!--            {% for username in diary.withfriend.split %}-->
-<!--                <a href="{% url 'user_diary_main' social_id=username %}">{{ username }}</a>-->
-<!--            {% endfor %}-->
         </p>
 
         <p>{{ diary.content }}</p>
@@ -114,9 +111,45 @@
         </div>
 
 
+    <!-- 모달 창 : 뱃지, 별명 획득 -->
+    <div class="modal fade" id="badgeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <h2 class="screen_out">다이어리 뱃지, 별명 획득 모달창</h2>
+                <div class="modal-body">
+                    <em class="screen_out">badge name 뱃지</em>
+                    <img id="badgeImageModal" src="" alt="badge name">
+                    <em class="screen_out">별명</em>
+                    <strong id="nicknameModal" class="txt_nickname"></strong>
+                    <p class="txt_info">축하합니다! 뱃지와 별명을 획득했습니다.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">닫기</button>
+            </div>
+        </div>
+    </div>
+
+
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM fully loaded and parsed');
+
+
+
+         // 모달창 : 뱃지, 별명 획득
+        const urlParams = new URLSearchParams(window.location.search);
+        const nickname = urlParams.get('nickname');
+        const badgeName = urlParams.get('badge_name');
+        const badgeImage = urlParams.get('badge_image');
+
+        if (nickname && badgeImage) {
+            document.getElementById('nicknameModal').textContent = nickname;
+            document.getElementById('badgeImageModal').src = `data:image/png;base64,${badgeImage}`;
+            const badgeModal = document.getElementById('badgeModal');
+            badgeModal.style.display = "block";
+        }
+
+
 
         var openModalButtons = document.querySelectorAll('.open-modal');
         console.log('Found open-modal elements:', openModalButtons.length);
