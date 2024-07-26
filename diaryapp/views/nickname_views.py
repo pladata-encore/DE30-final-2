@@ -3,10 +3,9 @@ import pymongo
 from django.conf import settings
 from django.http import JsonResponse
 import uuid
-import base64
+import json
 import gzip
 from io import BytesIO
-from PIL import Image
 
 # MongoDB 클라이언트 설정
 mongo_client = pymongo.MongoClient(settings.DATABASES['default']['CLIENT']['host'],
@@ -34,22 +33,39 @@ def create_nickname(unique_diary_id, user_email, content, plan_id):
     if response.status_code != 200:
         return JsonResponse({"error": "Failed to fetch data from API"}, status=500)
 
-    data = response.json()
-    title = data['title']
-    nickname = data['nickname']
 
-    # 뱃지 찾기
-    badge = find_badge(title)
-    if not badge:
-        return JsonResponse({"error": "No badge found for the given title"}, status=404)
+    # # data = json.loads(response.content)
+    # print(data)
+    # title = data.get('title')
+    # print(title)
+    # nickname = data.get('nickname')
 
-    # 별명 저장
-    nickname_id = save_nickname(nickname, badge, unique_diary_id, user_email, title)
+    try:
+        json_data = response.json()  # requests 라이브러리의 json 메소드를 사용하여 자동으로 파싱
+        print("Parsed JSON Data:", json_data)  # 파싱된 데이터 출력
+    except ValueError as e:
+        print("Error parsing JSON:", e)
+        return None, None, None, None  # 오류 시 None 반환
 
-    # 뱃지 이미지 Base64 디코딩 및 압축 해제
-    badge_image = decompress_badge(badge)
+    # title과 nickname 추출
+    title = json_data.get('title')
+    nickname = json_data.get('nickname')
 
-    return JsonResponse({"nickname_id": str(nickname_id), "nickname": nickname, "badge": badge, "badge_image": badge_image}, status=201)
+    return title, nickname
+
+    # # 뱃지 찾기
+    # badge = find_badge(title)
+    # if not badge:
+    #     return JsonResponse({"error": "No badge found for the given title"}, status=404)
+    #
+    # # 별명 저장
+    # nickname_id = save_nickname(nickname, badge, unique_diary_id, user_email, title)
+    #
+    # # 뱃지 이미지 Base64 디코딩 및 압축 해제
+    # badge_image = decompress_badge(badge)
+    # badge_name = badge['name']
+    #
+    # return JsonResponse({"nickname_id": str(nickname_id), "nickname": nickname, "badge_name": badge_name, "badge_image": badge_image}, status=201)
 
 
 

@@ -142,7 +142,7 @@ def generate_diary(request):
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
             # 나중에 user 정보 넘길 예정
-            nickname_id, nickname, badge, badge_image = create_nickname(unique_diary_id, user_email, GPT3content, "plan_id")
+            nickname_id, nickname, badge_name, badge_image = create_nickname(unique_diary_id, user_email, GPT3content, "plan_id")
 
             # 별명 : 다이어리에 별명 ID 저장
             diary_entry.nickname_id = nickname_id
@@ -174,7 +174,7 @@ def generate_diary(request):
 
             return JsonResponse({
                 'success': True,
-                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}?nickname={nickname}&badge_name={badge['name']}&badge_image={badge_image})",
+                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}?nickname={nickname}&badge_name={badge_name}&badge_image={badge_image})",
             })
         else:
             return JsonResponse({
@@ -229,7 +229,7 @@ def write_diary(request):
 
             # 별명 : 별명 생성
             # 나중에 일정의 타이틀, 카테고리도 넘길 예정
-            nickname_id, nickname, badge, badge_image = create_nickname(unique_diary_id, user_email, content, "plan_id")
+            nickname_id, nickname, badge_name, badge_image = create_nickname(unique_diary_id, user_email, content, "plan_id")
 
             # 별명 : 다이어리에 별명 ID 저장
             diary_entry.nickname_id = nickname_id
@@ -255,7 +255,7 @@ def write_diary(request):
 
             return JsonResponse({
                 'success': True,
-                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}?nickname={nickname}&badge_name={badge['name']}&badge_image={badge_image})",            })
+                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}?nickname={nickname}&badge_name={badge_name}&badge_image={badge_image})",})
         else:
             return JsonResponse({
                 'success': False,
