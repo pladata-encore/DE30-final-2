@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from diaryapp.views import diarywrite_views, comment_views
+from diaryapp.views import diarywrite_views, comment_views, wishlist_views
 
 urlpatterns = [
     #### diarywrite_views.py ####
@@ -29,6 +29,10 @@ urlpatterns = [
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),
 
+    # 일정 찜기능 - 찜 리스트
+    path('add_wish/', wishlist_views.add_wish, name='add_wish'),
+    path('wishlist_view/', wishlist_views.wishlist_view, name='wishlist_view'),
+    path('remove_wish/<str:place>/', wishlist_views.remove_wish, name='remove_wish'),
 
     #### comment_views.py ####
     # 댓글 달기

@@ -1,6 +1,5 @@
 import os
 import openai
-from django.contrib.auth.decorators import login_required
 from dotenv import load_dotenv
 import gridfs
 import torch
@@ -19,11 +18,9 @@ from ..clip_model import *
 from googletrans import Translator
 import base64
 import time
-
-from django.forms.models import modelformset_factory
-from django.contrib.auth.models import User
-
+from django.core.paginator import Paginator
 from ..mongo_queries import filter_diaries
+
 
 """태그된 사용자 자동 완성 기능"""
 # def user_suggestions(request):
@@ -279,14 +276,19 @@ def list_diary(request):
     diary_list = filter_diaries(year, month)
     print(f"Diaries returned to view: {len(diary_list)}")
 
-    for diary in diary_list:
+    # Pagination 적용
+    paginator = Paginator(diary_list, 9)  # 페이지당 10개의 항목으로 나누기
+    page_number = request.GET.get('page')  # URL에서 'page' 파라미터 가져오기
+    page_obj = paginator.get_page(page_number)  # 해당 페이지의 항목 가져오기
+
+    for diary in page_obj:
         print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
               f"Created: {diary.get('created_at', 'No date')}, "
               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
 
     context = {
         'form': form,
-        'diary_list': diary_list
+        'page_obj': page_obj
     }
     return render(request, 'diaryapp/list_diary.html', context)
 
@@ -341,6 +343,7 @@ def detail_diary_by_id(request, unique_diary_id):
 def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     return render(request, 'diaryapp/plan_modal.html', {'diary': diary})
+
 
 
 '''

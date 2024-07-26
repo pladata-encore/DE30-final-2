@@ -329,7 +329,34 @@ main {
     margin-right: 0.5em;
     text-align: center;
 }
-
+.btn-sdiary-action{
+    padding: 0.4rem 0.4rem !important; /* 패딩 조정 (상하좌우) */
+    font-size: 1.0rem !important; /* 폰트 크기 조정 */
+    line-height: 1.0 !important; /* 라인 높이 조정 */
+    font-weight: 300 !important;
+    background-color: transparent !important;
+    color: #636363, .85) !important;
+    border: 0.05px solid #dddddd !important;
+    text-decoration: none !important;
+    text-align: center !important;
+    transition: all 0.3s ease !important;
+    vertical-align: middle !important;
+    cursor: pointer !important;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+.btn-sdiary-action:hover,
+.btn-sdiary-action:focus {
+    color: #fff; /* 호버시 텍스트 색상 */
+    background-color: #D8D8D8 !important; /* 호버시 배경색 */
+    border-color: #636363 !important; /* 호버시 테두리 색상 */
+}
+#detail_diary .diary-actions .btn-sdiary-action::before {
+    display: inline-block;
+    width: 1em;
+    margin-right: 0.5em;
+    text-align: center;
+}
 #list_diary {
     padding-top: 20;
     border: 2px solid #ddd; /* 경계선 추가 */
@@ -404,16 +431,47 @@ main {
     text-align: center;
 }
 #loading-screen {
-            display: none; /* 기본적으로 숨김 */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            text-align: center;
-            line-height: 100vh;
-            font-size: 2em;
-            z-index: 1000;
-        }
+    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    text-align: center;
+    line-height: 100vh;
+    font-size: 2em;
+    z-index: 1000;
+}
+.pagination {
+    display: flex;
+    justify-content: center; /* 버튼들을 가운데 정렬 */
+    align-items: center;
+    margin: 20px 0; /* 상하 여백 */
+}
+.pagination-btn {
+    margin: 0 5px; /* 좌우 여백 */
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+}
+.pagination-btn:hover {
+    background-color: #ddd;
+    color: #000;
+}
+.pagination-current {
+    margin: 0 10px;
+    font-size: 14px;
+    font-weight: 600
+}
+.pagination-current span {
+    font-size: 14px;
+    font-weight: bold;
+}
+

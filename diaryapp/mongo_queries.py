@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 from datetime import datetime
 
-client = MongoClient('mongodb://localhost:27017/')
-db = client['diary']
+client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority')
+db = client['MyDiary']
 aiwritemodel_collection = db['diaryapp_aiwritemodel']
 imagemodel_collection = db['diaryapp_imagemodel']
 

@@ -6,7 +6,7 @@
         <div class="list-actions">
             <div class="list-actions-header">
                 <a href="{% url 'list_diary' %}">
-                <h1 style="color: #636363; font-weight: bold;">다이어리 목록</h1>
+                    <h1 style="color: #636363; font-weight: bold;">다이어리 목록</h1>
                 </a>
             </div>
             <div class="list-actions-buttons">
@@ -29,7 +29,7 @@
 
         <hr/>
         <div class="diary-grid">
-            {% for diary in diary_list %}
+            {% for diary in page_obj %}
                 <div class="card">
                     <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}" class="link_card">
                         <div class="card-img">
@@ -54,6 +54,23 @@
             {% empty %}
                 <p>No diaries found.</p>
             {% endfor %}
+        </div>
+
+        <!-- 페이징 네비게이션 -->
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if form.year.value %}&year={{ form.year.value }}{% endif %}{% if form.month.value %}&month={{ form.month.value }}{% endif %}" class="pagination-btn">처음</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if form.year.value %}&year={{ form.year.value }}{% endif %}{% if form.month.value %}&month={{ form.month.value }}{% endif %}" class="pagination-btn">이전</a>
+            {% endif %}
+
+            <span class="pagination-current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if form.year.value %}&year={{ form.year.value }}{% endif %}{% if form.month.value %}&month={{ form.month.value }}{% endif %}" class="pagination-btn">다음</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if form.year.value %}&year={{ form.year.value }}{% endif %}{% if form.month.value %}&month={{ form.month.value }}{% endif %}" class="pagination-btn">끝</a>
+            {% endif %}
         </div>
     </div>
 </section>

@@ -16,9 +16,7 @@
         <p><strong>장소:</strong> <a href="#" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
         <p><strong>함께 한 친구:</strong>
             {{ diary.withfriend }}
-<!--            {% for username in diary.withfriend.split %}-->
-<!--                <a href="{% url 'user_diary_main' social_id=username %}">{{ username }}</a>-->
-<!--            {% endfor %}-->
+
         </p>
 
         <p>{{ diary.content }}</p>
@@ -108,6 +106,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button id="wishlistBtn" data-place="{{ diary.place }}" class="btn btn-secondary">찜하기</button>
                     </div>
                 </div>
             </div>
@@ -176,6 +175,36 @@
            modalBody.style.maxHeight = `${bodyHeight}px`;
            modalBody.style.overflowY = 'auto';
          });
+    });
+    // 찜하기 버튼 클릭 이벤트
+    document.getElementById('wishlistBtn').addEventListener('click', function() {
+        var place = this.getAttribute('data-place');
+        fetch("{% url 'add_wish' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams({
+                'place': place
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (data.created) {
+                    alert('찜 목록에 추가되었습니다!');
+                } else {
+                    alert('이미 찜 목록에 있습니다.');
+                }
+            } else {
+                alert('오류가 발생했습니다. 다시 시도해주세요.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('오류가 발생했습니다. 다시 시도해주세요.');
+        });
     });
     </script>
 </section>

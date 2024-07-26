@@ -98,31 +98,22 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 #     }
 # }
 
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'diary',  # 사용할 MongoDB 데이터베이스 이름
+        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': 'mongodb://localhost',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-            'port': 27017,  # MongoDB 포트 (기본적으로는 27017)
+            'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+            'username': 'Jiwon',
+            'password': '1234',
+            'authMechanism': 'SCRAM-SHA-1',
         }
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
-#         'ENFORCE_SCHEMA': False,
-#         'CLIENT': {
-#             'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-#             'username': os.getenv('username'),
-#             'password': os.getenv('password'),
-#         }
-#     }
-# }
-
+#
 
 # 미디어 파일 저장 경로
 MEDIA_URL = '/media/'
@@ -130,8 +121,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 이미지 DB
-MONGO_URI = 'mongodb://localhost:27017/'
-MONGO_DB_NAME = 'diary'
+# MONGO_URI = 'mongodb://localhost:27017/'
+# MONGO_DB_NAME = 'diary'
 MEDIA_BASE_URL = 'http://localhost:8000/media/'  # GridFS의 파일을 접근할 수 있는 기본 URL
 
 

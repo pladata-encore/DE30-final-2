@@ -39,6 +39,10 @@ class ImageModel(models.Model):
 '''다이어리-일정 모델'''
 class DiaryPlanModel(models.Model):
     unique_diary_id = models.OneToOneField('AiwriteModel', on_delete=models.SET_NULL, blank=True, null=True)
+    destination = models.CharField(max_length=255, blank=True, null=True)  # 여행지 정보 저장
+
+    def __str__(self):
+        return f"Plan for Diary ID {self.unique_diary_id}"
 
 '''다이어리 모델'''
 class AiwriteModel(models.Model):
@@ -99,3 +103,27 @@ class CommentModel(models.Model):
     #     return user == self.user
     def can_delete(self, user):
         return user == self.user_email
+
+'''찜모델'''
+# class Wishlist(models.Model):
+#     # user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     user_email = models.EmailField()
+#     place = models.CharField(max_length=2000)
+#     added_at = models.DateTimeField(auto_now_add=True)
+#
+#     class Meta:
+#         unique_together = ('user', 'place')
+#
+#     def __str__(self):
+#         return f"{self.place} - {self.user_email}"
+
+class Wishlist(models.Model):
+    user_email = models.EmailField()
+    place = models.CharField(max_length=2000)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user_email', 'place')  # 'user'를 'user_email'로 변경
+
+    def __str__(self):
+        return f"{self.place} - {self.user_email}"
