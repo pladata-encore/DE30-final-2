@@ -3,7 +3,7 @@
     <h2 class="screen_out">여행 다이어리</h2>
     <div class="info_diary">
         <div class="scope_tit">
-            <h3 class="tit_main">여행 다이어리 전체 제목, 사용자가 입력</h3>
+            <h3 class="tit_main">{{ user_email }}님의 여행 다이어리</h3>
             <button type="button" class="btn_setting">
                 다이어리 전체 제목 수정
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
@@ -18,10 +18,10 @@
                 <span class="scope_badge"><img src="" class="img_badge">성산일출봉 뱃지</span>
                 <strong class="tit_badge">반짝이는 성산일출봉</strong>
             </a>
-	    </div>
+        </div>
     </div>
     <div class="card_diary">
-        <h3 class="tit_main">여행 다이어리 </h3>
+        <h3 class="tit_main">여행 다이어리</h3>
         <div class="slider-container">
             <div class="slider">
                 <div class="card add">
@@ -42,49 +42,29 @@
                         </div>
                     </a>
                 </div>
+                {% for diary in diaries %}
                 <div class="card">
-                    <a href="#" class="link_card">
+                    <a href="{% url 'detail_diary_by_id' unique_diary_id=diary.unique_diary_id %}" class="link_card">
                         <div class="card-img">
-                            <img src="https://wimg.mk.co.kr/meet/neds/2021/03/image_readtop_2021_230365_16153626904568253.jpg" alt="">
-                            <span class="txt_noimg">No image</span>
+                            {% if diary.representative_image %}
+                                <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="{{ diary.diarytitle }}">
+                            {% else %}
+                                <span class="txt_noimg">No image</span>
+                            {% endif %}
                         </div>
                         <div class="card-body">
-                            <strong class="card-title">2024 제주도 여행 다이어리 제목이 들어가요 말줄임이 되지요!</strong>
+                            <strong class="card-title">{{ diary.diarytitle }}</strong>
                             <div class="badge_tour">
-                                <span class="scope_badge"><img src="" class="img_badge">성산일출봉 뱃지</span>
-                                <strong class="tit_badge">반짝이는 성산일출봉 길어지면 말줄임이 되지요 하하하하하</strong>
+                                <span class="scope_badge">
+                                    <img src="" class="img_badge">성산일출봉 뱃지
+                                </span>
+                                <strong class="tit_badge">{{ diary.badge_name|default:"반짝이는 성산일출봉" }}</strong>
                             </div>
+                            <p class="card-date">{{ diary.created_at|date:"Y년 n월 j일" }}</p>
                         </div>
                     </a>
                 </div>
-                <div class="card">
-                    <a href="#" class="link_card">
-                        <div class="card-img">
-                            <span class="txt_noimg">No image</span>
-                        </div>
-                        <div class="card-body">
-                            <strong class="card-title">2024 제주도 여행</strong>
-                            <div class="badge_tour">
-                                <span class="scope_badge"><img src="" class="img_badge">성산일출봉 뱃지</span>
-                                <strong class="tit_badge">반짝이는 성산일출봉</strong>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="card">
-                    <a href="#" class="link_card">
-                        <div class="card-img">
-                            <span class="txt_noimg">No image</span>
-                        </div>
-                        <div class="card-body">
-                            <strong class="card-title">2024 제주도 여행</strong>
-                            <div class="badge_tour">
-                                <span class="scope_badge"><img src="" class="img_badge">성산일출봉 뱃지</span>
-                                <strong class="tit_badge">반짝이는 성산일출봉</strong>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+                {% endfor %}
             </div>
             <button class="carousel-control-prev" type="button" id="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -95,7 +75,7 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-        <a href="list_diary" class="link_all">
+        <a href="{% url 'list_diary' %}" class="link_all">
             전체보기
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>

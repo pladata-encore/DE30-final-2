@@ -244,19 +244,19 @@ def write_diary(request):
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
 '''다이어리 메인 화면'''
-def viewDiary(request):
-    return render(request, 'diaryapp/diary.html')
+# def viewDiary(request):
+#     return render(request, 'diaryapp/diary.html')
+def viewDiary(request, user_email):
+    user_email = settings.DEFAULT_FROM_EMAIL
+    # 사용자 이메일에 해당하는 다이어리 항목을 가져옵니다. (최신 5개)
+    diaries = AiwriteModel.objects.filter(user_email=user_email).order_by('-created_at')[:5]
 
-# def viewDiary(request, social_id):
-#     user = get_object_or_404(User, writer=social_id)  # social_id를 통해 사용자 조회
-#     diaries = Diary.objects.filter(writer=user)  # 작성자 필드를 통해 사용자의 다이어리 조회
-#
-#     context = {
-#         'user': user,
-#         'diaries': diaries,
-#     }
-#
-#     return render(request, 'diaryapp/diary.html', context)
+    context = {
+        'diaries': diaries,
+        'user_email': user_email
+    }
+    return render(request, 'diaryapp/diary.html', context)
+
 
 '''태그된 다른 사용자의 메인 다이어리로 이동 - 메인화면 html주소 변동 필요'''
 # def user_diary_main(request, social_id):
