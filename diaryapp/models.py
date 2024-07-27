@@ -64,6 +64,7 @@ class AiwriteModel(models.Model):
     withfriend = models.CharField(max_length=100, blank=True, null=True)
     images = models.ManyToManyField(ImageModel, related_name='aiwrite_models')
     representative_image = models.OneToOneField('ImageModel', on_delete=models.SET_NULL, blank=True, null=True)
+    nickname_id = models.CharField(max_length=100, null=True, blank=True)
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = timezone.now()

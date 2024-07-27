@@ -22,7 +22,7 @@ import time
 
 from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
-from .nickname_views import create_nickname
+from .nickname_views import *
 
 from ..mongo_queries import filter_diaries
 
@@ -142,8 +142,9 @@ def generate_diary(request):
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
             # 나중에 user 정보 넘길 예정
-            nickname_id, nickname, badge_name, badge_image = create_nickname(unique_diary_id, user_email, GPT3content, "plan_id")
-
+            nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, "plan_id")
+            # 별명 : 세션에 show_modal 저장
+            request.session['show_modal'] = True
             # 별명 : 다이어리에 별명 ID 저장
             diary_entry.nickname_id = nickname_id
             diary_entry.save()
@@ -174,7 +175,7 @@ def generate_diary(request):
 
             return JsonResponse({
                 'success': True,
-                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}?nickname={nickname}&badge_name={badge_name}&badge_image={badge_image})",
+                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}",
             })
         else:
             return JsonResponse({
@@ -228,9 +229,11 @@ def write_diary(request):
 
 
             # 별명 : 별명 생성
-            # 나중에 일정의 타이틀, 카테고리도 넘길 예정
-            nickname_id, nickname, badge_name, badge_image = create_nickname(unique_diary_id, user_email, content, "plan_id")
-
+            # 나중에 일정 plan_id도 넘길 예정
+            # 나중에 user 정보 넘길 예정
+            nickname_id = create_nickname(unique_diary_id, user_email, content, "plan_id")
+            # 별명 : 세션에 show_modal 저장
+            request.session['show_modal'] = True
             # 별명 : 다이어리에 별명 ID 저장
             diary_entry.nickname_id = nickname_id
             diary_entry.save()
@@ -255,7 +258,8 @@ def write_diary(request):
 
             return JsonResponse({
                 'success': True,
-                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}?nickname={nickname}&badge_name={badge_name}&badge_image={badge_image})",})
+                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}",
+            })
         else:
             return JsonResponse({
                 'success': False,
@@ -351,10 +355,19 @@ def detail_diary_by_id(request, unique_diary_id):
     # 디버깅을 위해 댓글 수를 출력
     print(f"Number of comments: {comment_list.count()}")
 
+    # 별명 : db에서 가져오기
+    nickname, badge_name, badge_image = get_nickname(diary.nickname_id) if diary.nickname_id else None
+    # 별명 : 세션에서 데이터 가져오기
+    show_modal = request.session.pop('show_modal', True) # 테스트 : False로 변경 예정
+
     context = {
         'diary': diary,
         'comment_list': comment_list,
         'form': CommentForm(),
+        'show_modal': show_modal,
+        'nickname': nickname,
+        'badge_name': badge_name,
+        'badge_image': badge_image,
     }
     return render(request, 'diaryapp/detail_diary.html', context)
 

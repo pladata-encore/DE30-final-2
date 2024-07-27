@@ -23,6 +23,9 @@ pip==24.1.2
 setuptools==70.3.0
 wheel==0.43.0
 scipy==1.12.0
+ipython==8.26.0
+
+
 
 # requirements.txt 실행
 # pip install -r requirements.txt

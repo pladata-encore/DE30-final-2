@@ -10,15 +10,16 @@ from konlpy.tag import Komoran
 from django.http import JsonResponse
 
 
-
 app = FastAPI()
 
 
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 import sys
 # Django 프로젝트 루트 디렉토리를 sys.path에 추가
-sys.path.append(r'C:/projects/Encore_Final_Project')
+sys.path.append(str(BASE_DIR))
+# sys.path.append(r'C:/projects/Encore_Final_Project')
 # sys.path.append(r'/Users/ychun/projects/Encore_Final_Project')
-
 
 # 프로젝트의 루트 디렉토리 경로 설정
 PROJECT_ROOT = 'myproject.settings'
@@ -215,17 +216,15 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
 
     # 다이어리 content
     # 일정 여행지 list (예시)
-    content = '''제주도의 푸른 바다와 하얀 모래는 정말 멋지고 차갑고 빨갛다 좋다. 세화 해변을 걷는 것만으로도 마음이 편안해졌어요.
-            유채꽃 필 때 방문한 우도는 한국의 아름다움을 다시 한 번 느낄 수 있었던 곳이에요.
-            제주의 풍경은 정말 매력적이었고, 특히 성산 일출봉에서 일출을 보는 것은 잊지 못할 순간이었어요.
-            협재 해수욕장의 파도 소리와 시원한 바람은 제주에서의 시간을 더욱 특별하게 만들어 주었어요.
-            제주에서 맛본 흑돼지고기와 감귤은 정말 맛있었고, 다시 방문하고 싶은 마음이 들 정도로 여행이 즐거웠어요.'''
+    # content = '''제주도의 푸른 바다와 하얀 모래는 정말 멋지고 차갑고 빨갛다 좋다. 세화 해변을 걷는 것만으로도 마음이 편안해졌어요.
+    #         유채꽃 필 때 방문한 우도는 한국의 아름다움을 다시 한 번 느낄 수 있었던 곳이에요.
+    #         제주의 풍경은 정말 매력적이었고, 특히 성산 일출봉에서 일출을 보는 것은 잊지 못할 순간이었어요.
+    #         협재 해수욕장의 파도 소리와 시원한 바람은 제주에서의 시간을 더욱 특별하게 만들어 주었어요.
+    #         제주에서 맛본 흑돼지고기와 감귤은 정말 맛있었고, 다시 방문하고 싶은 마음이 들 정도로 여행이 즐거웠어요.'''
 
     title, nickname = extract_words(plan_data, content)
 
-    print(title, nickname)
-    data = {"title": title, "nickname": nickname}
-    return JsonResponse(data)
+    return title, nickname
 
 
 import uvicorn
