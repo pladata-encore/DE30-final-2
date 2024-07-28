@@ -6,6 +6,7 @@ from .forms import UserPreferencesForm
 from django.views.decorators.csrf import csrf_exempt
 import requests
 import json
+from datetime import datetime
 
 # MongoDB 클라이언트 설정
 client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
@@ -16,7 +17,6 @@ area_code_collection = db['areaCode']
 
 @csrf_exempt
 def recommend(request):
-    regions = get_regions()
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -35,20 +35,22 @@ def recommend(request):
                     'accommodation_type': form.cleaned_data['accommodation_type'],
                     'travel_preference': form.cleaned_data['travel_preference']
                 }
-                response = requests.post('http://127.0.0.1:8001/recommend', json=payload)
+                response = requests.post('http://127.0.0.1:5000/recommend', json=payload)
                 if response.status_code == 200:
                     recommendations = response.json()
-                    request.session['recommendations'] = recommendations
+                    request.session['recommendations'] = recommendations['itinerary']
                     return JsonResponse({'redirect_url': '/results'}, status=200)
                 else:
                     form.add_error(None, "추천 요청에 실패했습니다. 다시 시도해주세요.")
-
+            else:
+                form.add_error(None, "폼이 유효하지 않습니다")
         except json.JSONDecodeError:
             form = UserPreferencesForm()
 
     else:
         form = UserPreferencesForm()
 
+    regions = list(area_code_collection.find())
     return render(request, 'recommendations/create_schedule.html', {'form':form, 'regions': regions})
 
 def get_regions():
@@ -67,8 +69,48 @@ def load_subregions(request):
 
 def results(request):
     recommendations = request.session.get('recommendations', [])
-    return render(request, 'results.html', {'recommendations': recommendations})
+    return render(request, 'result.html', {'recommendations': recommendations})
 
+# 추천 결과 페이지에서 보여주는 여행 장소 정보 (모달을 통해 보여주는 정보)
+def get_place_info(request):
+    contentid = request.GET.get('contentid')
+    category = request.GET.get('category')
 
+    if contentid and category:
+        place_info = db[category].find_onde({'contentid': contentid})
+        if place_info:
+            return JsonResponse(place_info, safe=False)
+        else:
+            return JsonResponse({'error': 'Place not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Invalid parameters'}, status=400)
+
+# 사용자 일정 저장
+@csrf_exempt
+def save_schedule(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_id = data.get('user_id') ## user 컬렉션에 있는 필드명으로 교체해주기
+        email = data.get('email')
+        itinerary = data.get('itinerary')
+
+        # MongoDB에 저장
+        db.schedules.insert_one({
+            'user_id': user_id,
+            'email': email,
+            'itinerary': itinerary
+        })
+
+        return JsonResponse({'message': '일정 저장 완료'}, status=200)
+    return JsonResponse({'message': '잘못된 요청입니다'}, status=400)
+
+# 사용자 일정 불러오기
+def view_schedule(request):
+    user_id = request.GET.get('user_id')
+    schedule = list(db.schedules.find({'user_id': user_id}))
+
+    return render(request, 'recommendations/view_schedule.html', {'schedules': schedules})
+
+# 메인 페이지
 def index(request):
-    return HttpResponse("Hello World!")
+    return render(request, 'service_main.html')

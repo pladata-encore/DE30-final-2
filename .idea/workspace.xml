@@ -5,54 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/fastapi_app/models/word2vec_model2.model" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/knusl.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/SentiWord_info.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_acc_ratings.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_culture14_overview.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_food39_overview.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_leisure28_overview.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_shopping38_overview.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_tourspace12_overview.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/stopwords-ko.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/update_overview_keywords.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/management/commands/update_reviews_to_ratings.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/scripts/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/scripts/fetch_data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/templates/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/templates/recommendations/create_schedule.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/templates/recommendations/result.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/travel_recommend/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/myproject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/myproject.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/travel_recommend/templates/recommendations/view_schedule.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/travel_recommend/templates/service_main.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/import_mongo_tour_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/admin.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/apps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/forms.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/management/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/management/commands/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/fastapi_app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/management/commands/load_acc_category_code.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_acc_category_code.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/management/commands/load_acc_description.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_acc_description.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/management/commands/load_acc_overview.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_acc_overview.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/management/commands/load_accomodation_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/management/commands/load_accomodation_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/fastapi_app/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/app/detail.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/app/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/app/your_form.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/views.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/myproject/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/travel_recommend/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/travel_recommend/fastapi_app/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/fastapi_app/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/travel_recommend/templates/recommendations/create_schedule.html" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/templates/recommendations/create_schedule.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/travel_recommend/templates/recommendations/result.html" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/templates/recommendations/result.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/travel_recommend/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/travel_recommend/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/travel_recommend/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,8 +26,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -110,24 +74,24 @@
     &quot;Python.update_reviews_to_ratings.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;plan&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/projects/Encore_Final_Project&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Playdata\PycharmProjects\Encore_Final_Project\travel_recommend\templates" />
       <recent name="C:\Users\Playdata\PycharmProjects\Encore_Final_Project\travel_recommend\fastapi_app\models" />
       <recent name="C:\Users\Playdata\PycharmProjects\Encore_Final_Project\travel_recommend\management\commands" />
       <recent name="C:\Users\Playdata\PycharmProjects\Encore_Final_Project\travel_recommend" />
       <recent name="C:\Users\Playdata\PycharmProjects\Encore_Final_Project\travel_recommend\templates\recommendation" />
-      <recent name="C:\projects\Encore_Final_Project\diaryapp\templates" />
     </key>
   </component>
   <component name="RunManager" selected="Python.app">
@@ -244,7 +208,23 @@
       <workItem from="1721725817249" duration="135000" />
       <workItem from="1721725963048" duration="63000" />
       <workItem from="1721726033719" duration="103000" />
-      <workItem from="1721726146204" duration="834000" />
+      <workItem from="1721726146204" duration="3219000" />
+      <workItem from="1721730989374" duration="271000" />
+      <workItem from="1721731272252" duration="1789000" />
+      <workItem from="1721733090281" duration="1782000" />
+      <workItem from="1721866273354" duration="18900000" />
+      <workItem from="1721893449685" duration="1163000" />
+      <workItem from="1721894849774" duration="500000" />
+      <workItem from="1721895375155" duration="1199000" />
+      <workItem from="1721896613494" duration="182000" />
+      <workItem from="1721896952636" duration="17393000" />
+      <workItem from="1721969980971" duration="775000" />
+      <workItem from="1721970969647" duration="8348000" />
+      <workItem from="1721979430857" duration="1228000" />
+      <workItem from="1721980779268" duration="4934000" />
+      <workItem from="1722173117364" duration="29000" />
+      <workItem from="1722173158860" duration="167000" />
+      <workItem from="1722173338787" duration="333000" />
     </task>
     <servers />
   </component>

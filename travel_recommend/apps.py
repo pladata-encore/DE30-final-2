@@ -13,4 +13,4 @@ class TravelRecommendConfig(AppConfig):
         threading.Thread(target=self.start_fastapi_server).start()
 
     def start_fastapi_server(self):
-        subprocess.Popen([sys.executable,"-m", "uvicorn","travel_recommend.fastapi_app.app:app", "--reload"])
+        subprocess.Popen([sys.executable,"-m", "uvicorn","travel_recommend.fastapi_app.app:app", "--reload","--port","5000"])

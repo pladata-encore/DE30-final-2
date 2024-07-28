@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>메인 페이지</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-top: 20px;
+        }
+        .carousel-item {
+            padding: 20px;
+        }
+        .carousel-inner {
+            width: 100%;
+        }
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .carousel-counter {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .option-card {
+            cursor: pointer;
+            margin: 10px;
+            flex: 1 1 calc(25% - 20px); /* Flexbox layout with 25% width cards */
+            max-width: calc(); /* Ensure the max width is also set */
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+        }
+        .option-card p {
+            margin: 0;
+            white-space: nowrap;
+        }
+        .option-card.selected {
+            background-color: #d3f9d8;
+            border-color: #28a745;
+        }
+        .card-deck {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            justify-content: center;
+        }
+        .progress {
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 100%;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 50%;
+            height: 50%;
+            overflow: auto;
+            background-color: lightpink;
+        }
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #e37682;
+            width: 80%;
+        }
+        .close {
+            color: #7ec3ee;
+            float: right;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: #636363;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">My Travel Planner</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'create_schedule' %}">여행 일정 생성</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h1 class="display-4">나만의 여행 일정을 만들어보세요!</h1>
+            <p class="lead">자동 생성 또는 직접 생성 옵션 중에서 선택하세요.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card option-card text-center" onclick="location.href='{% url 'create_schedule' %}'">
+                    <div class="card-body">
+                        <h5 class="card-title">자동 생성</h5>
+                        <p class="card-text">사용자 맞춤형 여행 일정을 자동으로 생성합니다.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card option-card text-center" onclick="location.href='#'">
+                    <div class="card-body">
+                        <h5 class="card-title">직접 생성</h5>
+                        <p class="card-text">직접 여행 일정을 만들어보세요.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
