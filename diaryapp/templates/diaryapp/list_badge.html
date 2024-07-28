@@ -1,0 +1,43 @@
+{% include 'header.html' %}
+<section id="listBadge" class="main main_badge">
+    <h2 class="screen_out">나의 여행 뱃지</h2>
+    <div class="info_main">
+        <h3 class="tit_main">여행 뱃지</h3>
+        <div class="badge_tour badge_represent">
+            <strong class="tit_badge">대표 여행 뱃지</strong>
+            <a href="" class="link_badge">
+                <span class="scope_badge">
+                    <em class="screen_out">{{ badge_name }} 뱃지</em>
+                    <img src="data:image/png;base64,{{ badge_image }}" class="img_badge"  alt={{ badge_name }}>
+                </span>
+                <em class="screen_out">별명</em>
+                <strong class="tit_badge">반짝이는 성산일출봉</strong>
+            </a>
+        </div>
+        <h4 class="screen_out">여행 뱃지 목록</h4>
+        <ul class="list_badge">
+            {% for item in list_badge %}
+            <li>
+                <div class="badge_tour">
+                    <a href="" class="link_badge">
+                        <span class="scope_badge">
+                            <em class="screen_out">{{ item.badge_name }} 뱃지</em>
+                            <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge"  alt={{ item.badge_name }}>
+                        </span>
+                        <em class="screen_out">별명</em>
+                        <strong class="tit_badge">{{ item.nickname }}</strong>
+                    </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="txt_info">
+            대표 뱃지 설정 : 원하는 뱃지를 대표 뱃지 영역으로 드래그하여 올려주세요.</br>
+            대표 뱃지 제거 : 더 이상 필요하지 않은 뱃지는 아무 곳에나 드래그하여 놓으면 제거됩니다.
+        </p>
+    </div>
+    <div class="cont_main">
+        <h3 class="tit_main">여행 통계</h3>
+    </div>
+</section>
+{% include 'footer.html' %}

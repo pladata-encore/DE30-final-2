@@ -11,8 +11,12 @@ window.addEventListener('scroll', function() {
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
-    //다이어리 슬라이드
+//다이어리 슬라이드
+function initializeSlider() {
+
     const sliderContainer = document.querySelector('.slider-container');
+    if (!sliderContainer) return; // sliderContainer가 존재하지 않으면 스크립트 종료
+
     const slider = sliderContainer.querySelector('.slider');
     const nextButton = sliderContainer.querySelector('#next');
     const prevButton = sliderContainer.querySelector('#prev');
@@ -111,6 +115,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // 페이지 로드 시 및 리사이즈 이벤트 시 호출
     window.addEventListener('load', adjustCardWidth);
     window.addEventListener('resize', adjustCardWidth);
+
+}
+initializeSlider();
 
 
 

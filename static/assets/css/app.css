@@ -342,9 +342,11 @@ main {
     grid-template-columns: repeat(3, 1fr);
     gap: 4rem; /* 바둑판 셀 사이의 간격 */
     list-style: none;
-    padding-left: 4rem;
-    margin: 20;
+    /* padding-left: 4rem; */
+    /* margin: 20; */
 }
+#list_diary .diary-grid .card{margin-left:0}
+
 #list_diary .list-actions{
     display: flex;
     justify-content: flex-end; /* 오른쪽 정렬 */

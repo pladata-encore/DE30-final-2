@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views, nickname_views
+from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views, nickname_views, badge_views
 
 urlpatterns = [
     #### diarywrite_views.py ####
@@ -39,6 +39,10 @@ urlpatterns = [
 
     # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
     # path('maindiary', views.delete_diary, name='main_diary'),
+
+
+    # 리스트 뱃지
+    path('list_badge/', badge_views.list_badge, name='list_badge'),
 
 
     # Bootstrap 테마 예시 페이지

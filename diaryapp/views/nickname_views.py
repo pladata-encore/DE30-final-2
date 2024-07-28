@@ -101,6 +101,9 @@ def decompress_badge(badge):
 # 별명, 뱃지 db에서 불러오기 함수
 def get_nickname(nickname_id):
 
+    if nickname_id == None:
+        return '별명이 없습니다.', '', ''
+
     target_nickname = nickname_collection.find_one({"nickname_id": nickname_id})
     nickname = target_nickname['nickname']
     badge_id = target_nickname['badge_id']
