@@ -22,10 +22,6 @@ urlpatterns = [
     # 다이어리 삭제
     path('delete_diary/<str:unique_diary_id>/', diarywrite_views.delete_diary, name='delete_diary'),
 
-    # 다이어리 메인
-    # path('',diarywrite_views.viewDiary),
-    path('<str:user_email>/', diarywrite_views.viewDiary, name='user_diary_main'),
-
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),
 
@@ -48,6 +44,10 @@ urlpatterns = [
     # path('index', views.viewIndex),
     # path('elements', views.viewElements),
     # path('generic', views.viewGeneric),
+
+    # 다이어리 메인
+    # path('',diarywrite_views.viewDiary),
+    path('<str:user_email>/', diarywrite_views.viewDiary, name='user_diary_main'),
 ]
 
 if settings.DEBUG:

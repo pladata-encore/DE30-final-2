@@ -246,6 +246,9 @@ def write_diary(request):
 '''다이어리 메인 화면'''
 # def viewDiary(request):
 #     return render(request, 'diaryapp/diary.html')
+'''태그된 다른 사용자의 메인 다이어리로 이동 - 메인화면 html주소 변동 필요'''
+
+
 def viewDiary(request, user_email):
     user_email = settings.DEFAULT_FROM_EMAIL
     # 사용자 이메일에 해당하는 다이어리 항목을 가져옵니다. (최신 5개)
@@ -256,9 +259,6 @@ def viewDiary(request, user_email):
         'user_email': user_email
     }
     return render(request, 'diaryapp/diary.html', context)
-
-
-'''태그된 다른 사용자의 메인 다이어리로 이동 - 메인화면 html주소 변동 필요'''
 # def user_diary_main(request, social_id):
 #     user = get_object_or_404(User, writer=social_id)
 #     diary_entries = AiwriteModel.objects.filter(tags__name__startswith='@', tags__name=social_id)

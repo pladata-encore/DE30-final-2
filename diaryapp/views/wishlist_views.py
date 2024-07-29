@@ -1,10 +1,10 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import JsonResponse, HttpResponseForbidden
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 
 from ..forms import *
 from ..models import *
-from django.http import HttpResponse, JsonResponse, HttpResponseForbidden
-from django.shortcuts import render, get_object_or_404, redirect
 
 '''다이어리 찜 기능'''
 # @login_required
