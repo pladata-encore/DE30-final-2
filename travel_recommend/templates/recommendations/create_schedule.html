@@ -409,14 +409,9 @@
                         <h2>5. 선호하는 활동 선택</h2>
                         <label>여행 시 선호 하는 활동을 모두 선택하세요</label>
                         <div class="card-deck">
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자연 명소 관광')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자연 명소')">
                                 <div class="card-body">
-                                    <p class="card-text">자연 명소 관광</p>
-                                </div>
-                            </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '지역 명소 관광')">
-                                <div class="card-body">
-                                    <p class="card-text">지역 명소 관광</p>
+                                    <p class="card-text">자연 명소</p>
                                 </div>
                             </div>
                             <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '바닷가/해변')">
@@ -424,14 +419,44 @@
                                     <p class="card-text">바닷가/해변</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '멋진 야경 감상')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '공원')">
                                 <div class="card-body">
-                                    <p class="card-text">멋진 야경 감상</p>
+                                    <p class="card-text">공원</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '역사/유적지')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '산')">
                                 <div class="card-body">
-                                    <p class="card-text">역사/유적지</p>
+                                    <p class="card-text">산</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '계곡/폭포')">
+                                <div class="card-body">
+                                    <p class="card-text">계곡/폭포</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '생태관광지/휴양림')">
+                                <div class="card-body">
+                                    <p class="card-text">생태관광지/휴양림</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '고궁/성')">
+                                <div class="card-body">
+                                    <p class="card-text">고궁/성</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '고택/생가')">
+                                <div class="card-body">
+                                    <p class="card-text">고택/생가</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '민속마을')">
+                                <div class="card-body">
+                                    <p class="card-text">민속마을</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '유적지/사적지')">
+                                <div class="card-body">
+                                    <p class="card-text">유적지/사적지</p>
                                 </div>
                             </div>
                             <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '절/사찰')">
@@ -439,49 +464,114 @@
                                     <p class="card-text">절/사찰</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '미술관/전시관')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '종교성지')">
                                 <div class="card-body">
-                                    <p class="card-text">미술관/전시관</p>
+                                    <p class="card-text">종교성지</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자연박물관/과학박물관')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '온천/스파/찜질방')">
                                 <div class="card-body">
-                                    <p class="card-text">자연박물관/과학박물관</p>
+                                    <p class="card-text">온천/스파/찜질방</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '테마박물관')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '테마공원')">
                                 <div class="card-body">
-                                    <p class="card-text">테마박물관</p>
+                                    <p class="card-text">테마공원</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '가벼운 산책')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '유람선/잠수함')">
                                 <div class="card-body">
-                                    <p class="card-text">가벼운 산책</p>
+                                    <p class="card-text">유람선/잠수함</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '트레킹 코스')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자연 체험')">
                                 <div class="card-body">
-                                    <p class="card-text">트레킹 코스</p>
+                                    <p class="card-text">자연 체험</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '본격 등산')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '전통 체험')">
                                 <div class="card-body">
-                                    <p class="card-text">본격 등산</p>
+                                    <p class="card-text">전통 체험</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스키/스노우보드')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '산사 체험')">
                                 <div class="card-body">
-                                    <p class="card-text">스키/스노우보드</p>
+                                    <p class="card-text">산사 체험</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '레일바이크')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '이색 체험')">
                                 <div class="card-body">
-                                    <p class="card-text">레일바이크</p>
+                                    <p class="card-text">이색 체험</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '패러글라이딩')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '박물관')">
                                 <div class="card-body">
-                                    <p class="card-text">패러글라이딩</p>
+                                    <p class="card-text">박물관</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '기념관')">
+                                <div class="card-body">
+                                    <p class="card-text">기념관</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '전시관')">
+                                <div class="card-body">
+                                    <p class="card-text">전시관</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '컨벤션센터')">
+                                <div class="card-body">
+                                    <p class="card-text">컨벤션센터</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '미술관/화랑')">
+                                <div class="card-body">
+                                    <p class="card-text">미술관/화랑</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '도서관')">
+                                <div class="card-body">
+                                    <p class="card-text">도서관</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '수상 레포츠')">
+                                <div class="card-body">
+                                    <p class="card-text">수상 레포츠</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '항공 레포츠')">
+                                <div class="card-body">
+                                    <p class="card-text">항공 레포츠</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '인라인/실내스케이트')">
+                                <div class="card-body">
+                                    <p class="card-text">인라인/실내스케이트</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자전거하이킹')">
+                                <div class="card-body">
+                                    <p class="card-text">자전거하이킹</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '카트')">
+                                <div class="card-body">
+                                    <p class="card-text">카트</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '골프')">
+                                <div class="card-body">
+                                    <p class="card-text">골프</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '경마/경륜')">
+                                <div class="card-body">
+                                    <p class="card-text">경마/경륜</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '카지노')">
+                                <div class="card-body">
+                                    <p class="card-text">카지노</p>
                                 </div>
                             </div>
                             <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '승마')">
@@ -489,19 +579,59 @@
                                     <p class="card-text">승마</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '워터파크')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스키/스노보드')">
                                 <div class="card-body">
-                                    <p class="card-text">워터파크</p>
+                                    <p class="card-text">스키/스노보드</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '온천')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스케이트')">
                                 <div class="card-body">
-                                    <p class="card-text">온천/스파</p>
+                                    <p class="card-text">스케이트</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '서핑')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '썰매장')">
                                 <div class="card-body">
-                                    <p class="card-text">서핑</p>
+                                    <p class="card-text">썰매장</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '수렵/사격')">
+                                <div class="card-body">
+                                    <p class="card-text">수렵/사격</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '암벽등반')">
+                                <div class="card-body">
+                                    <p class="card-text">암벽등반</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '서바이벌게임')">
+                                <div class="card-body">
+                                    <p class="card-text">서바이벌게임</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', 'ATV/MTB')">
+                                <div class="card-body">
+                                    <p class="card-text">ATV/MTB</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '번지점프')">
+                                <div class="card-body">
+                                    <p class="card-text">번지점프</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '트래킹')">
+                                <div class="card-body">
+                                    <p class="card-text">트래킹</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '윈드서핑/제트스키')">
+                                <div class="card-body">
+                                    <p class="card-text">윈드서핑/제트스키</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '카약/카누')">
+                                <div class="card-body">
+                                    <p class="card-text">카약/카누</p>
                                 </div>
                             </div>
                             <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '요트')">
@@ -509,24 +639,39 @@
                                     <p class="card-text">요트</p>
                                 </div>
                             </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스노쿨링/스킨스쿠버다이빙')">
+                                <div class="card-body">
+                                    <p class="card-text">스노쿨링/스킨스쿠버다이빙</p>
+                                </div>
+                            </div>
                             <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '낚시')">
                                 <div class="card-body">
                                     <p class="card-text">낚시</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스쿠버다이빙')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '래프팅')">
                                 <div class="card-body">
-                                    <p class="card-text">스쿠버다이빙</p>
+                                    <p class="card-text">래프팅</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '짚라인')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스카이다이빙')">
                                 <div class="card-body">
-                                    <p class="card-text">짚라인</p>
+                                    <p class="card-text">스카이다이빙</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '사격')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '초경량비행')">
                                 <div class="card-body">
-                                    <p class="card-text">사격</p>
+                                    <p class="card-text">초경량비행</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '행글라이딩/패러글라이딩')">
+                                <div class="card-body">
+                                    <p class="card-text">행글라이딩/패러글라이딩</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '5일장')">
+                                <div class="card-body">
+                                    <p class="card-text">5일장</p>
                                 </div>
                             </div>
                             <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '상설시장')">
@@ -544,9 +689,19 @@
                                     <p class="card-text">면세점</p>
                                 </div>
                             </div>
-                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '기념품 판매점')">
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '대형마트')">
                                 <div class="card-body">
-                                    <p class="card-text">기념품 판매점</p>
+                                    <p class="card-text">대형마트</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '공예/공방')">
+                                <div class="card-body">
+                                    <p class="card-text">공예/공방</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '특산물판매점')">
+                                <div class="card-body">
+                                    <p class="card-text">특산물판매점</p>
                                 </div>
                             </div>
                         </div>
