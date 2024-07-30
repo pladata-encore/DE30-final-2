@@ -102,7 +102,7 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'djongo',
-#         'NAME': 'diary',  # 사용할 MongoDB 데이터베이스 이름
+#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
 #         'ENFORCE_SCHEMA': False,
 #         'CLIENT': {
 #             'host': 'mongodb://localhost',  # MongoDB 호스트 주소 (기본적으로는 localhost)

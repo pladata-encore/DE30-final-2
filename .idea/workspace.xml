@@ -6,15 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="66fb4d72-e793-489e-b109-633a82a13a0a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common_templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/common_templates/header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/diary.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_diary.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/templatetags/custom_filters.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templatetags/custom_filters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/views/diarywrite_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/diarywrite_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/fastapi_app/nickname_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/fastapi_app/nickname_app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/views/nickname_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/nickname_views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/assets/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/assets/css/app.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/assets/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/assets/js/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,17 +40,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Python.nickname_app.executor": "Run",
-    "Python.urls.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "diary",
-    "last_opened_file_path": "C:/projects/Encore_Final_Project/diaryapp/fastapi_app",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Python.nickname_app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.urls.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;diary&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/projects/Encore_Final_Project/diaryapp/fastapi_app&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\projects\Encore_Final_Project\diaryapp\fastapi_app" />

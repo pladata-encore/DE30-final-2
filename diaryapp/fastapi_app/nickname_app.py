@@ -222,6 +222,8 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
     #         협재 해수욕장의 파도 소리와 시원한 바람은 제주에서의 시간을 더욱 특별하게 만들어 주었어요.
     #         제주에서 맛본 흑돼지고기와 감귤은 정말 맛있었고, 다시 방문하고 싶은 마음이 들 정도로 여행이 즐거웠어요.'''
 
+    # content = '특별한 명사 없이 대충 썼어요'
+
     title, nickname = extract_words(plan_data, content)
 
     return title, nickname

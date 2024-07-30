@@ -100,24 +100,24 @@ def decompress_badge(badge):
 
 # 별명, 뱃지 db에서 불러오기 함수
 def get_nickname(nickname_id):
+    if nickname_id:
+        target_nickname = nickname_collection.find_one({"nickname_id": nickname_id})
+        nickname = target_nickname['nickname']
+        badge_id = target_nickname['badge_id']
 
-    if nickname_id == None:
+        target_badge = badge_collection.find_one({"badge_id": badge_id})
+        badge_name = target_badge['name']
+
+        compressed_img = target_badge['badge']
+        # Gzip 압축 해제
+        img_gzip = BytesIO(compressed_img)
+        with gzip.GzipFile(fileobj=img_gzip, mode='rb') as f:
+            badge_image = f.read().decode('utf-8')
+
+        return nickname, badge_name, badge_image
+    else :
         return '별명이 없습니다.', '', ''
 
-    target_nickname = nickname_collection.find_one({"nickname_id": nickname_id})
-    nickname = target_nickname['nickname']
-    badge_id = target_nickname['badge_id']
-
-    target_badge = badge_collection.find_one({"badge_id": badge_id})
-    badge_name = target_badge['name']
-
-    compressed_img = target_badge['badge']
-    # Gzip 압축 해제
-    img_gzip = BytesIO(compressed_img)
-    with gzip.GzipFile(fileobj=img_gzip, mode='rb') as f:
-        badge_image = f.read().decode('utf-8')
-
-    return nickname, badge_name, badge_image
 
 
 
