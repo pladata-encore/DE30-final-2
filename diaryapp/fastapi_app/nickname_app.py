@@ -103,8 +103,11 @@ def extract_nouns(pos_tags):
     return nouns
 
 
-# 빈도 높은 일정 추출 함수 (빈도 높은 순 > 전체)
-def frequent_category(plan_data):
+# 빈도 높은 일정 추출 함수
+# 빈도 높은 순 > 전체
+# 빈도 높은 일정이 다이어리 명사와 매칭이 안되면 전체 반환
+def frequent_category(plan_data, nouns):
+
     updated_documents = []
 
     for document in plan_data:
@@ -131,9 +134,19 @@ def frequent_category(plan_data):
             most_frequent = list(cat_counter.keys())
 
         # 조건에 맞는 문서 필터링
-        updated_documents = [doc for doc in updated_documents if doc[cat] in most_frequent]
+        final_documents = [doc for doc in updated_documents if doc[cat] in most_frequent]
 
-    return updated_documents
+    all_nouns_not_found = True  # 모든 문서에서 nouns가 발견되지 않았다고 가정
+
+    for document in final_documents:
+        if any(any(noun in str(value) for value in document.values()) for noun in nouns):
+            all_nouns_not_found = False  # 하나라도 발견되면 False로 변경
+            break
+
+    if all_nouns_not_found:
+        final_documents = updated_documents
+
+    return final_documents
 
 
 # 유사도 계산 명사 추출 함수
@@ -151,7 +164,7 @@ def select_noun(nouns, final_documents, model):
                     title_vector = model.wv[title].reshape(1, -1)
 
                     similarity = cosine_similarity(title_vector, noun_vector)[0][0]
-                    if similarity >= 0.999:
+                    if (similarity >= 0.999) or (noun in title):
                         selected_nouns.append((title, noun))
 
     # 타이틀 유사도 높은 명사 반환
@@ -170,16 +183,16 @@ def select_noun(nouns, final_documents, model):
                         cat_vector = model.wv[cat_value].reshape(1, -1)
 
                         similarity = cosine_similarity(cat_vector, noun_vector)[0][0]
-                        if similarity >= 0.9 :
-                            selected_nouns.append((title, cat_value, noun))
+                        if similarity >= 0.9:
+                            selected_nouns.append((title, noun, cat_value, similarity))
 
+    if selected_nouns:
         # 유사도 기준으로 정렬
-        print(selected_nouns.sort(key=lambda x: x[2], reverse=True))
+        selected_nouns.sort(key=lambda x: x[-1], reverse=True)
+        best_match = selected_nouns[0]
+        return best_match[:3]
 
-        if selected_nouns:
-            return random.choice(selected_nouns)  # 랜덤으로 하나 선택
-
-    return ('','여행자') # 그 외
+    return ('','여행자')
 
 # 별명 추출 함수
 def extract_words(plan_data, content):
@@ -193,12 +206,12 @@ def extract_words(plan_data, content):
     nouns = extract_nouns(pos_tags)
 
     # 빈도 높은 일정 추출
-    final_documents = frequent_category(plan_data)
+    final_documents = frequent_category(plan_data, nouns)
 
     # 유사도 계산 명사 추출
     selected_noun = select_noun(nouns, final_documents, model)
 
-    return selected_noun[0], selected_adjective + ' ' + selected_noun[-1].replace(" ", "")
+    return selected_noun[0], selected_adjective + ' ' + selected_noun[1].replace(" ", "")
 
 
 @app.get("/generate-nickname/")
@@ -210,7 +223,7 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
     print('------------------', plan_id)
 
     # 일정 여행지 list (예시)
-    cursor = collection.find({"title": {"$regex": "우도해수욕장|세화해변|협재해수욕장|성산일출봉"}},
+    cursor = collection.find({"title": {"$regex": "우도\\(해양도립공원\\)|세화해변|협재해수욕장|성산일출봉"}},
                              {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0})
     plan_data = list(cursor)
 
@@ -222,7 +235,7 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
     #         협재 해수욕장의 파도 소리와 시원한 바람은 제주에서의 시간을 더욱 특별하게 만들어 주었어요.
     #         제주에서 맛본 흑돼지고기와 감귤은 정말 맛있었고, 다시 방문하고 싶은 마음이 들 정도로 여행이 즐거웠어요.'''
 
-    # content = '특별한 명사 없이 대충 썼어요'
+    # content = '산에 갔어요 행복했습니다'
 
     title, nickname = extract_words(plan_data, content)
 
