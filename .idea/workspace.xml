@@ -5,10 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jpage/templates/Jpage/map.html" beforeDir="false" afterPath="$PROJECT_DIR$/Jpage/templates/Jpage/map.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Jpage/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Jpage/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project/detailCommon.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/detailCommon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/areaBaseList.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/areaBaseList.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/areaCode.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/areaCode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/category.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/category.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/categoryCode.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/categoryCode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/categoryCode3.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/categoryCode3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/cityDistrict.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/cityDistrict.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project/detailInfo.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/detailInfo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,34 +43,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Python.ContentTypeId.executor&quot;: &quot;Run&quot;,
-    &quot;Python.api.executor&quot;: &quot;Run&quot;,
-    &quot;Python.apps.executor&quot;: &quot;Run&quot;,
-    &quot;Python.areaBaseList.executor&quot;: &quot;Run&quot;,
-    &quot;Python.areaCode.executor&quot;: &quot;Run&quot;,
-    &quot;Python.category.executor&quot;: &quot;Run&quot;,
-    &quot;Python.categoryCode.executor&quot;: &quot;Run&quot;,
-    &quot;Python.categoryCode2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.categoryCode3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.cityDistrict.executor&quot;: &quot;Run&quot;,
-    &quot;Python.detailCommon.executor&quot;: &quot;Run&quot;,
-    &quot;Python.detailInfo.executor&quot;: &quot;Run&quot;,
-    &quot;Python.detailIntro.executor&quot;: &quot;Run&quot;,
-    &quot;Python.map.executor&quot;: &quot;Run&quot;,
-    &quot;Python.urls.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Jpage&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Playdata/OneDrive/바탕 화면/gitfile/Encore_Final_Project/Jpage/templates/Jpage&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.tabs&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.ContentTypeId.executor": "Run",
+    "Python.api.executor": "Run",
+    "Python.apps.executor": "Run",
+    "Python.areaBaseList.executor": "Run",
+    "Python.areaCode.executor": "Run",
+    "Python.category.executor": "Run",
+    "Python.categoryCode.executor": "Run",
+    "Python.categoryCode2.executor": "Run",
+    "Python.categoryCode3.executor": "Run",
+    "Python.cityDistrict.executor": "Run",
+    "Python.detailCommon.executor": "Run",
+    "Python.detailInfo.executor": "Run",
+    "Python.detailIntro.executor": "Run",
+    "Python.map.executor": "Run",
+    "Python.urls.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "Merging Jpage",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Playdata/OneDrive/바탕 화면/gitfile/Encore_Final_Project/Jpage/templates/Jpage",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "editor.preferences.tabs",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\Jpage\templates\Jpage" />
