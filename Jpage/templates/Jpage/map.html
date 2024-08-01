@@ -914,7 +914,6 @@ function removeMarkerByPlaceName(day, placeName) {
             // 두 번 클릭 시 삭제 및 애니메이션 효과 추가
             $(this).fadeOut(300, function() {
                 $(this).remove(); // 애니메이션 후 삭제
-                removeMarkersForPlace(day, placeId);
             });
             var id = $(this).data('place-id');
             selectedPlaces = selectedPlaces.filter(function(pid) { return pid !== id; });
