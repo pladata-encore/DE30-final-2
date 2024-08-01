@@ -11,17 +11,16 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
 import os
-
 from dotenv import load_dotenv
+
 
 # Build paths inside the myproject like this: BASE_DIR / 'subdir'.
 # Build paths inside the myproject like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .env 파일 경로 설정
-env_path = Path('.') / '.env'
+env_path = BASE_DIR / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # # Open api key
@@ -32,12 +31,11 @@ load_dotenv(dotenv_path=env_path)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-a&)gx3mp+#9epz5&okvg@x6e*a#z%9%#p(k_uwl7w%bkwcntve"
 OPEN_API_KEY = os.getenv('OPEN_API_KEY')
-DEBUG = 'True'
-# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG 설정
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# ALLOWED_HOSTS = []
-# settings.py
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# ALLOWED_HOSTS 설정
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
 
@@ -98,22 +96,38 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'MyDiary',
+#         'ENFORCE_SCHEMA': False,
+#         'CLIENT': {
+#             'host': 'localhost',  # 또는 호스트 머신의 IP
+#             'port': '',
+#             'username': '',
+#             'password': '',
+#             'authSource': 'admin',
+#             'authMechanism': 'SCRAM-SHA-1',
+#         }
+#     }
+# }
 
+# MongoDB 설정
+MONGO_URI = os.getenv('MONGO_URI')
+MONGO_USERNAME = os.getenv('MONGO_USERNAME')
+MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 
+# 데이터베이스 설정
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+        'NAME': 'MyDiary',
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': 'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-            'username': 'Jiwon',
-            'password': '1234',
-            'authMechanism': 'SCRAM-SHA-1',
+            'host': MONGO_URI,
         }
     }
 }
-#
 
 # 미디어 파일 저장 경로
 MEDIA_URL = '/media/'

@@ -31,7 +31,7 @@ from ..mongo_queries import filter_diaries
 
 """GPT3.5 처리에 필요한 코드들"""
 load_dotenv()
-openai.api_key =""
+openai.api_key = os.getenv("OPEN_API_KEY")
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
     image_data = base64.b64decode(image_model.image_file)

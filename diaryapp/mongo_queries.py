@@ -1,11 +1,11 @@
 from pymongo import MongoClient
 from datetime import datetime
+from django.conf import settings
 
-client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority')
+client = MongoClient(settings.MONGO_URI)
 db = client['MyDiary']
 aiwritemodel_collection = db['diaryapp_aiwritemodel']
 imagemodel_collection = db['diaryapp_imagemodel']
-
 def filter_diaries(year=None, month=None):
     match_condition = {}
     if year and month:
