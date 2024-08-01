@@ -9,11 +9,30 @@
     <meta name="csrf-token" content="{% csrf_token %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Poor+Story&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <noscript>
         <link rel="stylesheet" href="{% static 'css/noscript.css' %}"/>
     </noscript>
     <style>
+
+        /* hover 상태 스타일 */
+        .btn-outline-primary:hover {
+            border-color: #ff007b; /* hover 시 테두리 색상 */
+            color: #ff007b; /* hover 시 텍스트 색상 */
+            background-color: rgba(255, 0, 123, 0.1); /* hover 시 배경색 */
+        }
+
+        /* active 및 .active 상태 스타일 */
+        .btn-outline-primary:not(:disabled):not(.disabled).active,
+        .btn-outline-primary:not(:disabled):not(.disabled):active,
+        .show>.btn-outline-primary.dropdown-toggle {
+            color: #fff; /* 텍스트 색상 */
+            background-color: rgba(255, 0, 123, 0.5); /* 활성 상태 시 배경색 */
+            border-color: #ff007b; /* 활성 상태 시 테두리 색상 */
+            box-shadow: inset 0 0 0 2px rgba(255, 0, 100, 0.5) !important;
+        }
+
         #app-container {
             width: 60%;
             margin-top: 200px; /* 위쪽 여백 */
@@ -25,11 +44,13 @@
             border-radius: 5px; /* 모서리를 둥글게 */
         }
         #map-container {
+            border: 2px solid #333; /* 테두리 설정 */
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5); /* 그림자 설정 */
             display: flex;
             justify-content: center;
             align-items: center;
             width: 80%;
-            margin: auto;
+
         }
         #map {
             width: 90%;
@@ -100,21 +121,26 @@
             color: #000;
         }
         #floatingLabel {
-    display: none; /* 기본적으로 숨김 */
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 9999;
-    transition: opacity 0.5s ease-in-out;
-}
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 9999;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .selected-item.active-border {
+            border: 2px solid red; /* 클릭 시 테두리 색상 */
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
-<section id="app-container" style="position: relative; padding-bottom: 140px;">
+<section id="app-container" style="position: relative; padding-bottom: 140px; font-family: 'Poor Story'">
     <div class="container">
         <!-- 위치 표시 영역 -->
         <div id="selectedLocation" class="mb-3">
@@ -125,7 +151,7 @@
         </div>
 
         <div class="col-md-6 d-flex justify-content-center align-items-center">
-            <button type="button" class="btn text-white" style="background-color: #935d8c;" data-toggle="modal"
+            <button type="button" class="btn" style="border-color: black;  background-color: #f5f5f5;" data-toggle="modal"
                     data-target="#locationModal">
                 Select Location
             </button>
@@ -154,6 +180,7 @@
                             <div class="form-group">
                                 <label for="citySelect">시/군/구</label>
                                 <select id="citySelect" class="form-control">
+                                    <option value="">select</option>
                                     {% for citydistrict in citydistricts %}
                                     <option value="{{ citydistrict.code }}">{{ citydistrict.name }}</option>
                                     {% endfor %}
@@ -175,9 +202,9 @@
     </div>
 
     <div class="col-md-6 d-flex justify-content-center align-items-center">
-        <button type="button" class="btn text-white" style="background-color: #935d8c;" data-toggle="modal"
+        <button type="button" class="btn" style="border-color: black;  background-color: #f5f5f5; font-size: 20px;" data-toggle="modal"
                 data-target="#categoryModal">
-            Select Categories
+            카테고리 선택
         </button>
     </div>
     <!-- 카테고리 선택하는 모달 -->
@@ -243,9 +270,9 @@
             <!-- 장소 리스트 카드 -->
             <div class="col-md-6 d-flex justify-content-center align-items-center">
                 <div class="card position-relative"
-                     style="width: 400px; height: 400px; background-color: #935d8c; border-radius: 10px;">
+                     style="width: 400px; height: 400px; background-color: #f5f5f5; border-radius: 0px; box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);">
                     <div class="card-body">
-                        <h3 class="card-title text-center text-white">Place List</h3>
+                        <h3 class="card-title text-center">Place List ✏️</h3>
                         <div class="card-text" style="max-height: 300px; overflow-y: auto;">
                             <ul id="place" class="list-group">
                                 <!-- 여기에 리스트 아이템들 추가 -->
@@ -254,29 +281,29 @@
                     </div>
                     <!-- 버튼을 카드의 오른쪽 하단에 위치시킵니다. -->
                 </div>
-                <button id="addBtn" class="btn text-white"
-                        style="background-color: #935d8c; position: absolute; right: 13px; bottom: -50px;">추가
+                <button id="addBtn" class="btn"
+                        style="border-color: black;  background-color: #f5f5f5; position: absolute; right: 13px; bottom: -50px;">추가
                 </button>
             </div>
 
             <!-- 일차별 선택된 장소 목록 카드 -->
             <div class="col-md-6 d-flex justify-content-center align-items-center">
-                <div class="card" style="width: 400px; height: 400px; background-color: #935d8c; border-radius: 10px;">
+                <div class="card" style="width: 400px; height: 400px; background-color: #f5f5f5; border-radius: 0px; box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);">
                     <div class="card-body">
                         <div class="btn-group d-flex justify-content-center" role="group" aria-label="일차 선택">
                             <button type="button" class="btn btn-outline-primary day-btn"
-                                    style="border-color: white; color: white;" data-day="1">1일차
+                                    style="border-color: black; color: black;" data-day="1">1일차
                             </button>
                             <button type="button" class="btn btn-outline-primary day-btn"
-                                    style="border-color: white; color: white;" data-day="2">2일차
+                                    style="border-color: black; color: black;" data-day="2">2일차
                             </button>
                             <button type="button" class="btn btn-outline-primary day-btn"
-                                    style="border-color: white; color: white;" data-day="3">3일차
+                                    style="border-color: black; color: black;" data-day="3">3일차
                             </button>
                         </div>
                         <div id="day-sections" class="mt-4">
                             <!-- 각 일차별 선택한 장소 섹션은 여기에 추가됩니다. -->
-                            <div id="day1" class="day-section active mt-4 text-white">
+                            <div id="day1" class="day-section active mt-4">
                                 <h4>Day 1</h4>
                                 <div class="card-text" style="max-height: 250px; overflow-y: auto;">
                                     <ul id="selectedPlaces1" class="list-group">
@@ -285,7 +312,7 @@
                                 </div>
                             </div>
 
-                            <div id="day2" class="day-section mt-4 text-white">
+                            <div id="day2" class="day-section mt-4">
                                 <h4>Day 2</h4>
                                 <div class="card-text" style="max-height: 250px; overflow-y: auto;">
                                     <ul id="selectedPlaces2" class="list-group">
@@ -293,7 +320,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div id="day3" class="day-section mt-4 text-white">
+                            <div id="day3" class="day-section mt-4">
                                 <h4>Day 3</h4>
                                 <div class="card-text" style="max-height: 250px; overflow-y: auto;">
                                     <ul id="selectedPlaces3" class="list-group">
@@ -305,8 +332,8 @@
                     </div>
                 </div>
                 <!-- "장소 추가" 버튼을 카드의 오른쪽 하단 바깥쪽에 위치시킵니다. -->
-                <button type="button" id="openModalButton" class="btn text-white"
-                        style="background-color: #935d8c; position: absolute; right: 13px; bottom: -50px;">장소 추가
+                <button type="button" id="openModalButton" class="btn"
+                        style="border-color: black;  background-color: #f5f5f5; position: absolute; right: 13px; bottom: -50px;">장소 추가
                 </button>
             </div>
         </div>
@@ -340,8 +367,8 @@
             </div>
         </div>
     </div>
-    <button id="saveButton" class="btn text-white" onclick="savePlan()"
-            style="background-color: #935d8c; position: absolute; right: 20px; bottom: 20px; padding: 12px 24px; font-size: 16px;">
+    <button id="saveButton" class="btn" onclick="savePlan()"
+            style="border-color: black;  background-color: #f5f5f5; position: absolute; right: 20px; bottom: 20px; padding: 12px 24px; font-size: 16px;">
         Save Plan
     </button>
     <div id="floatingLabel"
@@ -362,7 +389,6 @@
     function fetchCities() {
         var AreaCode = document.getElementById('provinceSelect').value;
         var citydistrictSelect = document.getElementById('citySelect');
-        citydistrictSelect.innerHTML = '<option value="">선택</option>'; // 초기화
 
         $.ajax({
             url: '/citydistrict/',
@@ -705,15 +731,20 @@
         $('.place-item').removeClass('selected');
     });
 
-    $(document).on('dblclick', '.selected-item', function() {
+     $(document).on('click', '.selected-item', function() {
+            var $item = $(this);
+
+            // 플로팅 라벨 표시
+            $('#floatingLabel').stop(true, true).fadeIn(300).delay(1500).fadeOut(300);
+
+            // 클릭 시 테두리 색상 토글
+            $item.toggleClass('active-border');
+        });
+
+$(document).on('dblclick', '.selected-item', function() {
     var $item = $(this);
-    var placeId = $item.data('place-id');
-
-    // 플로팅 라벨 표시
-    $('#floatingLabel').stop(true, true).fadeIn(300).delay(1500).fadeOut(300);
-
-    // 클릭 시 테두리 색상 변경
-    $item.css('border', '2px solid red');
+    var placeId = $item.data('data-place-id');
+    var placeName = $item.text().trim();
 
     // 삭제 애니메이션 및 삭제
     $item.fadeOut(300, function() {
@@ -728,26 +759,29 @@
         // 마커 삭제
         var day = $('.day-btn.active').data('day');
 
-        $.ajax({
-            url: '/coordinate/',
-            type: 'GET',
-            data: { 'placeName': placeItem },
-            success: function(data) {
-                if (data.mapx !== undefined && data.mapy !== undefined) {
-                    var lng = parseFloat(data.mapx);
-                    var lat = parseFloat(data.mapy);
-                    // 마커 제거
-                    removeMarkers(day);
-                    updateMarkers(day);
-                } else {
-                    console.error('Coordinates not found for place:', placeItem);
+        // 일차별 마커를 제거하는 함수 호출
+    removeMarkerByPlaceName(day, placeName);
+    updateMapCenterAndZoom(day);
+});
+
+function removeMarkerByPlaceName(day, placeName) {
+    if (markers[day]) {
+        for (var i = markers[day].length - 1; i >= 0; i--) {
+            try {
+                var marker = markers[day][i];
+                var markerTitle = marker.getTitle().trim();
+                console.log('Comparing:', markerTitle, 'with', placeName);
+                if (markerTitle === placeName) {
+                    marker.setMap(null); // 지도에서 마커 제거
+                    markers[day].splice(i, 1); // 배열에서 마커 제거
+                    console.log(placeName, 'deleted from map and array', markers);
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching place information:', error);
+            } catch (e) {
+                console.error('Error removing marker:', e);
             }
-        });
-    });
+        }
+    }
+}
 
     // 문서가 준비되었을 때 지도 초기화
     $(document).ready(function() {
@@ -767,7 +801,6 @@
     $('#addressModal').on('hidden.bs.modal', function () {
         $('#addressInput').val('');
         $('#addressResults').empty();
-        selectedPlace = null; // 선택된 장소 초기화
     });
 
     // 검색 버튼 클릭 이벤트 처리
@@ -862,7 +895,6 @@
             .text(placeName) // 정확한 장소 이름 설정
             .css({
             'color': '#000',
-            'border': '2px solid transparent',
             'transition': 'border 0.3s'
         })
         .on('click', function() {
@@ -886,6 +918,8 @@
             });
             var id = $(this).data('place-id');
             selectedPlaces = selectedPlaces.filter(function(pid) { return pid !== id; });
+            removeMarkerByPlaceName(day, placeName);
+            updateMapCenterAndZoom(day);
         });
 
         // 리스트에 추가

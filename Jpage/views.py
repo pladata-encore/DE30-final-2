@@ -7,8 +7,8 @@ import json
 
 
 
-client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority', 27017)
-db = client.MyDiary
+client = MongoClient('mongodb://localhost:27017/', 27017)
+db = client.diaryData
 
 def Stella(request):
     return render(request, 'Jpage/stella.html')

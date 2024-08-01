@@ -9,9 +9,9 @@ urls = "http://apis.data.go.kr/B551011/KorService1/detailCommon1"
 key = "sn4p9/xq3HzvfZw7DjDo9gJBjru0dhT62DbDbJFDdiZEYPe2Lyio/NSLbeFkKw1Of4/P8G+dQdTBfr8m0OMoQA=="
 
 # MongoDB 연결 설정
-client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority',
+client = MongoClient('mongodb://localhost:27017/',
                      27017)
-db = client.MyDiary
+db = client.diaryData
 
 # contentTypeId 리스트
 contentTypeIds = [12, 14, 28, 38, 39]
