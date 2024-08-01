@@ -14,7 +14,7 @@ content_types = content_type_collection.find({}, {"code": 1, "_id": 0})
 content_type_ids = [item['code'] for item in content_types]
 
 url = "http://apis.data.go.kr/B551011/KorService1/areaBasedList1"
-key = "자신의 키를 입력하세요"
+key = "sn4p9/xq3HzvfZw7DjDo9gJBjru0dhT62DbDbJFDdiZEYPe2Lyio/NSLbeFkKw1Of4/P8G+dQdTBfr8m0OMoQA=="
 
 # 페이지 단위로 데이터 가져오기
 num_of_rows =40  # 한번에 가져올 데이터 개수를 줄임

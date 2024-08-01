@@ -9,7 +9,7 @@ client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.ne
 db = client.MyDiary
 
 # API 키 설정
-key = "자신의 키를 입력하세요"
+key = "sn4p9/xq3HzvfZw7DjDo9gJBjru0dhT62DbDbJFDdiZEYPe2Lyio/NSLbeFkKw1Of4/P8G+dQdTBfr8m0OMoQA=="
 
 # 페이지 단위로 데이터 가져오기
 num_of_rows = 100  # 한 번에 가져올 데이터 개수

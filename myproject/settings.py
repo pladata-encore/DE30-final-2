@@ -35,7 +35,7 @@ CSRF_COOKIE_SECURE = True       # HTTPS에서만 쿠키 전송
 CSRF_COOKIE_HTTPONLY = True     # JavaScript에서 접근 불가
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # CSRF 토큰을 포함할 헤더 이름
 
-ROOT_URLCONF = 'project.urls'
+ROOT_URLCONF = 'myproject.urls'
 
 TEMPLATES = [
     {
@@ -53,7 +53,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'project.wsgi.application'
+WSGI_APPLICATION = 'myproject.wsgi.application'
 
 DATABASES = {
     'default': {

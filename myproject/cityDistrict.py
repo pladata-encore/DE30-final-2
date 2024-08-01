@@ -6,7 +6,7 @@ import time
 
 # API URL 및 키 설정
 base_url = "http://apis.data.go.kr/B551011/KorService1/"
-key = "자신의 키를 입력하세요"
+key = "sn4p9/xq3HzvfZw7DjDo9gJBjru0dhT62DbDbJFDdiZEYPe2Lyio/NSLbeFkKw1Of4/P8G+dQdTBfr8m0OMoQA=="
 
 # MongoDB 연결 설정
 client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority', 27017)
