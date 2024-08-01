@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-	<title>diary</title>
+	<title>tourdiary</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	{% load static %}
@@ -58,8 +58,8 @@
 					<div class="collapse show" id="account-collapse" style="">
 						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
 							<li><a href="#" class="link-dark rounded">프로필 수정</a></li>
+							<li><a href="#" class="link-dark rounded">나의 여행 뱃지</a></li>
 							<li><a href="{% url 'wishlist_view' %}" class="link-dark rounded">찜한 여행지</a></li>
-							<li><a href="#" class="link-dark rounded">여행 뱃지</a></li>
 							<li><a href="#" class="link-dark rounded">Sign out</a></li>
 						</ul>
 					</div>
@@ -68,12 +68,6 @@
 			<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 		</div>
 	</div>
-	<div class="badge_tour">
-		<a href="#" class="link_badge">
-			<strong class="screen_out">대표 뱃지 : </strong>
-			<span class="scope_badge"><img src="" class="img_badge">성산일출봉 뱃지</span>
-			<strong class="tit_badge">반짝이는 성산일출봉</strong>
-		</a>
-	</div>
+{% include 'main_badge.html' %}
 </header>
 <div id="main" class="cont_tour">

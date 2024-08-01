@@ -78,6 +78,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "common.context_processors.main_badge"
             ],
         },
     },
@@ -111,20 +112,19 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 #         }
 #     }
 # }
-
 # MongoDB 설정
 MONGO_URI = os.getenv('MONGO_URI')
 MONGO_USERNAME = os.getenv('MONGO_USERNAME')
 MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
-
-# 데이터베이스 설정
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'MyDiary',
+        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': MONGO_URI,
+            'host': os.getenv('MONGO_URI'),  # MongoDB 호스트 주소 (기본적으로는 localhost)
+            'username': os.getenv('MONGO_USERNAME'),
+            'password': os.getenv('MONGO_PASSWORD'),
         }
     }
 }

@@ -18,9 +18,17 @@ from ..clip_model import *
 from googletrans import Translator
 import base64
 import time
+
+from django.forms.models import modelformset_factory
+from django.contrib.auth.models import User
+from .nickname_views import *
+
 from django.core.paginator import Paginator
 from ..mongo_queries import filter_diaries
 
+"""GPT3.5 키"""
+load_dotenv()
+openai.api_key = os.getenv("OPEN_API_KEY")
 
 """태그된 사용자 자동 완성 기능"""
 # def user_suggestions(request):
@@ -30,8 +38,6 @@ from ..mongo_queries import filter_diaries
 #     return JsonResponse({'suggestions': suggestions})
 
 """GPT3.5 처리에 필요한 코드들"""
-load_dotenv()
-openai.api_key = os.getenv("OPEN_API_KEY")
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
     image_data = base64.b64decode(image_model.image_file)
@@ -134,6 +140,17 @@ def generate_diary(request):
             )
             diary_entry.save()
 
+            # 별명 : 별명 생성
+            # 나중에 일정 plan_id도 넘길 예정
+            # 나중에 user 정보 넘길 예정
+            nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, "plan_id")
+            # 별명 : 세션에 show_modal 저장
+            request.session['show_modal'] = True
+            # 별명 : 다이어리에 별명 ID 저장
+            diary_entry.nickname_id = nickname_id
+            diary_entry.save()
+
+
             image_start_time = time.time()
 
             # 추가 이미지 처리
@@ -159,7 +176,7 @@ def generate_diary(request):
 
             return JsonResponse({
                 'success': True,
-                'redirect_url': reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})
+                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}",
             })
         else:
             return JsonResponse({
@@ -211,6 +228,18 @@ def write_diary(request):
             )
             diary_entry.save()
 
+
+            # 별명 : 별명 생성
+            # 나중에 일정 plan_id도 넘길 예정
+            # 나중에 user 정보 넘길 예정
+            nickname_id = create_nickname(unique_diary_id, user_email, content, "plan_id")
+            # 별명 : 세션에 show_modal 저장
+            request.session['show_modal'] = True
+            # 별명 : 다이어리에 별명 ID 저장
+            diary_entry.nickname_id = nickname_id
+            diary_entry.save()
+
+
             # 대표 이미지 처리
             representative_image = request.FILES.get('image_file')
             if representative_image:
@@ -230,7 +259,7 @@ def write_diary(request):
 
             return JsonResponse({
                 'success': True,
-                'redirect_url': reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})
+                'redirect_url': f"{reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})}",
             })
         else:
             return JsonResponse({
@@ -242,12 +271,6 @@ def write_diary(request):
         image_form = ImageUploadForm()
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
-
-'''다이어리 메인 화면'''
-# def viewDiary(request):
-#     return render(request, 'diaryapp/diary.html')
-'''태그된 다른 사용자의 메인 다이어리로 이동 - 메인화면 html주소 변동 필요'''
-
 
 def viewDiary(request, user_email):
     user_email = settings.DEFAULT_FROM_EMAIL
@@ -264,7 +287,7 @@ def viewDiary(request, user_email):
 #     diary_entries = AiwriteModel.objects.filter(tags__name__startswith='@', tags__name=social_id)
 #     return render(request, 'diaryapp/diary.html', {'user': user, 'diary_entries': diary_entries})
 
-'''전체 일기 리스트 - 유저 인증이 필요 없을 듯'''
+'''전체 일기 리스트'''
 def list_diary(request):
     form = DateFilterForm(request.GET or None)
     year = None
@@ -277,19 +300,34 @@ def list_diary(request):
     print(f"Diaries returned to view: {len(diary_list)}")
 
     # Pagination 적용
-    paginator = Paginator(diary_list, 9)  # 페이지당 10개의 항목으로 나누기
+    paginator = Paginator(diary_list, 9)  # 페이지당 9개의 항목으로 나누기
     page_number = request.GET.get('page')  # URL에서 'page' 파라미터 가져오기
     page_obj = paginator.get_page(page_number)  # 해당 페이지의 항목 가져오기
+
+    enriched_diary_list = []
 
     for diary in page_obj:
         print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
               f"Created: {diary.get('created_at', 'No date')}, "
               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
 
+        # 별명 : db에서 가져오기
+        diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'))
+        nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+        enriched_diary = {
+            'diary': diary,
+            'nickname': nickname,
+            'badge_name': badge_name,
+            'badge_image': badge_image
+        }
+        enriched_diary_list.append(enriched_diary)
+
     context = {
         'form': form,
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'diary_list': enriched_diary_list,
     }
+
     return render(request, 'diaryapp/list_diary.html', context)
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
@@ -332,10 +370,20 @@ def detail_diary_by_id(request, unique_diary_id):
     # 디버깅을 위해 댓글 수를 출력
     print(f"Number of comments: {comment_list.count()}")
 
+    # 별명 : db에서 가져오기
+    nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+
+    # 별명 : 세션에서 데이터 가져오기
+    show_modal = request.session.pop('show_modal', True) # 테스트 : False로 변경 예정
+
     context = {
         'diary': diary,
         'comment_list': comment_list,
         'form': CommentForm(),
+        'show_modal': show_modal,
+        'nickname': nickname,
+        'badge_name': badge_name,
+        'badge_image': badge_image,
     }
     return render(request, 'diaryapp/detail_diary.html', context)
 

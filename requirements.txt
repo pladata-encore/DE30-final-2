@@ -1,6 +1,3 @@
-opencv-python==4.10.0.84
-
-
 openai~=0.28.1
 torch~=2.3.1
 Django~=4.1.13
@@ -15,3 +12,20 @@ django-taggit-templatetags~=0.2.5
 humanize~=4.10.0
 numpy~=1.26.0
 open-clip-torch~=2.24.0
+
+fastapi==0.111.1
+pydantic==2.8.2
+gensim==4.3.2
+konlpy==0.6.0
+uvicorn==0.30.1
+scikit-learn==1.5.1
+pip==24.1.2
+setuptools==70.3.0
+wheel==0.43.0
+scipy==1.12.0
+ipython==8.26.0
+
+
+
+# requirements.txt 실행
+# pip install -r requirements.txt

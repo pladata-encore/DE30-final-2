@@ -5,11 +5,15 @@
     <div class="write-container">
         <h1 style="color: #636363; font-weight: bold;">{{ diary.diarytitle }}</h1>
         <div class="badge_tour">
-            <span class="scope_badge">
-                <!-- Add any additional badge content here if needed -->
-                <img src="" class="img_badge">성산일출봉 뱃지
-            </span>
-            <strong class="tit_badge">반짝이는 성산일출봉</strong>
+            <a href="" class="link_badge">
+                <span class="scope_badge">
+                    <!-- Add any additional badge content here if needed -->
+                    <em class="screen_out">{{ badge_name }} 뱃지</em>
+                    <img src="data:image/png;base64,{{ badge_image }}" class="img_badge"  alt={{ badge_name }}>
+                </span>
+                <em class="screen_out">별명</em>
+                <strong class="tit_badge">{{ nickname }}</strong>
+            </a>
             &nbsp;&nbsp;&nbsp;{{ diary.created_at|date:"Y년 n월 j일" }}
         </div>
         <hr/>
@@ -112,6 +116,35 @@
             </div>
         </div>
 
+    {% if show_modal %}
+    <!-- 모달 창 : 뱃지, 별명 획득 -->
+    <div class="modal fade" id="badgeModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <h2 class="screen_out">다이어리 뱃지, 별명 획득 모달창</h2>
+                <div class="modal-body">
+                    <em class="screen_out">{{ badge_name }} 뱃지</em>
+                    <img id="badgeImageModal" src="data:image/png;base64,{{ badge_image }}" alt={{ badge_name }}>
+                    <em class="screen_out">별명</em>
+                    <strong id="nicknameModal" class="txt_nickname">{{ nickname }}</strong>
+                    <p class="txt_info">축하합니다! 뱃지와 별명을 획득했습니다.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">닫기</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 모달 창 : 뱃지, 별명 획득
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var badgeModal = new bootstrap.Modal(document.getElementById('badgeModal'), {
+                keyboard: false,
+                backdrop : true,
+                show: true
+            })
+            badgeModal.show();
+        });
+    </script>
+    {% endif %}
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -131,7 +164,7 @@
                     fetch(url)
                         .then(function(response) {
                             if (!response.ok) {
-                                throw new Error('Network response was not ok: ' + response.status);
+                                throw new Error('Network respo₩nse was not ok: ' + response.status);
                             }
                             return response.text(); // HTML로 응답받기
                         })

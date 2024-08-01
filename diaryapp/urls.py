@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from diaryapp.views import diarywrite_views, comment_views, wishlist_views
+from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views, badge_views
 
 urlpatterns = [
     #### diarywrite_views.py ####
@@ -40,6 +41,15 @@ urlpatterns = [
     # 태그된 친구 클릭 시 메인 다이어리 화면 이동 - 사용자 다이어리의 메인 화면 경로
     # path('maindiary', views.delete_diary, name='main_diary'),
 
+
+    # 리스트 뱃지
+    path('list_badge/', badge_views.list_badge, name='list_badge'),
+    path('list_badge/set_main_badge/', badge_views.set_main_badge, name='set_main_badge'),
+    path('list_badge/unset_main_badge/', badge_views.unset_main_badge, name='unset_main_badge'),
+
+    path('index', base_views.viewIndex),
+    path('elements', base_views.viewElements),
+    path('generic', base_views.viewGeneric),
     # Bootstrap 테마 예시 페이지
     # path('index', views.viewIndex),
     # path('elements', views.viewElements),
@@ -48,6 +58,7 @@ urlpatterns = [
     # 다이어리 메인
     # path('',diarywrite_views.viewDiary),
     path('<str:user_email>/', diarywrite_views.viewDiary, name='user_diary_main'),
+
 ]
 
 if settings.DEBUG:

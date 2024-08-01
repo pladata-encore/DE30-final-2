@@ -68,6 +68,7 @@ class AiwriteModel(models.Model):
     withfriend = models.CharField(max_length=100, blank=True, null=True)
     images = models.ManyToManyField(ImageModel, related_name='aiwrite_models')
     representative_image = models.OneToOneField('ImageModel', on_delete=models.SET_NULL, blank=True, null=True)
+    nickname_id = models.CharField(max_length=100, null=True, blank=True)
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = timezone.now()
@@ -127,3 +128,61 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f"{self.place} - {self.user_email}"
+
+
+
+# 플래그 모델(commands 중복 방지)
+class CommandFlag(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    executed = models.BooleanField(default=False)
+
+
+# 삭제 예정 (24.07.25 윤보라)
+# nickname = models.OneToOneField('Nickname', on_delete=models.SET_NULL, null=True, blank=True, related_name='nickname_model')
+# 카테고리1 모델
+# class CategoryCode1(models.Model):
+#     code = models.CharField(max_length=50, unique=True)
+#     name = models.CharField(max_length=255)
+#     rnum = models.IntegerField()
+#
+#     def __str__(self):
+#         return self.code
+#
+#     class Meta:
+#         db_table = 'categoryCode1'
+# 카테고리3 모델
+# class CategoryCode3(models.Model):
+#     code = models.CharField(max_length=50, unique=True)
+#     name = models.CharField(max_length=255)
+#     rnum = models.IntegerField()
+#     cat1_code = models.CharField(max_length=50)
+#     cat2_code = models.CharField(max_length=50)
+#
+#     def __str__(self):
+#         return self.code
+#
+#     class Meta:
+#         db_table = 'categoryCode3'
+# # 뱃지 모델
+# class Badge(models.Model):
+#     badge_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
+#     name = models.CharField(max_length=255)
+#     badge = models.BinaryField()
+#     categoryCode1 = models.CharField(max_length=50, blank=True, null=True)
+#     categoryCode3 = models.CharField(max_length=50, blank=True, null=True)
+#
+#     class Meta:
+#         db_table = 'diaryapp_badge'
+#
+#     def __str__(self):
+#         return self.name
+# 별명 모델
+# class Nickname(models.Model):
+#     nickname_id = models.UUIDField(default=uuid.uuid4, editable=False)
+#     nickname = models.CharField(max_length=255)
+#     unique_diary_id = models.OneToOneField('AiwriteModel', on_delete=models.SET_NULL, null=True, blank=True, related_name='aiwrite_model')
+#     badge = models.BinaryField()  # 임베딩 필드
+#     title = models.CharField(max_length=255)
+#
+#     class Meta:
+#         db_table = 'nickname'

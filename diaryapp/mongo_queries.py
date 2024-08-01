@@ -1,4 +1,6 @@
+import pymongo
 from pymongo import MongoClient
+from django.conf import settings
 from datetime import datetime
 from django.conf import settings
 
