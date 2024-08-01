@@ -3,16 +3,19 @@
     <h2 class="screen_out">나의 여행 뱃지</h2>
     <div class="info_main">
         <h3 class="tit_main">여행 뱃지</h3>
-        <div class="badge_tour badge_represent">
-            <strong class="tit_badge">대표 여행 뱃지</strong>
+        <div class="badge_tour badge_main">
+            <h4 class="tit_main">대표 여행 뱃지</h4>
             <a href="" class="link_badge">
                 <span class="scope_badge">
-                    <em class="screen_out">{{ badge_name }} 뱃지</em>
-                    <img src="data:image/png;base64,{{ badge_image }}" class="img_badge"  alt={{ badge_name }}>
+                    <em class="screen_out">{{ main_badge_name }} 뱃지</em>
+                    <img src="data:image/png;base64,{{ main_badge_image }}" class="img_badge"  alt={{ main_badge_name }}>
                 </span>
                 <em class="screen_out">별명</em>
-                <strong class="tit_badge">반짝이는 성산일출봉</strong>
+                <strong class="tit_badge">{{ main_nickname }}</strong>
             </a>
+            {% if main_nickname != '대표 별명이 없습니다.' %}
+                <button class="unset_main" data-nickname-id="{{ main_nickname_id }}">대표 해제</button>
+            {% endif %}
         </div>
         <h4 class="screen_out">여행 뱃지 목록</h4>
         <ul class="list_badge">
@@ -22,22 +25,118 @@
                     <a href="" class="link_badge">
                         <span class="scope_badge">
                             <em class="screen_out">{{ item.badge_name }} 뱃지</em>
-                            <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge"  alt={{ item.badge_name }}>
+                            <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge"  alt="{{ item.badge_name }}">
                         </span>
                         <em class="screen_out">별명</em>
                         <strong class="tit_badge">{{ item.nickname }}</strong>
                     </a>
+                    {% if item.is_main %}
+                    <button class="unset_main" data-nickname-id="{{ item.nickname_id }}">대표 해제</button>
+                    {% else %}
+                    <button class="set_main" data-nickname-id="{{ item.nickname_id }}">대표 설정</button>
+                    {% endif %}
                 </div>
             </li>
             {% endfor %}
         </ul>
         <p class="txt_info">
             대표 뱃지 설정 : 원하는 뱃지를 대표 뱃지 영역으로 드래그하여 올려주세요.</br>
-            대표 뱃지 제거 : 더 이상 필요하지 않은 뱃지는 아무 곳에나 드래그하여 놓으면 제거됩니다.
+            대표 뱃지 제거 : 아무 곳에나 드래그하여 놓으면 제거됩니다.
         </p>
     </div>
     <div class="cont_main">
         <h3 class="tit_main">여행 통계</h3>
     </div>
 </section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+
+     function updateMainBadge(badgeImage, badgeName, nickname, nicknameId, showButton) {
+        var $badgeMain = $('.badge_main');
+
+        $badgeMain.find('img').attr('src', badgeImage);
+        $badgeMain.find('.scope_badge em').text(badgeName);
+        $badgeMain.find('.tit_badge').text(nickname);
+
+        // list_badge 본문에 있는 대표 해제 버튼만 갱신
+        var $listBadgeMain = $('#listBadge .badge_main');
+        if ($listBadgeMain.length > 0) {
+            $listBadgeMain.find('.unset_main').remove(); // 기존 버튼 제거
+            if (showButton) {
+                $listBadgeMain.append('<button class="unset_main" data-nickname-id="' + nicknameId + '">대표 해제</button>');
+            }
+        }
+    }
+
+    // 대표 설정 버튼 클릭
+    $('.badge_tour').on('click', '.set_main', function(event) {
+        event.preventDefault();
+        var nicknameId = $(this).data('nickname-id');
+        var $thisButton = $(this); // 클릭된 버튼 저장
+        $.ajax({
+            url: "set_main_badge/",
+            type: "POST",
+            data: {
+                'nickname_id': nicknameId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    var badgeImage = $thisButton.closest('.badge_tour').find('.img_badge').attr('src');
+                    var badgeName = $thisButton.closest('.badge_tour').find('.scope_badge em').text();
+                    var nickname = $thisButton.closest('.badge_tour').find('.tit_badge').text();
+
+                    updateMainBadge(badgeImage, badgeName, nickname, nicknameId, true);
+
+                    $thisButton.text('대표 해제').removeClass('set_main').addClass('unset_main');
+
+                    $('.badge_tour .unset_main').each(function() {
+                        if ($(this).data('nickname-id') !== nicknameId) {
+                            $(this).text('대표 설정').removeClass('unset_main').addClass('set_main');
+                        }
+                    });
+
+                } else {
+                    alert('대표 뱃지 설정 실패');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX 요청 실패:", status, error);
+            }
+        });
+    });
+
+    // 대표 해제 버튼 클릭
+    $('.badge_tour').on('click', '.unset_main', function(event) {
+        event.preventDefault();
+        var nicknameId = $(this).data('nickname-id');
+        var $thisButton = $(this); // 클릭된 버튼 저장
+
+        $.ajax({
+            url: "unset_main_badge/",
+            type: "POST",
+            data: {
+                'nickname_id': nicknameId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    updateMainBadge('', '', '대표 별명이 없습니다.', '', false);
+
+                    // 클릭된 버튼의 상태 업데이트
+                    $thisButton.text('대표 설정').removeClass('unset_main').addClass('set_main');
+
+                } else {
+                    alert('대표 뱃지 해제 실패');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX 요청 실패:", status, error);
+            }
+        });
+    });
+
+});
+</script>
 {% include 'footer.html' %}

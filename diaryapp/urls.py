@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views, nickname_views, badge_views
+from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views, badge_views
 
 urlpatterns = [
     #### diarywrite_views.py ####
@@ -43,7 +43,8 @@ urlpatterns = [
 
     # 리스트 뱃지
     path('list_badge/', badge_views.list_badge, name='list_badge'),
-
+    path('list_badge/set_main_badge/', badge_views.set_main_badge, name='set_main_badge'),
+    path('list_badge/unset_main_badge/', badge_views.unset_main_badge, name='unset_main_badge'),
 
     # Bootstrap 테마 예시 페이지
     path('index', base_views.viewIndex),
