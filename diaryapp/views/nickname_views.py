@@ -8,16 +8,12 @@ import gzip
 from io import BytesIO
 
 # MongoDB 클라이언트 설정
-mongo_client = pymongo.MongoClient(settings.DATABASES['default']['CLIENT']['host'],
-                                   username=settings.DATABASES['default']['CLIENT']['username'],
-                                   password=settings.DATABASES['default']['CLIENT']['password'])
-db = mongo_client[settings.DATABASES['default']['NAME']]
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
-# 컬렉션 선택
+# 컬렉션
 collection = db['areaBaseList']
 badge_collection = db['diaryapp_badge']
 nickname_collection = db['diaryapp_nickname']
-
 
 
 # 별명 생성 함수
@@ -99,7 +95,7 @@ def decompress_badge(badge):
 
 
 # 별명, 뱃지 db에서 불러오기 함수
-def get_nickname(nickname_id):
+def get_nickname(nickname_id=None):
     if nickname_id:
         target_nickname = nickname_collection.find_one({"nickname_id": nickname_id})
         nickname = target_nickname['nickname']

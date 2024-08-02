@@ -3,10 +3,10 @@ from pymongo import MongoClient
 from django.conf import settings
 from datetime import datetime
 
-mongo_client = pymongo.MongoClient(settings.DATABASES['default']['CLIENT']['host'],
-                                   username=settings.DATABASES['default']['CLIENT']['username'],
-                                   password=settings.DATABASES['default']['CLIENT']['password'])
-db = mongo_client[settings.DATABASES['default']['NAME']]
+# MongoDB 클라이언트 설정
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+
+# 컬렉션
 aiwritemodel_collection = db['diaryapp_aiwritemodel']
 imagemodel_collection = db['diaryapp_imagemodel']
 

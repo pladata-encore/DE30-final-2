@@ -9,12 +9,9 @@ from django.http import JsonResponse
 from .nickname_views import *
 
 # MongoDB 클라이언트 설정
-mongo_client = pymongo.MongoClient(settings.DATABASES['default']['CLIENT']['host'],
-                                   username=settings.DATABASES['default']['CLIENT']['username'],
-                                   password=settings.DATABASES['default']['CLIENT']['password'])
-db = mongo_client[settings.DATABASES['default']['NAME']]
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
-# 컬렉션 선택
+# 컬렉션
 collection = db['areaBaseList']
 badge_collection = db['diaryapp_badge']
 nickname_collection = db['diaryapp_nickname']
@@ -65,6 +62,7 @@ def list_badge(request):
 
 # 대표 뱃지 설정 함수
 @require_http_methods(["POST"])
+#@login_required
 def set_main_badge(request):
     nickname_id = request.POST.get('nickname_id')
 
@@ -88,6 +86,7 @@ def set_main_badge(request):
 
 # 대표 뱃지 삭제 함수
 @require_http_methods(["POST"])
+#@login_required
 def unset_main_badge(request):
     nickname_id = request.POST.get('nickname_id')
 

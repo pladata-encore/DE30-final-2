@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from decouple import config
 import os
-
+import pymongo
 from dotenv import load_dotenv
 
 
@@ -81,7 +81,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "common.context_processors.main_badge"
+                "common.context_processors.main_badge",
+                "common.context_processors.get_user",
             ],
         },
     },
@@ -100,18 +101,9 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
-#         'ENFORCE_SCHEMA': False,
-#         'CLIENT': {
-#             'host': 'mongodb://localhost',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-#             'port': 27017,  # MongoDB 포트 (기본적으로는 27017)
-#         }
-#     }
-# }
 
+
+# 아틀라스 db
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
@@ -124,6 +116,30 @@ DATABASES = {
         }
     }
 }
+# MongoDB 클라이언트 설정
+mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
+                                   username=DATABASES['default']['CLIENT']['username'],
+                                   password=DATABASES['default']['CLIENT']['password']
+                                   )
+# mongo_client를 settings에 추가
+MONGO_CLIENT = mongo_client
+
+
+# 설아님 로컬 도커 db
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+#         'ENFORCE_SCHEMA': False,
+#         'CLIENT': {
+#             'host': 'mongodb://192.168.0.25:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+#         }
+#     }
+# }
+# # MongoDB 클라이언트 설정
+# mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'])
+# # mongo_client를 settings에 추가
+# MONGO_CLIENT = mongo_client
 
 
 # 미디어 파일 저장 경로

@@ -35,7 +35,7 @@ from ..mongo_queries import filter_diaries
 
 """GPT3.5 처리에 필요한 코드들"""
 load_dotenv()
-openai.api_key =""
+openai.api_key =os.getenv('OPEN_API_KEY')
 def image_detail(request, pk):
     image_model = ImageModel.objects.get(pk=pk)
     image_data = base64.b64decode(image_model.image_file)
@@ -298,7 +298,11 @@ def list_diary(request):
 
         # 별명 : db에서 가져오기
         diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'))
-        nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+        if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
+            nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+        else :
+            nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+
         enriched_diary = {
             'diary': diary,
             'nickname': nickname,
@@ -355,7 +359,10 @@ def detail_diary_by_id(request, unique_diary_id):
     print(f"Number of comments: {comment_list.count()}")
 
     # 별명 : db에서 가져오기
-    nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+    if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
+        nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+    else:
+        nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
 
     # 별명 : 세션에서 데이터 가져오기
     show_modal = request.session.pop('show_modal', True) # 테스트 : False로 변경 예정

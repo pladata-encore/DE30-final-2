@@ -1,18 +1,38 @@
 {% include 'header.html' %}
-<section id="diary" class="main main_diary">
+<section id="mainDiary" class="main main_diary">
     <h2 class="screen_out">여행 다이어리</h2>
-    <div class="info_diary">
+    <div class="info_main">
         <div class="scope_tit">
-            <h3 class="tit_main">여행 다이어리 전체 제목, 사용자가 입력</h3>
-            <button type="button" class="btn_setting">
-                다이어리 전체 제목 수정
+            <h3 id="titleDiary" class="tit_diary">{{ user.title_diary }}</h3>
+            {% if is_own_page %}
+            <button id="settingTitleButton" type="button" class="btn_setting">
+                제목 설정
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
                   <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
                   <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
                 </svg>
             </button>
+            <div id="writeTitleDiary" style="display:none">
+                <input type="text" id="inputTitleDiary" placeholder="다이어리 제목을 입력하세요.">
+                <button id="saveTitleButton" type="button">저장</button>
+                <button id="cancelTitleButton" type="button">취소</button>
+            </div>
+            {% endif %}
         </div>
-        {% include 'main_badge.html' %}
+        <div class="badge_tour badge_main">
+            <strong class="screen_out">대표 여행 뱃지</strong>
+            <a href="" class="link_badge">
+                <span class="scope_badge">
+                    <em class="screen_out">{{ main_badge_name }} 뱃지</em>
+                    <img src="data:image/png;base64,{{ main_badge_image }}" class="img_badge"  alt={{ main_badge_name }}>
+                </span>
+                <em class="screen_out">별명</em>
+                <strong class="tit_badge">{{ main_nickname }}</strong>
+            </a>
+            {% if main_nickname != '대표 별명이 없습니다.' %}
+                <button class="unset_main" data-nickname-id="{{ main_nickname_id }}">대표 해제</button>
+            {% endif %}
+        </div>
     </div>
     <div class="card_diary">
         <h3 class="tit_main">여행 다이어리</h3>
@@ -97,4 +117,56 @@
         </a>
     </div>
 </section>
+<script>
+$(document).ready(function() {
+
+    // 제목 설정 버튼 클릭
+    $('#mainDiary').on('click', '#settingTitleButton', function(event){
+
+        var currentTitle = $('#titleDiary').text().trim();
+        $('#inputTitleDiary').val(currentTitle);
+
+        $('#titleDiary').hide();
+        $(this).hide();
+        $('#writeTitleDiary').show();
+    });
+
+    // 저장 버튼 클릭
+    $('#mainDiary').on('click', '#saveTitleButton', function(event) {
+        var titleDiary = $('#inputTitleDiary').val().trim();
+
+        // 제목이 비어있으면 기본 제목 설정
+        if (titleDiary === "") {
+            titleDiary = "{{ user.name|default:'여행자' }}의 여행 다이어리";
+        }
+
+        $.ajax({
+            url: 'save_title_diary/',
+            type: 'POST',
+            data: {
+                'title': titleDiary,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#titleDiary').text(titleDiary).show();
+                    $('#writeTitleDiary').hide();
+                    $('#settingTitleButton').show();
+                } else {
+                    alert('제목 저장 실패');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX 요청 실패:", status, error);
+            }
+        });
+    });
+    // 취소 버튼 클릭
+    $('#mainDiary').on('click', '#cancelTitleButton', function(event) {
+        $('#writeTitleDiary').hide();
+        $('#titleDiary').show();
+        $('#settingTitleButton').show();
+    });
+});
+</script>
 {% include 'footer.html' %}
