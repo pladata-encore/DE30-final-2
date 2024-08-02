@@ -18,11 +18,7 @@
         </div>
         <hr/>
         <p><strong>장소:</strong> <a href="#" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
-        <p><strong>함께 한 친구:</strong>
-            {{ diary.withfriend }}
-
-        </p>
-
+        <p><strong>함께 한 친구:</strong> {{ diary.withfriend }}</p>
         <p>{{ diary.content }}</p>
         {% load humanize %}
 
@@ -38,7 +34,6 @@
             {% endif %}
         {% empty %}
         {% endfor %}
-
 
         <div class="diary-actions">
             <!-- 수정 버튼 -->
@@ -58,7 +53,6 @@
             </button>
         </div>
         <br/><br/>
-
 
         <!-- 댓글 버튼 -->
         <div class="diary-comment-actions">
@@ -96,29 +90,31 @@
         </div>
     </div>
 
-        <!-- 모달 창 -->
-        <div class="modal fade" id="planModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="planModalLabel">여행 일정 상세 정보</h5>
-                            <span aria-hidden="true">&times;</span>
-                    </div>
-                    <div class="modal-body">
-                        <div id="modal-body-content">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button id="wishlistBtn" data-place="{{ diary.place }}" class="btn btn-secondary">찜하기</button>
-                    </div>
+    <!-- 모달 창 : 장소 정보 -->
+    <div class="modal fade" id="planModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="planModalLabel">여행 장소 정보</h5>
+                    <span aria-hidden="true">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <section id="diary" class="planmodal plan_modal">
+                        <h2 class="screen_out">여행 다이어리 장소 모달</h2>
+                        <p><strong>여행 장소:</strong> {{ diary.place }}</p>
+                    </section>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button id="wishlistBtn" data-place="{{ diary.place }}" class="btn btn-secondary">찜하기</button>
                 </div>
             </div>
         </div>
+    </div>
 
     {% if show_modal %}
     <!-- 모달 창 : 뱃지, 별명 획득 -->
-    <div class="modal fade" id="badgeModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
+    <div class="modal fade" id="badgeModal" tabindex="-1" role="dialog" aria-labelledby="badgeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <h2 class="screen_out">다이어리 뱃지, 별명 획득 모달창</h2>
@@ -157,31 +153,8 @@
             openModalButtons.forEach(function(element) {
                 element.addEventListener('click', function(e) {
                     e.preventDefault();
-                    var uniqueDiaryId = encodeURIComponent(this.getAttribute('data-unique-diary-id'));
-                    var url = '/diary/plan_modal/' + uniqueDiaryId + '/';
-                    console.log('Fetching URL:', url);
-
-                    fetch(url)
-                        .then(function(response) {
-                            if (!response.ok) {
-                                throw new Error('Network respo₩nse was not ok: ' + response.status);
-                            }
-                            return response.text(); // HTML로 응답받기
-                        })
-                        .then(function(data) {
-                            console.log('Received data:', data);
-                            var modalBodyContent = document.getElementById('modal-body-content');
-                            if (modalBodyContent) {
-                                modalBodyContent.innerHTML = data;
-                                var planModal = new bootstrap.Modal(document.getElementById('planModal'));
-                                planModal.show();
-                            } else {
-                                console.error('Modal body content element not found');
-                            }
-                        })
-                        .catch(function(error) {
-                            console.error("Fetch error:", error);
-                        });
+                    var planModal = new bootstrap.Modal(document.getElementById('planModal'));
+                    planModal.show();
                 });
             });
         } else {
@@ -193,10 +166,7 @@
         if (planModalElement) {
             var planModal = new bootstrap.Modal(planModalElement);
             planModalElement.addEventListener('hidden.bs.modal', function () {
-                var modalBodyContent = document.getElementById('modal-body-content');
-                if (modalBodyContent) {
-                    modalBodyContent.innerHTML = '';
-                }
+                // No content to clear as it's included directly in HTML
             });
         }
 
@@ -209,6 +179,7 @@
            modalBody.style.overflowY = 'auto';
          });
     });
+
     // 찜하기 버튼 클릭 이벤트
     document.getElementById('wishlistBtn').addEventListener('click', function() {
         var place = this.getAttribute('data-place');

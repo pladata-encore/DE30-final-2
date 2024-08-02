@@ -9,8 +9,9 @@ from io import BytesIO
 
 # MongoDB 클라이언트 설정
 mongo_client = pymongo.MongoClient(settings.DATABASES['default']['CLIENT']['host'],
-                                   username=settings.DATABASES['default']['CLIENT']['username'],
-                                   password=settings.DATABASES['default']['CLIENT']['password'])
+                                   # username=settings.DATABASES['default']['CLIENT']['username'],
+                                   # password=settings.DATABASES['default']['CLIENT']['password']
+                                   )
 db = mongo_client[settings.DATABASES['default']['NAME']]
 
 # 컬렉션 선택
@@ -102,6 +103,7 @@ def decompress_badge(badge):
 def get_nickname(nickname_id):
     if nickname_id:
         target_nickname = nickname_collection.find_one({"nickname_id": nickname_id})
+        print('---------------', target_nickname, target_nickname['nickname'])
         nickname = target_nickname['nickname']
         badge_id = target_nickname['badge_id']
 

@@ -272,21 +272,6 @@ def write_diary(request):
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
-def viewDiary(request, user_email):
-    user_email = settings.DEFAULT_FROM_EMAIL
-    # 사용자 이메일에 해당하는 다이어리 항목을 가져옵니다. (최신 5개)
-    diaries = AiwriteModel.objects.filter(user_email=user_email).order_by('-created_at')[:5]
-
-    context = {
-        'diaries': diaries,
-        'user_email': user_email
-    }
-    return render(request, 'diaryapp/diary.html', context)
-# def user_diary_main(request, social_id):
-#     user = get_object_or_404(User, writer=social_id)
-#     diary_entries = AiwriteModel.objects.filter(tags__name__startswith='@', tags__name=social_id)
-#     return render(request, 'diaryapp/diary.html', {'user': user, 'diary_entries': diary_entries})
-
 '''전체 일기 리스트'''
 def list_diary(request):
     form = DateFilterForm(request.GET or None)
@@ -307,13 +292,20 @@ def list_diary(request):
     enriched_diary_list = []
 
     for diary in page_obj:
+        print('////////////////', diary.keys())
+
+        unique_diary_id = diary['unique_diary_id']
         print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
               f"Created: {diary.get('created_at', 'No date')}, "
               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
 
-        # 별명 : db에서 가져오기
-        diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'))
-        nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+        # 별명 : db에서 가져오
+        diary_model = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+        print(diary_model)
+        nickname_id = str(diary_model).split()[0]
+        print(nickname_id)
+
+        nickname, badge_name, badge_image = get_nickname(nickname_id)
         enriched_diary = {
             'diary': diary,
             'nickname': nickname,

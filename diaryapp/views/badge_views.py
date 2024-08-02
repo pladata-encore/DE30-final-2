@@ -10,8 +10,10 @@ from .nickname_views import *
 
 # MongoDB 클라이언트 설정
 mongo_client = pymongo.MongoClient(settings.DATABASES['default']['CLIENT']['host'],
-                                   username=settings.DATABASES['default']['CLIENT']['username'],
-                                   password=settings.DATABASES['default']['CLIENT']['password'])
+                                   # username=settings.DATABASES['default']['CLIENT']['username'],
+                                   # password=settings.DATABASES['default']['CLIENT']['password']
+                                   )
+
 db = mongo_client[settings.DATABASES['default']['NAME']]
 
 # 컬렉션 선택
@@ -108,6 +110,3 @@ def get_main_badge(user_email):
         main_nickname, main_badge_name, main_badge_image = '대표 별명이 없습니다.', '', ''
 
     return main_nickname, main_badge_name, main_badge_image
-
-
-

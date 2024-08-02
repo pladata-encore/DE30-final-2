@@ -57,7 +57,7 @@ urlpatterns = [
 
     # 다이어리 메인
     # path('',diarywrite_views.viewDiary),
-    path('<str:user_email>/', diarywrite_views.viewDiary, name='user_diary_main'),
+    path('<str:user_email>/', diary_views.viewDiary, name='user_diary_main'),
 
 ]
 
