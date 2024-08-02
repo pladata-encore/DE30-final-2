@@ -96,7 +96,6 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="planModalLabel">여행 장소 정보</h5>
-                    <span aria-hidden="true">&times;</span>
                 </div>
                 <div class="modal-body">
                     <section id="diary" class="planmodal plan_modal">
@@ -202,12 +201,12 @@
                     alert('이미 찜 목록에 있습니다.');
                 }
             } else {
-                alert('오류가 발생했습니다. 다시 시도해주세요.');
+                alert('이미 찜 목록에 있습니다.');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('오류가 발생했습니다. 다시 시도해주세요.');
+            alert('이미 찜 목록에 있습니다.');
         });
     });
     </script>

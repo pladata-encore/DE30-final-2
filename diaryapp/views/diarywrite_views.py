@@ -300,8 +300,13 @@ def list_diary(request):
     for diary in page_obj:
         print(f"Processing diary with unique_diary_id: {diary.get('unique_diary_id')}")
         try:
-            diary_model = AiwriteModel.objects.get(unique_diary_id=diary.get('unique_diary_id'))
-            nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+            # diary_model = AiwriteModel.objects.get(unique_diary_id=diary.get('unique_diary_id'))
+            # nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+            diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'))
+            if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
+                nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+            else:
+                nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
             enriched_diary = {
                 'diary': diary,
                 'nickname': nickname,
@@ -319,16 +324,7 @@ def list_diary(request):
               f"Created: {diary.get('created_at', 'No date')}, "
               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
 
-        # 별명 : db에서 가져오기
-        diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'))
-        nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
-        enriched_diary = {
-            'diary': diary,
-            'nickname': nickname,
-            'badge_name': badge_name,
-            'badge_image': badge_image
-        }
-        enriched_diary_list.append(enriched_diary)
+
 
     context = {
         'form': form,
@@ -380,7 +376,10 @@ def detail_diary_by_id(request, unique_diary_id):
     print(f"Number of comments: {comment_list.count()}")
 
     # 별명 : db에서 가져오기
-    nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+    if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
+        nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+    else:
+        nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
 
     # 별명 : 세션에서 데이터 가져오기
     show_modal = request.session.pop('show_modal', True) # 테스트 : False로 변경 예정
