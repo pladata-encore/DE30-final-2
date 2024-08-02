@@ -21,13 +21,21 @@ def viewDiary(request, user_email=None):
 
     # 사용자 정보 가져오기
     user_info = get_user(request, user_email)
+    user=user_info['user']
+    is_own_page=user_info['is_own_page']
+
+    # 사용자 다이어리 전체 이름 가져오기
+    user['title_diary'] = user.get('title_diary', f"{user.get('name', '여행자')}의 여행 다이어리")
+
+    # 사용자 메인 뱃지 가져오기
+    main_nickname, main_badge_name, main_badge_image = get_main_badge(user_email)
 
     context = {
-        'user': user_info['user'],
-        #'is_own_page': is_own_page,
-        'is_own_page': user_info['is_own_page'],
-        # 내 페이지 테스트 : True
-        # 다른 사람 페이지 테스트 : 주소에 'view/<str:user_email>/' 넣기, False
+        'main_nickname': main_nickname,
+        'main_badge_name': main_badge_name,
+        'main_badge_image': main_badge_image,
+        'user': user,
+        'is_own_page': is_own_page,
     }
     return render(request, 'diaryapp/diary.html', context)
 
@@ -65,12 +73,3 @@ def save_title_diary(request):
             return JsonResponse({'success': False, 'message': '서버 오류: ' + str(e)})
 
     return JsonResponse({'success': False, 'message': '잘못된 요청입니다.'})
-
-# 다이어리 메인 대표 뱃지
-def main_badge(request):
-    main_nickname, main_badge_name, main_badge_image = get_main_badge(user_email)
-    return {
-        'main_nickname': main_nickname,
-        'main_badge_name': main_badge_name,
-        'main_badge_image': main_badge_image
-    }

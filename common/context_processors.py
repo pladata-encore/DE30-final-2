@@ -22,9 +22,6 @@ def get_user(request, user_email=None):
     # 로그인 사용자 확인
     #is_own_page = user and (user['email'] == request.user.email)
 
-    # 기본 제목 설정
-    user['title_diary'] = user.get('title_diary', f"{user.get('name', '여행자')}의 여행 다이어리")
-
     return {
         'user': user,
         #'is_own_page': is_own_page,
