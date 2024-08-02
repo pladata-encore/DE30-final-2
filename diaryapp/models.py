@@ -106,18 +106,6 @@ class CommentModel(models.Model):
         return user == self.user_email
 
 '''찜모델'''
-# class Wishlist(models.Model):
-#     # user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     user_email = models.EmailField()
-#     place = models.CharField(max_length=2000)
-#     added_at = models.DateTimeField(auto_now_add=True)
-#
-#     class Meta:
-#         unique_together = ('user', 'place')
-#
-#     def __str__(self):
-#         return f"{self.place} - {self.user_email}"
-
 class Wishlist(models.Model):
     user_email = models.EmailField()
     place = models.CharField(max_length=2000)

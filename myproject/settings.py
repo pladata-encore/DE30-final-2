@@ -95,7 +95,7 @@ MONGO_URI = os.getenv('MONGO_URI')
 MONGO_USERNAME = os.getenv('MONGO_USERNAME')
 MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 
-# MongoDB atlas
+# # MongoDB atlas
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'djongo',

@@ -1,5 +1,6 @@
 import os
 import openai
+from django.contrib.auth.decorators import login_required
 from dotenv import load_dotenv
 import gridfs
 import torch
@@ -339,29 +340,69 @@ def list_diary(request):
 # @login_required
 # def list_user_diary(request):
 #     user = request.user
-#     diary_list = AiwriteModel.objects.filter(writer=user).order_by('-created_at')
-#     return render(request, 'diaryapp/user_list_diary.html', {'diary_list': diary_list})
-
-# 태그된 다이어리까지 전부 가져오기
-# @login_required
-# def tag_list_user_diary(request):
-#     user = request.user
-#     write_diary = AiwriteModel.objects.filter(writer=user).order_by('-created_at')
-#     tag_diary = AiwriteModel.objects.filter(tags__name__startswith='@').filter(tags__name__in=[tag.name for tag in user.tags.all()]).exclude(writer=user).order_by('-created_at')
+#     form = DateFilterForm(request.GET or None)
+#     year = None
+#     month = None
+#     if form.is_valid():
+#         year = form.cleaned_data['year']
+#         month = form.cleaned_data['month']
 #
+#     # 로그인한 사용자의 다이어리만 필터링
+#     diary_list = filter_user_diaries(user, year, month)
+#     print(f"Diaries returned to view: {len(diary_list)}")
 #
-#     # 쓴 다이어리, 태그한 다이어리 따로 불러오기
-#     # context = {
-#     #     'write_diary': write_diary,
-#     #     'tag_diary': tag_diary
-#     # }
+#     # 페이징 설정
+#     paginator = Paginator(diary_list, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
+#     page_number = request.GET.get('page')
 #
-#     # 쓴 다이어리, 태그한 다이어리 합쳐서 시간 순으로 불러오기
-#     diary = (write_diary | tag_diary).order_by('-created_at')
+#     try:
+#         page_obj = paginator.page(page_number)
+#     except PageNotAnInteger:
+#         page_obj = paginator.page(1)
+#     except EmptyPage:
+#         page_obj = paginator.page(paginator.num_pages)
+#
+#     enriched_diary_list = []
+#
+#     for diary in page_obj:
+#         print(f"Processing diary with unique_diary_id: {diary.get('unique_diary_id')}")
+#         try:
+#             diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'), writer=user)
+#             if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
+#                 nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+#             else:
+#                 nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+#             enriched_diary = {
+#                 'diary': diary,
+#                 'nickname': nickname,
+#                 'badge_name': badge_name,
+#                 'badge_image': badge_image
+#             }
+#             enriched_diary_list.append(enriched_diary)
+#         except AiwriteModel.DoesNotExist:
+#             print(f"AiwriteModel not found for unique_diary_id: {diary.get('unique_diary_id')}")
+#             continue
+#
+#         print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
+#               f"Created: {diary.get('created_at', 'No date')}, "
+#               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
+#
 #     context = {
-#         'diary' : diary
+#         'form': form,
+#         'diary_list': enriched_diary_list,
+#         'page_obj': page_obj,
 #     }
 #     return render(request, 'diaryapp/user_list_diary.html', context)
+#
+# def filter_user_diaries(user, year=None, month=None):
+#     diaries = AiwriteModel.objects.filter(writer=user).order_by('-created_at')
+#
+#     if year:
+#         diaries = diaries.filter(created_at__year=year)
+#     if month:
+#         diaries = diaries.filter(created_at__month=month)
+#
+#     return diaries
 
 '''일기 내용 확인'''
 def detail_diary_by_id(request, unique_diary_id):
@@ -370,8 +411,6 @@ def detail_diary_by_id(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     form = CommentForm()
     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
-    # tagged_users = diary.get_tagged_users()
-    # return render(request, 'diaryapp/detail_diary.html', {'diary': diary, 'tagged_users': tagged_users})
     # 디버깅을 위해 댓글 수를 출력
     print(f"Number of comments: {comment_list.count()}")
 
@@ -401,23 +440,43 @@ def plan_modal(request, unique_diary_id):
     return render(request, 'diaryapp/plan_modal.html', {'diary': diary})
 
 '''
-user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일기와 다른 사용자의 일기를 볼 때 화면이 다름
+user가 생기면 변경 - 로그인한 사용자를 기준으로 자신이 작성한 일기와 다른 사용자가 작성한 일기를 볼 때 화면이 다름
 '''
 # @login_required
 # def detail_diary_by_id(request, unique_diary_id):
 #     user = request.user
 #     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-#     # tagged = diary.get_tagged_users()
-#     # comments = diary.comments.all()
+#     form = CommentForm()
+#     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
+#
+#     # 디버깅을 위해 댓글 수를 출력
+#     print(f"Number of comments: {comment_list.count()}")
+#
+#     # 별명 : db에서 가져오기
+#     if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
+#         nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+#     else:
+#         nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+#
+#     # 별명 : 세션에서 데이터 가져오기
+#     show_modal = request.session.pop('show_modal', True)  # 테스트 : False로 변경 예정
+#
+#     context = {
+#         'diary': diary,
+#         'comment_list': comment_list,
+#         'form': form,
+#         'show_modal': show_modal,
+#         'nickname': nickname,
+#         'badge_name': badge_name,
+#         'badge_image': badge_image,
+#     }
+#
+#     # 사용자가 자신의 일기를 보는 경우와 다른 사용자의 일기를 보는 경우 템플릿 분기
 #     if diary.writer == user:
 #         template = 'diaryapp/detail_diary.html'
 #     else:
 #         template = 'diaryapp/detail_diary_otheruser.html'
-#     context = {
-#         'diary':diary,
-#         # 'tagged':tagged,
-#         # 'comments':comments
-#     }
+#
 #     return render(request, template, context)
 
 '''일기 내용 업데이트'''

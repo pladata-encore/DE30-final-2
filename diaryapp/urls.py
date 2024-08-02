@@ -54,7 +54,8 @@ urlpatterns = [
     # path('generic', views.viewGeneric),
 
     # 리스트 다이어리
-    path('list_diary/', diarywrite_views.list_diary, name='list_diary'),
+    path('all_list_diary/', diarywrite_views.list_diary, name='list_diary'),
+    # path('list_diary', diarywrite_views.list_user_diary, name='list_user_diary'),
 
     # 다이어리 메인
         # path('',diarywrite_views.viewDiary),
@@ -64,5 +65,3 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
