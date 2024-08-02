@@ -75,6 +75,19 @@
             {% endif %}
         </div>
     </div>
+
+    <script>
+    function adjustGridColumns() {
+        var grid = document.querySelector('#list_diary .diary-grid');
+        var containerWidth = grid.offsetWidth;
+        var columnCount = Math.floor(containerWidth / 300); // 300px는 각 카드의 최소 너비입니다
+        columnCount = Math.max(1, Math.min(3, columnCount)); // 1에서 3 사이의 값으로 제한
+        grid.style.gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
+    }
+
+    window.addEventListener('load', adjustGridColumns);
+    window.addEventListener('resize', adjustGridColumns);
+    </script>
 </section>
 
 {% include 'footer.html' %}

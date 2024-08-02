@@ -109,7 +109,7 @@ DATABASES = {
     }
 }
 
-## MongoDB 도커
+# # MongoDB 도커
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'djongo',

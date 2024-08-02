@@ -366,14 +366,30 @@ main {
 }
 #list_diary .diary-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4rem; /* 바둑판 셀 사이의 간격 */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
     list-style: none;
-    /* padding-left: 4rem; */
-    /* margin: 20; */
+    padding: 2rem;
+    max-width: 1200px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 중앙 정렬 */
 }
 #list_diary .diary-grid .card{margin-left:0}
-
+@media screen and (max-width: 600px) {
+    #list_diary .diary-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+}
+@media screen and (min-width: 601px) and (max-width: 900px) {
+    #list_diary .diary-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+@media screen and (min-width: 901px) {
+    #list_diary .diary-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
 #list_diary .list-actions{
     display: flex;
     justify-content: flex-end; /* 오른쪽 정렬 */
@@ -476,4 +492,18 @@ main {
     font-size: 14px;
     font-weight: bold;
 }
-
+#list_diary .card {
+    width: 100%;
+    min-width: 250px; /* 최소 너비 설정 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+#list_diary .card-img img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+#list_diary .card-body {
+    padding: 1rem;
+}

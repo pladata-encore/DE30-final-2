@@ -273,8 +273,6 @@ def write_diary(request):
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
 '''전체 일기 리스트'''
-
-
 def list_diary(request):
     form = DateFilterForm(request.GET or None)
     year = None
@@ -402,8 +400,6 @@ def detail_diary_by_id(request, unique_diary_id):
 def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     return render(request, 'diaryapp/plan_modal.html', {'diary': diary})
-
-
 
 '''
 user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일기와 다른 사용자의 일기를 볼 때 화면이 다름
