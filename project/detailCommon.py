@@ -6,7 +6,7 @@ import time
 
 # API URL 및 키 설정
 urls = "http://apis.data.go.kr/B551011/KorService1/detailCommon1"
-key = "sn4p9/xq3HzvfZw7DjDo9gJBjru0dhT62DbDbJFDdiZEYPe2Lyio/NSLbeFkKw1Of4/P8G+dQdTBfr8m0OMoQA=="
+key = "메롱"
 
 # MongoDB 연결 설정
 client = MongoClient('mongodb://localhost:27017/',
