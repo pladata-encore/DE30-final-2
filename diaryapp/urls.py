@@ -11,9 +11,6 @@ urlpatterns = [
     path('write_diary/', diarywrite_views.write_diary, name='write_diary'),
     path('image/<int:pk>/', diarywrite_views.image_detail, name='image_detail'),
 
-    # 리스트 다이어리
-    path('list_diary/', diarywrite_views.list_diary, name='list_diary'),
-
     # 다이어리 상세화면
     path('detail_diary/<str:unique_diary_id>/', diarywrite_views.detail_diary_by_id, name='detail_diary_by_id'),
 
@@ -53,10 +50,14 @@ urlpatterns = [
     # Bootstrap 테마 예시 페이지
     # path('index', views.viewIndex),
     # path('elements', views.viewElements),
+
     # path('generic', views.viewGeneric),
 
+    # 리스트 다이어리
+    path('list_diary/', diarywrite_views.list_diary, name='list_diary'),
+
     # 다이어리 메인
-    # path('',diarywrite_views.viewDiary),
+        # path('',diarywrite_views.viewDiary),
     path('<str:user_email>/', diary_views.viewDiary, name='user_diary_main'),
 
 ]

@@ -15,7 +15,7 @@ from myproject import settings
 from ..forms import *
 from ..models import *
 from ..clip_model import *
-from googletrans import Translator
+from diaryapp.forms import *
 import base64
 import time
 
@@ -23,7 +23,7 @@ from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
 from .nickname_views import *
 
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from ..mongo_queries import filter_diaries
 
 """GPT3.5 키"""
@@ -273,6 +273,8 @@ def write_diary(request):
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
 
 '''전체 일기 리스트'''
+
+
 def list_diary(request):
     form = DateFilterForm(request.GET or None)
     year = None
@@ -284,28 +286,44 @@ def list_diary(request):
     diary_list = filter_diaries(year, month)
     print(f"Diaries returned to view: {len(diary_list)}")
 
-    # Pagination 적용
-    paginator = Paginator(diary_list, 9)  # 페이지당 9개의 항목으로 나누기
-    page_number = request.GET.get('page')  # URL에서 'page' 파라미터 가져오기
-    page_obj = paginator.get_page(page_number)  # 해당 페이지의 항목 가져오기
+    # 페이징 설정
+    paginator = Paginator(diary_list, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
 
     enriched_diary_list = []
 
     for diary in page_obj:
-        print('////////////////', diary.keys())
+        print(f"Processing diary with unique_diary_id: {diary.get('unique_diary_id')}")
+        try:
+            diary_model = AiwriteModel.objects.get(unique_diary_id=diary.get('unique_diary_id'))
+            nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+            enriched_diary = {
+                'diary': diary,
+                'nickname': nickname,
+                'badge_name': badge_name,
+                'badge_image': badge_image
+            }
+            enriched_diary_list.append(enriched_diary)
+        except AiwriteModel.DoesNotExist:
+            print(f"AiwriteModel not found for unique_diary_id: {diary.get('unique_diary_id')}")
+            # 여기서 오류를 무시하고 계속 진행하거나,
+            # 필요에 따라 기본값을 설정할 수 있습니다.
+            continue
 
-        unique_diary_id = diary['unique_diary_id']
         print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
               f"Created: {diary.get('created_at', 'No date')}, "
               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
 
-        # 별명 : db에서 가져오
-        diary_model = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-        print(diary_model)
-        nickname_id = str(diary_model).split()[0]
-        print(nickname_id)
-
-        nickname, badge_name, badge_image = get_nickname(nickname_id)
+        # 별명 : db에서 가져오기
+        diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'))
+        nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
         enriched_diary = {
             'diary': diary,
             'nickname': nickname,
@@ -316,11 +334,12 @@ def list_diary(request):
 
     context = {
         'form': form,
-        'page_obj': page_obj,
         'diary_list': enriched_diary_list,
+        'page_obj': page_obj,  # 템플릿에서 사용하는 이름으로 변경
     }
 
     return render(request, 'diaryapp/list_diary.html', context)
+
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
 # @login_required

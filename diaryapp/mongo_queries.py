@@ -1,10 +1,12 @@
+import os
+
 import pymongo
 from pymongo import MongoClient
 from django.conf import settings
 from datetime import datetime
 from django.conf import settings
-
-client = MongoClient('mongodb://192.168.0.25:27017/',27017)
+MONGO_URI = os.getenv('MONGO_URI')
+client = MongoClient(MONGO_URI)
 db = client['MyDiary']
 aiwritemodel_collection = db['diaryapp_aiwritemodel']
 imagemodel_collection = db['diaryapp_imagemodel']

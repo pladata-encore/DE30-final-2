@@ -90,42 +90,36 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'MyDiary',
-#         'ENFORCE_SCHEMA': False,
-#         'CLIENT': {
-#             'host': 'localhost',  # 또는 호스트 머신의 IP
-#             'port': '',
-#             'username': '',
-#             'password': '',
-#             'authSource': 'admin',
-#             'authMechanism': 'SCRAM-SHA-1',
-#         }
-#     }
-# }
 # MongoDB 설정
 MONGO_URI = os.getenv('MONGO_URI')
 MONGO_USERNAME = os.getenv('MONGO_USERNAME')
 MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
+
+# MongoDB atlas
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+        'NAME': 'MyDiary',
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': 'mongodb://192.168.0.25:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+            'host': MONGO_URI,  # 또는 호스트 머신의 IP
+            'username': MONGO_USERNAME,
+            'password': MONGO_PASSWORD,
         }
     }
 }
+
+## MongoDB 도커
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+#         'ENFORCE_SCHEMA': False,
+#         'CLIENT': {
+#             'host': 'mongodb://192.168.0.25:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+#         }
+#     }
+# }
 
 # 미디어 파일 저장 경로
 MEDIA_URL = '/media/'
