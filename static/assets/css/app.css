@@ -494,7 +494,7 @@ main {
 }
 #list_diary .card {
     width: 100%;
-    min-width: 250px; /* 최소 너비 설정 */
+    /* min-width: 250px; */
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;

@@ -77,12 +77,11 @@
                         </div>
                     </a>
                 </div>
-            {% empty %}
-            <div class="no-diaries">
-                <p>작성된 다이어리가 없습니다.</p>
-            </div>
-            {% endfor %}
-
+                {% empty %}
+                <div class="no-diaries">
+                    <p>작성된 다이어리가 없습니다.</p>
+                </div>
+                {% endfor %}
             </div>
             <button class="carousel-control-prev" type="button" id="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>

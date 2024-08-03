@@ -30,7 +30,7 @@ def get_user(request, user_email=None):
     return {
         'user': user,
         #'is_own_page': is_own_page,
-        'is_own_page': False,
+        'is_own_page': True,
         # 로그인 사용자 테스트 : True
         # 다른 사용자 테스트 : 주소에 'view/<str:user_email>/' 넣기, urls 설정, False
     }

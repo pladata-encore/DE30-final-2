@@ -9,6 +9,7 @@ from django.conf import settings
 from django.http import JsonResponse
 
 from diaryapp.models import AiwriteModel
+from .nickname_views import get_nickname
 from .badge_views import get_main_badge
 from common.context_processors import get_user
 
@@ -41,12 +42,12 @@ def viewDiary(request, user_email=None):
 
     # 사용자 다이어리 슬라이드
     enriched_diary_list = []
-
     try:
-        diaries = AiwriteModel.objects.filter(user_email=user_email).order_by('-created_at')[:5]
+        diaries = AiwriteModel.objects.filter(user_email=user['email']).order_by('-created_at')[:5]
 
         # 디버깅을 위한 로그 추가
         logger.info(f"Retrieved diaries for {user_email}")
+        print()
         for diary in diaries:
             logger.info(f"Diary: {diary.unique_diary_id}, Title: {diary.diarytitle}, Created at: {diary.created_at}")
 
