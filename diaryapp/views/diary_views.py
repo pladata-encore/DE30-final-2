@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 import logging
+import random
 import traceback
 import pymongo
 from django.db import DatabaseError
@@ -7,6 +8,7 @@ from django.http import HttpResponseServerError
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.http import JsonResponse
+from django.urls import reverse
 
 from diaryapp.models import AiwriteModel
 from .nickname_views import get_nickname
@@ -18,7 +20,10 @@ from common.context_processors import get_user
 db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
+collection = db['areaBaseList']
 user_collection = db['users']
+diary_collection = db['diaryapp_aiwritemodel']
+plan_collection = db['J_plan']
 
 
 logger = logging.getLogger(__name__)
@@ -34,11 +39,14 @@ def viewDiary(request, user_email=None):
     user = user_info['user']
     is_own_page = user_info['is_own_page']
 
+
     # 사용자 다이어리 전체 이름 가져오기
     user['title_diary'] = user.get('title_diary', f"{user.get('name', '즐거운 여행자')}의 여행 다이어리")
 
+
     # 사용자 메인 뱃지 가져오기
     main_nickname, main_badge_name, main_badge_image = get_main_badge(user['email'])
+
 
     # 사용자 다이어리 슬라이드
     enriched_diary_list = []
@@ -77,6 +85,90 @@ def viewDiary(request, user_email=None):
         enriched_diary_list = []
         return HttpResponseServerError("An error occurred while accessing the database.")
 
+
+    # 다이어리 생성 링크
+    schedule_links_and_diary_links = []
+    try:
+        # 다이어리에서 plan_id 추출
+        # diaries = diary_collection.find({'email': user['email']})
+        # plan_id_diaries = [diary['plan_id'] for diary in diaries if 'plan_id' in diary]
+        #
+        # # 계획에서 조건에 맞는 plan_id 필터링
+        # target_plans = plan_collection.find({
+        #     'email': user['email'],
+        #     'plan_id': {'$nin': plan_id_diaries}
+        # })
+
+        # 예시 계획
+        target_plans = [{
+            'province': '경기도',
+            'city': '안산시',
+            'email': settings.DEFAULT_FROM_EMAIL,
+            'plan_id': 'plan_id입니다',
+            'plan_title': '일정 제목 예시입니다. 여기를 누르면 해당 일정으로 이동합니다. 지금은 임시로 나의 여행 뱃지로 이동합니다.',
+            'days':{
+                "day1": [
+                    "가경목장",
+                    "귀인한우촌",
+                    "김제한우"
+                ],
+                "day2": [
+                    "까망조개이야기",
+                    "귀인한우촌",
+                    "궁중삼계탕"
+                ],
+                "day3": [
+                    "안산신길온천역휴먼빌2차아파트",
+                    "배터지는집",
+                    "벚나무집"
+                ]
+            },
+            # 다른 항목은 생략..
+        }]
+
+        if target_plans:
+            for plan in target_plans:
+                plan_id = plan.get('plan_id', '')
+                plan_title = plan.get('plan_title', '')
+                province = plan.get('province', '')
+                city = plan.get('city', '')
+                days = plan.get('days', {})
+
+                # 랜덤으로 타이틀 추출
+                all_titles = []
+
+                for day, titles in days.items():
+                    all_titles.extend(titles)
+
+                if all_titles:
+                    random_title = random.choice(all_titles)
+                    doc = collection.find_one({'title': random_title})
+                    bg = doc.get('firstimage','')
+
+                # url 생성
+                schedule_url = reverse('list_badge',kwargs={
+                    #'plan_id': plan_id,
+                    # 각 일정의 url을 추가, 예시로 list_badge로 간다
+                })
+                create_diary_url = reverse('generate_diary_plan_id', kwargs={
+                    'plan_id': plan_id,
+                    # 'plan_title': plan_title,
+                    # 'province': province,
+                    # 'city': city,
+                })
+
+                schedule_links_and_diary_links.append({
+                    'schedule_url': schedule_url,
+                    'create_diary_url': create_diary_url,
+                    'plan_title': plan_title,
+                    'title':random_title,
+                    'bg':bg,
+                })
+
+    except Exception as e:
+        logger.error(f"Error retrieving target plans: {str(e)}")
+
+
     context = {
         'user_nickname': main_nickname,
         'user_badge_name': main_badge_name,
@@ -85,7 +177,9 @@ def viewDiary(request, user_email=None):
         'is_own_page': is_own_page,
         'diary_list': enriched_diary_list,
         'user_email': user_email,
+        'schedule_links_and_diary_links': schedule_links_and_diary_links,
     }
+
     return render(request, 'diaryapp/diary.html', context)
 
 

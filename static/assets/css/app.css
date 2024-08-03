@@ -216,7 +216,7 @@ main {
 }
 
 /* card - 다이어리 */
-.card{max-width:300px;margin-left:1.5rem;margin-right:0;border:0;}
+.card{max-width:300px;min-height:360px;margin-left:1.5rem;margin-right:0;border:0;}
 .card .link_card {display: block;position: relative;height: 100%;box-shadow: 2px 4px 12px #00000014;transition: .3s cubic-bezier(0,0,.5,1);border-radius:inherit;}
 .card .link_card:hover, .card .link_card:focus {box-shadow: 2px 4px 18px #00000029;}
 .card-img{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;height:200px;border-bottom-right-radius:0;border-bottom-left-radius:0;}

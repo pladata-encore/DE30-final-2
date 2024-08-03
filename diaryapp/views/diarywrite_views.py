@@ -60,7 +60,7 @@ def translate_to_korean(text): # 일기 내용 한국어로 번역
     return translated.text
 
 """GPT3로 일기 생성"""
-def generate_diary(request):
+def generate_diary(request, plan_id=None):
     if request.method == 'POST':
         start_time = time.time()
         form = DiaryForm(request.POST, request.FILES)
@@ -143,7 +143,7 @@ def generate_diary(request):
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
             # 나중에 user 정보 넘길 예정
-            nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, "plan_id")
+            nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, plan_id)
             # 별명 : 세션에 show_modal 저장
             request.session['show_modal'] = True
             # 별명 : 다이어리에 별명 ID 저장

@@ -25,8 +25,8 @@ function initializeSlider() {
 
     function getSlideDetails() {
         const slide = sliderContainer.querySelector('.card');
-        const slideWidth = slide.offsetWidth;
-        const marginLeft = parseFloat(getComputedStyle(slide).marginLeft);
+        const slideWidth = slide ? slide.offsetWidth : 0; // 카드가 없을 경우를 대비하여 0으로 설정
+        const marginLeft = slide ? parseFloat(getComputedStyle(slide).marginLeft) : 0; // 카드가 없을 경우를 대비하여 0으로 설정
         return { slideWidth, marginLeft };
     }
 
@@ -42,8 +42,14 @@ function initializeSlider() {
 
     function updateSliderButtons() {
         const slides = sliderContainer.querySelectorAll('.card');
-        nextButton.style.display = currentIndex === slides.length - 1 ? 'none' : 'flex';
-        prevButton.style.display = currentIndex === 0 ? 'none' : 'flex';
+        const hasSlides = slides.length > 0; // 카드가 있는지 확인
+        nextButton.style.display = hasSlides && currentIndex === slides.length - 1 ? 'none' : 'flex';
+        prevButton.style.display = hasSlides && currentIndex === 0 ? 'none' : 'flex';
+        // 카드가 없는 경우 버튼 숨기기
+        if (!hasSlides) {
+            nextButton.style.display = 'none';
+            prevButton.style.display = 'none';
+        }
     }
 
     nextButton.addEventListener('click', () => {
@@ -115,6 +121,9 @@ function initializeSlider() {
     // 페이지 로드 시 및 리사이즈 이벤트 시 호출
     window.addEventListener('load', adjustCardWidth);
     window.addEventListener('resize', adjustCardWidth);
+
+    // 카드가 없는 경우 버튼 숨기기
+    updateSliderButtons();
 
 }
 initializeSlider();
