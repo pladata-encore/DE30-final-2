@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .env 파일 경로 설정
-env_path = Path('.') / '.env'
+env_path = BASE_DIR / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # # Open api key
@@ -33,12 +33,11 @@ load_dotenv(dotenv_path=env_path)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-a&)gx3mp+#9epz5&okvg@x6e*a#z%9%#p(k_uwl7w%bkwcntve"
 OPEN_API_KEY = os.getenv('OPEN_API_KEY')
-DEBUG = 'True'
-# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG 설정
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# ALLOWED_HOSTS = []
-# settings.py
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# ALLOWED_HOSTS 설정
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
 
@@ -101,6 +100,17 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+#         'ENFORCE_SCHEMA': False,
+#         'CLIENT': {
+#             'host': 'mongodb://localhost',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+#             'port': 27017,  # MongoDB 포트 (기본적으로는 27017)
+#         }
+#     }
+# }
 
 
 # 아틀라스 db
@@ -148,8 +158,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 이미지 DB
-MONGO_URI = 'mongodb://localhost:27017/'
-MONGO_DB_NAME = 'diary'
+# MONGO_URI = 'mongodb://localhost:27017/'
+# MONGO_DB_NAME = 'diary'
 MEDIA_BASE_URL = 'http://localhost:8000/media/'  # GridFS의 파일을 접근할 수 있는 기본 URL
 
 

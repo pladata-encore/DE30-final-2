@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views, badge_views
+from diaryapp.views import diarywrite_views, comment_views, wishlist_views, base_views, diary_views, badge_views
 
 urlpatterns = [
     #### diarywrite_views.py ####
@@ -9,9 +9,6 @@ urlpatterns = [
     path('generate_diary/', diarywrite_views.generate_diary, name='generate_diary'),
     path('write_diary/', diarywrite_views.write_diary, name='write_diary'),
     path('image/<int:pk>/', diarywrite_views.image_detail, name='image_detail'),
-
-    # 리스트 다이어리
-    path('list_diary/', diarywrite_views.list_diary, name='list_diary'),
 
     # 다이어리 상세화면
     path('detail_diary/<str:unique_diary_id>/', diarywrite_views.detail_diary_by_id, name='detail_diary_by_id'),
@@ -30,6 +27,10 @@ urlpatterns = [
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),
 
+    # 일정 찜기능 - 찜 리스트
+    path('add_wish/', wishlist_views.add_wish, name='add_wish'),
+    path('wishlist_view/', wishlist_views.wishlist_view, name='wishlist_view'),
+    path('remove_wish/<str:place>/', wishlist_views.remove_wish, name='remove_wish'),
 
     #### comment_views.py ####
     # 댓글 달기
@@ -51,7 +52,11 @@ urlpatterns = [
     # Bootstrap 테마 예시 페이지
     path('index', base_views.viewIndex),
     path('elements', base_views.viewElements),
-    path('generic', base_views.viewGeneric)
+    path('generic', base_views.viewGeneric),
+
+    # 리스트 다이어리
+    path('list_diary/', diarywrite_views.list_diary, name='list_diary'),
+
 ]
 
 if settings.DEBUG:

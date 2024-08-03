@@ -1,14 +1,22 @@
+import os
+
 import pymongo
 from pymongo import MongoClient
 from django.conf import settings
 from datetime import datetime
+from django.conf import settings
 
 # MongoDB 클라이언트 설정
 db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
+# client = MongoClient(settings.MONGO_URI)
+#client = MongoClient('mongodb://192.168.0.25:27017/',27017)
+#db = client['MyDiary']
+
 # 컬렉션
 aiwritemodel_collection = db['diaryapp_aiwritemodel']
 imagemodel_collection = db['diaryapp_imagemodel']
+
 
 def filter_diaries(year=None, month=None):
     match_condition = {}

@@ -6,7 +6,7 @@
         <div class="list-actions">
             <div class="list-actions-header">
                 <a href="{% url 'list_diary' %}">
-                <h1 style="color: #636363; font-weight: bold;">다이어리 목록</h1>
+                    <h1 style="color: #636363; font-weight: bold;">다이어리 목록</h1>
                 </a>
             </div>
             <div class="list-actions-buttons">
@@ -57,7 +57,37 @@
                 <p>No diaries found.</p>
             {% endfor %}
         </div>
+
+        <!-- 페이징 네비게이션 -->
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if form.year.value %}&year={{ form.year.value }}{% endif %}{% if form.month.value %}&month={{ form.month.value }}{% endif %}" class="pagination-btn">처음</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if form.year.value %}&year={{ form.year.value }}{% endif %}{% if form.month.value %}&month={{ form.month.value }}{% endif %}" class="pagination-btn">이전</a>
+            {% endif %}
+
+            <span class="pagination-current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if form.year.value %}&year={{ form.year.value }}{% endif %}{% if form.month.value %}&month={{ form.month.value }}{% endif %}" class="pagination-btn">다음</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if form.year.value %}&year={{ form.year.value }}{% endif %}{% if form.month.value %}&month={{ form.month.value }}{% endif %}" class="pagination-btn">끝</a>
+            {% endif %}
+        </div>
     </div>
+
+    <script>
+    function adjustGridColumns() {
+        var grid = document.querySelector('#list_diary .diary-grid');
+        var containerWidth = grid.offsetWidth;
+        var columnCount = Math.floor(containerWidth / 300); // 300px는 각 카드의 최소 너비입니다
+        columnCount = Math.max(1, Math.min(3, columnCount)); // 1에서 3 사이의 값으로 제한
+        grid.style.gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
+    }
+
+    window.addEventListener('load', adjustGridColumns);
+    window.addEventListener('resize', adjustGridColumns);
+    </script>
 </section>
 
 {% include 'footer.html' %}
