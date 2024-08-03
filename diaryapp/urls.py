@@ -47,6 +47,7 @@ urlpatterns = [
     path('list_badge/set_main_badge/', badge_views.set_main_badge, name='set_main_badge'),
     path('list_badge/unset_main_badge/', badge_views.unset_main_badge, name='unset_main_badge'),
 
+
     # Bootstrap 테마 예시 페이지
     path('index', base_views.viewIndex),
     path('elements', base_views.viewElements),

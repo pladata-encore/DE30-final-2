@@ -13,7 +13,12 @@ user_collection = db['users']
 def get_user(request, user_email=None):
     # 사용자 정보 조회
     if user_email :
-        user = user_collection.find_one({'email': user_email})
+        #user = user_collection.find_one({'email': user_email})
+        # 다른 사용자 예시 db
+        user = {
+            'email':'neweeee@gmail.com',
+            'name':'다른 사용자'
+        }
     else:
         # user = user_collection.find_one({'email': request.user.email})
         # 로그인 사용자 예시 이메일
@@ -36,7 +41,7 @@ def get_user(request, user_email=None):
 def main_badge(request):
     # 현재 로그인한 사용자의 정보 가져오기
     # user_email = request.user.email
-    user_email = settings.DEFAULT_FROM_EMAIL  # 예시 이메일
+    user_email = 'ymlove112002@naver.com'  # 예시 이메일
 
     main_nickname, main_badge_name, main_badge_image = get_main_badge(user_email)
     return {

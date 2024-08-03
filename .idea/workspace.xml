@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/context_processors.py" beforeDir="false" afterPath="$PROJECT_DIR$/common/context_processors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/diary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/views/diary_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/diary_views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
