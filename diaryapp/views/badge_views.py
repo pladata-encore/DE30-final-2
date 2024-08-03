@@ -25,7 +25,7 @@ def list_badge(request):
 
     # user_email = request.user.email
     # 로그인 사용자 예시 이메일
-    user_email = 'ymlove112002@naver.com'
+    user_email = settings.DEFAULT_FROM_EMAIL
 
     # 대표 별명 가져 오기
     nickname_main = nickname_collection.find_one({"user_email": user_email, "is_main": True})
@@ -70,7 +70,7 @@ def set_main_badge(request):
 
     # user_email = request.user.email
     # 로그인 사용자 예시 이메일
-    user_email = 'ymlove112002@naver.com'
+    user_email = settings.DEFAULT_FROM_EMAIL
 
     # 현재 대표 뱃지
     current_main_nickname = nickname_collection.find_one({"user_email": user_email, "is_main": True})
@@ -98,7 +98,7 @@ def unset_main_badge(request):
 
     # user_email = request.user.email
     # 로그인 사용자 예시 이메일
-    user_email = 'ymlove112002@naver.com'
+    user_email = settings.DEFAULT_FROM_EMAIL
 
     # 선택된 닉네임의 is_main 필드를 삭제
     nickname_collection.update_one(
