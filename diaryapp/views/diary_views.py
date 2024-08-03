@@ -4,7 +4,7 @@ import pymongo
 from django.conf import settings
 from django.http import JsonResponse
 
-from .badge_views import *
+from .badge_views import get_main_badge
 from common.context_processors import get_user
 
 
@@ -28,7 +28,7 @@ def viewDiary(request, user_email=None):
     user['title_diary'] = user.get('title_diary', f"{user.get('name', '즐거운 여행자')}의 여행 다이어리")
 
     # 사용자 메인 뱃지 가져오기
-    main_nickname, main_badge_name, main_badge_image = get_main_badge(user_email)
+    main_nickname, main_badge_name, main_badge_image = get_main_badge(user['email'])
 
     context = {
         'user_nickname': main_nickname,
@@ -45,9 +45,9 @@ def viewDiary(request, user_email=None):
 def save_title_diary(request):
     if request.method == 'POST':
         title = request.POST.get('title')
-        # 현재 로그인한 사용자 이메일 가져 오기
         # user_email = request.user.email
-        user_email = 'ymlove112002@naver.com'  # 예시 이메일
+        # 로그인 사용자 예시 이메일
+        user_email = settings.DEFAULT_FROM_EMAIL
 
         try:
             user = user_collection.find_one({'email': user_email})
@@ -57,7 +57,7 @@ def save_title_diary(request):
                 return JsonResponse({'success': True})
 
             if not title:
-                title = f"{user.get('name', '여행자')}의 여행 다이어리"
+                title = f"{user.get('name', '즐거운 여행자')}의 여행 다이어리"
 
             result = user_collection.update_one(
                 {'email': user_email},
