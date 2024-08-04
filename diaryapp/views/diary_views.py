@@ -45,8 +45,17 @@ def viewDiary(request, user_email=None):
 
 
     # 사용자 메인 뱃지 가져오기
-    main_nickname, main_badge_name, main_badge_image = get_main_badge(user['email'])
-
+    main_nickname_id, main_nickname, main_badge_name, main_badge_image = get_main_badge(user['email'])
+    # 사용자 메인 뱃지 링크 생성
+    if is_own_page:
+        badge_link = reverse('list_badge')
+    else:
+        diary = diary_collection.find_one({'nickname_id': main_nickname_id})
+        if diary :
+            unique_diary_id = diary.get('unique_diary_id','')
+            badge_link = reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})
+        else :
+            badge_link = "#"
 
     # 사용자 다이어리 슬라이드
     enriched_diary_list = []
@@ -61,7 +70,7 @@ def viewDiary(request, user_email=None):
 
             try:
                 diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.unique_diary_id)
-                nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+                nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
                 enriched_diary = {
                     'diary': diary,
                     'nickname': nickname,
@@ -104,7 +113,7 @@ def viewDiary(request, user_email=None):
             'province': '경기도',
             'city': '안산시',
             'email': settings.DEFAULT_FROM_EMAIL,
-            'plan_id': 'plan_id입니다',
+            'plan_id': 'plan_id입니다.generate_diary 뷰함수가 받아요.',
             'plan_title': '일정 제목 예시입니다. 여기를 누르면 해당 일정으로 이동합니다. 지금은 임시로 나의 여행 뱃지로 이동합니다.',
             'days':{
                 "day1": [
@@ -136,14 +145,23 @@ def viewDiary(request, user_email=None):
 
                 # 랜덤으로 타이틀 추출
                 all_titles = []
+                valid_titles = []
 
                 for day, titles in days.items():
                     all_titles.extend(titles)
 
-                if all_titles:
-                    random_title = random.choice(all_titles)
+                for title in all_titles:
+                    doc = collection.find_one({'title': title})
+                    if doc and doc['firstimage'].strip() != '':
+                        valid_titles.append(title)
+
+                if valid_titles:
+                    random_title = random.choice(valid_titles)
                     doc = collection.find_one({'title': random_title})
                     bg = doc.get('firstimage','')
+                else :
+                    random_title = None
+                    bg = ''
 
                 # url 생성
                 schedule_url = reverse('list_badge',kwargs={
@@ -178,6 +196,7 @@ def viewDiary(request, user_email=None):
         'diary_list': enriched_diary_list,
         'user_email': user_email,
         'schedule_links_and_diary_links': schedule_links_and_diary_links,
+        'badge_link': badge_link,
     }
 
     return render(request, 'diaryapp/diary.html', context)

@@ -301,12 +301,12 @@ def list_diary(request):
         print(f"Processing diary with unique_diary_id: {diary.get('unique_diary_id')}")
         try:
             # diary_model = AiwriteModel.objects.get(unique_diary_id=diary.get('unique_diary_id'))
-            # nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+            # nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
             diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'))
             if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
-                nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+                nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
             else:
-                nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+                nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
             enriched_diary = {
                 'diary': diary,
                 'nickname': nickname,
@@ -379,7 +379,7 @@ def detail_diary_by_id(request, unique_diary_id):
     if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
         nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
     else:
-        nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+        nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
 
     # 별명 : 세션에서 데이터 가져오기
     show_modal = request.session.pop('show_modal', True) # 테스트 : False로 변경 예정

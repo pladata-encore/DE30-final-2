@@ -3,6 +3,7 @@ import pymongo
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 
@@ -13,6 +14,7 @@ db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
 collection = db['areaBaseList']
+diary_collection = db['diaryapp_aiwritemodel']
 badge_collection = db['diaryapp_badge']
 nickname_collection = db['diaryapp_nickname']
 
@@ -31,31 +33,48 @@ def list_badge(request):
     nickname_main = nickname_collection.find_one({"user_email": user_email, "is_main": True})
 
     if nickname_main:
-        main_nickname_id = nickname_main['nickname_id']
-        main_nickname, main_badge_name, main_badge_image = get_nickname(nickname_main['nickname_id'])
+        main_nickname_id, main_nickname, main_badge_name, main_badge_image = get_nickname(nickname_main['nickname_id'])
     else:
         main_nickname_id, main_nickname, main_badge_name, main_badge_image = '','대표 별명이 없습니다.', '', ''
+
+    main_diary = diary_collection.find_one({'nickname_id': main_nickname_id})
+    if main_diary:
+        unique_diary_id = main_diary.get('unique_diary_id', '')
+        main_badge_link = reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})
+    else:
+        main_badge_link = "#"
 
     # 모든 별명 가져 오기
     nicknames = nickname_collection.find({"user_email": user_email})
 
     list_badge = []
     for item in nicknames :
-        nickname, badge_name, badge_image = get_nickname(item['nickname_id'])
+        nickname_id, nickname, badge_name, badge_image = get_nickname(item['nickname_id'])
+        diary = diary_collection.find_one({'nickname_id': nickname_id})
+        if diary:
+            unique_diary_id = diary.get('unique_diary_id', '')
+            badge_link = reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id})
+        else:
+            badge_link = "#"
+
         badgenickname = {
             'nickname_id' : item['nickname_id'],
             'nickname': nickname,
             'badge_name': badge_name,
             'badge_image': badge_image,
+            'badge_link' : badge_link,
             'is_main': item.get('is_main', False)  # 대표 여부 추가
         }
         list_badge.append(badgenickname)
+
+
 
     context = {
         'main_nickname_id': main_nickname_id,
         'main_nickname': main_nickname,
         'main_badge_name': main_badge_name,
         'main_badge_image': main_badge_image,
+        'main_badge_link' : main_badge_link,
         'list_badge': list_badge,
     }
 
@@ -112,11 +131,11 @@ def unset_main_badge(request):
 def get_main_badge(user_email):
     nickname_main = nickname_collection.find_one({"user_email": user_email, "is_main": True})
     if nickname_main:
-        main_nickname, main_badge_name, main_badge_image = get_nickname(nickname_main['nickname_id'])
+        main_nickname_id, main_nickname, main_badge_name, main_badge_image = get_nickname(nickname_main['nickname_id'])
     else:
-        main_nickname, main_badge_name, main_badge_image = '대표 별명이 없습니다.', '', ''
+        main_nickname_id, main_nickname, main_badge_name, main_badge_image = '', '대표 별명이 없습니다.', '', ''
 
-    return main_nickname, main_badge_name, main_badge_image
+    return main_nickname_id, main_nickname, main_badge_name, main_badge_image
 
 
 

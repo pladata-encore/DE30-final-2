@@ -44,7 +44,7 @@ def main_badge(request):
     # 로그인 사용자 예시 이메일
     user_email = settings.DEFAULT_FROM_EMAIL
 
-    main_nickname, main_badge_name, main_badge_image = get_main_badge(user_email)
+    main_nickname_id, main_nickname, main_badge_name, main_badge_image = get_main_badge(user_email)
     return {
         'main_nickname': main_nickname,
         'main_badge_name': main_badge_name,

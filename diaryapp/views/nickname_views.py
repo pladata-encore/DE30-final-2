@@ -110,7 +110,7 @@ def get_nickname(nickname_id=None):
         with gzip.GzipFile(fileobj=img_gzip, mode='rb') as f:
             badge_image = f.read().decode('utf-8')
 
-        return nickname, badge_name, badge_image
+        return nickname_id, nickname, badge_name, badge_image
     else :
         return '별명이 없습니다.', '', ''
 

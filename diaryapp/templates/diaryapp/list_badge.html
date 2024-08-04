@@ -5,7 +5,7 @@
         <h3 class="tit_main">여행 뱃지</h3>
         <div class="badge_tour badge_main">
             <h4 class="tit_main">대표 여행 뱃지</h4>
-            <a href="" class="link_badge">
+            <a href="{{main_badge_link}}" class="link_badge">
                 <span class="scope_badge">
                     <em class="screen_out">{{ main_badge_name }} 뱃지</em>
                     <img src="data:image/png;base64,{{ main_badge_image }}" class="img_badge"  alt={{ main_badge_name }}>
@@ -22,7 +22,7 @@
             {% for item in list_badge %}
             <li>
                 <div class="badge_tour">
-                    <a href="" class="link_badge">
+                    <a href="{{item.badge_link}}" class="link_badge">
                         <span class="scope_badge">
                             <em class="screen_out">{{ item.badge_name }} 뱃지</em>
                             <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge"  alt="{{ item.badge_name }}">
@@ -44,9 +44,9 @@
             대표 뱃지 제거 : 아무 곳에나 드래그하여 놓으면 제거됩니다.
         </p>
     </div>
-    <div class="cont_main">
-        <h3 class="tit_main">여행 통계</h3>
-    </div>
+<!--    <div class="cont_main">-->
+<!--        <h3 class="tit_main">여행 통계</h3>-->
+<!--    </div>-->
 </section>
 <script>
 $(document).ready(function() {
