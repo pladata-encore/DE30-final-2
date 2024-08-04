@@ -2,43 +2,60 @@
 <section id="listBadge" class="main main_badge">
     <h2 class="screen_out">나의 여행 뱃지</h2>
     <div class="info_main">
-        <h3 class="tit_main">여행 뱃지</h3>
-        <div class="badge_tour badge_main">
-            <h4 class="tit_main">대표 여행 뱃지</h4>
-            <a href="{{main_badge_link}}" class="link_badge">
-                <span class="scope_badge">
-                    <em class="screen_out">{{ main_badge_name }} 뱃지</em>
-                    <img src="data:image/png;base64,{{ main_badge_image }}" class="img_badge"  alt={{ main_badge_name }}>
-                </span>
-                <em class="screen_out">별명</em>
-                <strong class="tit_badge">{{ main_nickname }}</strong>
-            </a>
-            {% if main_nickname != '대표 별명이 없습니다.' %}
-                <button class="unset_main" data-nickname-id="{{ main_nickname_id }}">대표 해제</button>
-            {% endif %}
+        <div class="scope_info">
+            <h3 class="tit_main">여행 뱃지</h3>
+            <div class="badge_tour badge_main">
+                <h4 class="tit_badgemain">
+                    대표 여행 뱃지
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                      <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                    </svg>
+                </h4>
+                <a href="{{main_badge_link}}" class="link_badge">
+                    <span class="scope_badge drop_zone">
+                        <em class="screen_out">{{ main_badge_name }} 뱃지</em>
+                        <img src="data:image/png;base64,{{ main_badge_image }}" class="img_badge"  alt="{{ main_badge_name }}">
+                    </span>
+                    <em class="screen_out">별명</em>
+                    <strong class="tit_badge">{{ main_nickname }}</strong>
+                </a>
+                {% if main_nickname != '대표 별명이 없습니다.' %}
+                    <button class="unset_main" data-nickname-id="{{ main_nickname_id }}">대표 해제</button>
+                {% endif %}
+            </div>
         </div>
         <h4 class="screen_out">여행 뱃지 목록</h4>
-        <ul class="list_badge">
-            {% for item in list_badge %}
-            <li>
-                <div class="badge_tour">
-                    <a href="{{item.badge_link}}" class="link_badge">
-                        <span class="scope_badge">
-                            <em class="screen_out">{{ item.badge_name }} 뱃지</em>
-                            <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge"  alt="{{ item.badge_name }}">
-                        </span>
-                        <em class="screen_out">별명</em>
-                        <strong class="tit_badge">{{ item.nickname }}</strong>
-                    </a>
-                    {% if item.is_main %}
-                    <button class="unset_main" data-nickname-id="{{ item.nickname_id }}">대표 해제</button>
-                    {% else %}
-                    <button class="set_main" data-nickname-id="{{ item.nickname_id }}">대표 설정</button>
-                    {% endif %}
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="slide_tour">
+            <ul class="list_badge slider">
+                {% for item in list_badge %}
+                <li>
+                    <div class="badge_tour {% if item.nickname_id == main_nickname_id %}main-selected{% endif %}" >
+                        <a href="{{item.badge_link}}" class="link_badge">
+                            <span class="scope_badge" data-nickname-id="{{ item.nickname_id }}">
+                                <em class="screen_out">{{ item.badge_name }} 뱃지</em>
+                                <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge"  alt="{{ item.badge_name }}">
+                            </span>
+                            <em class="screen_out">별명</em>
+                            <strong class="tit_badge">{{ item.nickname }}</strong>
+                        </a>
+                        {% if item.is_main %}
+                        <button class="unset_main" data-nickname-id="{{ item.nickname_id }}">대표 해제</button>
+                        {% else %}
+                        <button class="set_main" data-nickname-id="{{ item.nickname_id }}">대표 설정</button>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <button class="carousel-control-prev" type="button" id="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" id="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
         <p class="txt_info">
             대표 뱃지 설정 : 원하는 뱃지를 대표 뱃지 영역으로 드래그하여 올려주세요.</br>
             대표 뱃지 제거 : 아무 곳에나 드래그하여 놓으면 제거됩니다.
@@ -55,7 +72,8 @@ $(document).ready(function() {
         var $badgeMain = $('.badge_main');
 
         $badgeMain.find('img').attr('src', badgeImage);
-        $badgeMain.find('.scope_badge em').text(badgeName);
+        $badgeMain.find('img').attr('alt', badgeName);
+        $badgeMain.find('.scope_badge em').text(badgeName + ' 뱃지');
         $badgeMain.find('.tit_badge').text(nickname);
 
         // list_badge 본문에 있는 대표 해제 버튼만 갱신
@@ -68,11 +86,8 @@ $(document).ready(function() {
         }
     }
 
-    // 대표 설정 버튼 클릭
-    $('.badge_tour').on('click', '.set_main', function(event) {
-        event.preventDefault();
-        var nicknameId = $(this).data('nickname-id');
-        var $thisButton = $(this); // 클릭된 버튼 저장
+    // 대표 생성 함수
+    function setMainBadge(nicknameId, $badgeElement) {
         $.ajax({
             url: "set_main_badge/",
             type: "POST",
@@ -82,20 +97,22 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    var badgeImage = $thisButton.closest('.badge_tour').find('.img_badge').attr('src');
-                    var badgeName = $thisButton.closest('.badge_tour').find('.scope_badge em').text();
-                    var nickname = $thisButton.closest('.badge_tour').find('.tit_badge').text();
+                    var badgeImage = $badgeElement.find('.img_badge').attr('src');
+                    var badgeName = $badgeElement.find('.scope_badge em').text().split(' ')[0];
+                    var nickname = $badgeElement.find('.tit_badge').text();
 
                     updateMainBadge(badgeImage, badgeName, nickname, nicknameId, true);
 
-                    $thisButton.text('대표 해제').removeClass('set_main').addClass('unset_main');
+                    $('.badge_tour').removeClass('main-selected');
+                    $badgeElement.addClass('main-selected');
+
+                    $badgeElement.find('.set_main').text('대표 해제').removeClass('set_main').addClass('unset_main');
 
                     $('.badge_tour .unset_main').each(function() {
                         if ($(this).data('nickname-id') !== nicknameId) {
                             $(this).text('대표 설정').removeClass('unset_main').addClass('set_main');
                         }
                     });
-
                 } else {
                     alert('대표 뱃지 설정 실패');
                 }
@@ -104,14 +121,11 @@ $(document).ready(function() {
                 console.error("AJAX 요청 실패:", status, error);
             }
         });
-    });
+    }
 
-    // 대표 해제 버튼 클릭
-    $('.badge_tour').on('click', '.unset_main', function(event) {
-        event.preventDefault();
-        var nicknameId = $(this).data('nickname-id');
-        var $thisButton = $(this); // 클릭된 버튼 저장
 
+    // 대표 해제 함수
+    function unsetMainBadge(nicknameId, $button) {
         $.ajax({
             url: "unset_main_badge/",
             type: "POST",
@@ -124,8 +138,10 @@ $(document).ready(function() {
                     updateMainBadge('', '', '대표 별명이 없습니다.', '', false);
 
                     // 클릭된 버튼의 상태 업데이트
-                    $thisButton.text('대표 설정').removeClass('unset_main').addClass('set_main');
-
+                    if ($button) {
+                        $button.text('대표 설정').removeClass('unset_main').addClass('set_main');
+                    }
+                    $('.badge_tour').removeClass('main-selected');
                 } else {
                     alert('대표 뱃지 해제 실패');
                 }
@@ -134,7 +150,78 @@ $(document).ready(function() {
                 console.error("AJAX 요청 실패:", status, error);
             }
         });
+    }
+
+    // 대표 설정 버튼 클릭
+    $('.badge_tour').on('click', '.set_main', function(event) {
+        event.preventDefault();
+        var nicknameId = $(this).data('nickname-id');
+        setMainBadge(nicknameId, $(this).closest('.badge_tour'));
     });
+
+    // 대표 해제 버튼 클릭
+    $('.badge_tour').on('click', '.unset_main', function(event) {
+        event.preventDefault();
+        var nicknameId = $(this).data('nickname-id');
+        unsetMainBadge(nicknameId, $(this));
+    });
+
+
+    // 뱃지 드래그
+    $('.list_badge .badge_tour .scope_badge').draggable({
+        revert: true,
+        start: function(event, ui) {
+        // 드래그 시작 시 현재 위치 저장
+        var $this = $(this);
+        $this.data('originalPosition', $this.offset());
+        $this.addClass("dragging");
+        },
+        stop: function() {
+            $(this).removeClass("dragging");
+        }
+    });
+
+    // 메인 뱃지 드래그
+    $('.badge_main .scope_badge').draggable({
+        revert: true,
+        start: function(event, ui) {
+            $(this).addClass("dragging");
+        },
+        stop: function(event, ui) {
+            $(this).removeClass("dragging");
+        }
+    });
+
+    // 뱃지 드롭
+    $('.drop_zone').droppable({
+        accept: ".list_badge .badge_tour .scope_badge",
+        classes: {
+            "ui-droppable-hover": "over"
+        },
+        drop: function(event, ui) {
+            var $Element = ui.draggable;
+            var nicknameId = $Element.data('nickname-id');
+            var $badgeElement = $Element.closest('.badge_tour');
+
+
+            setMainBadge(nicknameId, $badgeElement);
+        }
+    });
+
+    // 메인 뱃지 드롭
+    $('.main_badge').droppable({
+        accept: ".badge_main .scope_badge",
+        drop: function(event, ui) {
+            var currentMainId = $('.badge_main .unset_main').data('nickname-id');
+            if (currentMainId) {
+                unsetMainBadge(currentMainId, $('.unset_main'));
+            }
+        }
+    });
+
+
+
+
 
 });
 </script>

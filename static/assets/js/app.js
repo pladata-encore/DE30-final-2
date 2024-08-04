@@ -11,6 +11,12 @@ window.addEventListener('scroll', function() {
 
 document.addEventListener('DOMContentLoaded', (event) => {
 
+// 헤더 스크롤(새로고침)
+const header = document.getElementById('head');
+if (window.scrollY > 10) {
+    header.classList.add('scrolled');
+}
+
 //다이어리 슬라이드
 function initializeSlider() {
 
@@ -41,14 +47,17 @@ function initializeSlider() {
     }
 
     function updateSliderButtons() {
-        const slides = sliderContainer.querySelectorAll('.card');
-        const hasSlides = slides.length > 0; // 카드가 있는지 확인
-        nextButton.style.display = hasSlides && currentIndex === slides.length - 1 ? 'none' : 'flex';
-        prevButton.style.display = hasSlides && currentIndex === 0 ? 'none' : 'flex';
-        // 카드가 없는 경우 버튼 숨기기
-        if (!hasSlides) {
+        const sliderContainerWidth = sliderContainer.offsetWidth;
+        const sliderWidth = slider.offsetWidth;
+
+         if (slides.length === 0 || sliderWidth <= sliderContainerWidth) {
             nextButton.style.display = 'none';
             prevButton.style.display = 'none';
+            currentIndex = 0;
+            updateSliderPosition();
+        } else {
+            nextButton.style.display = currentIndex === slides.length - 1 ? 'none' : 'flex';
+            prevButton.style.display = currentIndex === 0 ? 'none' : 'flex';
         }
     }
 
@@ -127,6 +136,110 @@ function initializeSlider() {
 
 }
 initializeSlider();
+
+
+// 슬라이드
+function setupslideTour() {
+    const slideTour = document.querySelector('.slide_tour');
+    if (!slideTour) return;
+
+    const slider = slideTour.querySelector('.slider');
+    const nextButton = slideTour.querySelector('#next');
+    const prevButton = slideTour.querySelector('#prev');
+    const slides = slider.querySelectorAll('.slider li');
+    let currentIndex = 0;
+
+    // 슬라이드의 너비 가져오기
+    const slideWidth = slides.length > 0 ? slides[0].offsetWidth : 0;
+
+    // 다음 버튼 클릭 시
+    nextButton.addEventListener('click', () => {
+        if (currentIndex < slides.length - 1) {
+            currentIndex++;
+            updateSlider(slider, currentIndex);
+            updateSliderButtons();
+        }
+    });
+
+    // 이전 버튼 클릭 시
+    prevButton.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateSlider(slider, currentIndex);
+            updateSliderButtons();
+
+        }
+    });
+
+    // 슬라이더 위치 업데이트
+    function updateSlider(slider, currentIndex) {
+        const offset = -currentIndex * slideWidth;
+        slider.style.transform = `translateX(${offset}px)`;
+    }
+
+    function updateSliderButtons() {
+        const slideTourWidth = slideTour.offsetWidth;
+        const sliderWidth = slider.offsetWidth;
+
+        if (slides.length === 0 || sliderWidth <= slideTourWidth) {
+            nextButton.style.display = 'none';
+            prevButton.style.display = 'none';
+            currentIndex = 0;
+            updateSlider(slider, currentIndex);
+        } else {
+            nextButton.style.display = currentIndex === slides.length - 1 ? 'none' : 'flex';
+            prevButton.style.display = currentIndex === 0 ? 'none' : 'flex';
+        }
+    }
+
+    // 터치 이벤트 추가
+    let startX = 0;
+    let endX = 0;
+
+    // 터치 시작
+    slider.addEventListener('touchstart', (event) => {
+        startX = event.touches[0].clientX;
+        document.body.style.overflow = 'hidden'; // 스크롤 방지
+
+    });
+
+    // 터치 끝
+    slider.addEventListener('touchend', (event) => {
+        endX = event.changedTouches[0].clientX;
+        handleSwipe();
+        document.body.style.overflow = ''; // 스크롤 다시 활성화
+
+    });
+
+    // 스와이프 처리
+    function handleSwipe() {
+        if (startX > endX + 50) {
+            if (currentIndex < slides.length - 1) {
+                currentIndex++;
+                updateSlider(slider, currentIndex);
+                updateSliderButtons();
+            }
+        } else if (startX < endX - 50) {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateSlider(slider, currentIndex);
+                updateSliderButtons();
+            }
+        }
+    }
+
+    // 초기 슬라이더 업데이트
+    updateSlider(slider, currentIndex);
+    updateSliderButtons();
+
+    // 창 크기 변경 이벤트 리스너 추가
+    window.addEventListener('resize', () => {
+        updateSliderButtons();
+    });
+
+
+}
+setupslideTour();
 
 
 
