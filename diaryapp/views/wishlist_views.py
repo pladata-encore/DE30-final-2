@@ -11,7 +11,7 @@ from ..models import *
 @require_POST
 def add_wish(request):
     place = request.POST.get('place')
-    user_email = settings.DEFAULT_FROM_EMAIL  # 사용자 이메일 가져오기 (로그인된 경우)
+    user_email = 'dobi3@nate.com'  # 사용자 이메일 가져오기 (로그인된 경우)
 
     if not user_email:
         return JsonResponse({'status': 'error', 'message': '로그인 필요'}, status=403)
