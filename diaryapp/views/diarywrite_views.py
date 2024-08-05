@@ -191,7 +191,7 @@ def generate_diary(request, plan_id=None):
 
 # 직접 일기 부분 작성
 """사용자가 일기 작성"""
-def write_diary(request):
+def write_diary(request, plan_id=None):
     if request.method == 'POST':
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
@@ -232,7 +232,8 @@ def write_diary(request):
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
             # 나중에 user 정보 넘길 예정
-            nickname_id = create_nickname(unique_diary_id, user_email, content, "plan_id")
+            print(f'-------------여기는 다이어리 작성 닉네임 쪽-------------{plan_id}')
+            nickname_id = create_nickname(unique_diary_id, user_email, content, plan_id)
             # 별명 : 세션에 show_modal 저장
             request.session['show_modal'] = True
             # 별명 : 다이어리에 별명 ID 저장

@@ -99,7 +99,7 @@ strong, b{color:inherit}
 @media screen and (max-width: 480px) {
   .head_tour .badge_tour .tit_badge{display:none}
 }
-.tit_badgemain{width:28px;height:28px;min-width:28px;overflow:hidden;font-size: 0;line-height: 0;margin-top:-11.2px}
+.tit_badgemain{width:28px;height:28px;min-width:28px;overflow:hidden;font-size: 0;line-height: 0}
 .tit_badgemain svg{color:#8cc9f0}
 .tit_badgemain + .link_badge{margin-left:15px}
 
@@ -187,19 +187,23 @@ main {
 .main .info_main{padding:0 1em}
 #main > .main_diary{padding-left:0;padding-right:0;}
 .main_diary .scope_tit{display:flex}
-.main_diary .tit_badgemain{width:20px;height:20px;min-width:20px;margin-top:3px}
-.main_diary .tit_diary{font-size:1.5rem;font-weight:500;word-break:keep-all}
-
-.main_diary .badge_main .scope_badge{width:70px;height:70px;min-width:70px}
+.main_diary .tit_diary{font-size:1.5rem;font-weight:500;word-break:keep-all;margin-bottom:0}
+#main .btn_setting{width:32px;height:32px;min-width:32px;overflow:hidden;box-shadow:none;font-size:0;line-height: 0;opacity:0.5; transition: opacity 0.2s ease;}
+#main .btn_setting:hover, #main .btn_setting:active, #main .btn_setting:focus{background:none;opacity:1}
+.main_diary .scope_input{width:80%}
+.main_diary .scope_input button{margin-top:15px}
+.main_diary .scope_input .primary{margin-right:5px}
+.main_diary .tit_badgemain{width:24px;height:24px;min-width:24px}
+.main_diary .badge_main{margin-top:1em}
+.main_diary .badge_main .scope_badge{width:60px;height:60px;min-width:60px}
+.main_diary .badge_main .tit_badge{font-size:1.1rem}
 .card_diary{position:relative;margin-top:3em}
 .card_diary .tit_main{margin-left:1em;}
 .link_all{position:absolute;right:1em;top:0;font-size:.8em;line-height:2.5;font-weight:400}
 .link_all svg{vertical-align:text-top}
-#main .btn_setting{width:32px;height:32px;min-width:32px;overflow:hidden;box-shadow:none;font-size:0;line-height: 0;opacity:0.5; transition: opacity 0.2s ease;}
-#main .btn_setting:hover, #main .btn_setting:active, #main .btn_setting:focus{background:none;opacity:1}
+
 
 /* slider */
-
 .slider-container {
   display:flex;
   align-items:center;
@@ -261,6 +265,7 @@ main {
 .card-add .txt_add{display:block;color:#fff;margin-top:.5em;font-weight:500;font-size:1.1rem}
 
 .main_diary .slider-container{margin-top:30px}
+.main_diary .no-diaries{padding:0 1em}
 
 
 
@@ -276,14 +281,14 @@ main {
 .main_badge .badge_tour .unset_main{background-color:rgba(222, 222, 222, 0.3) !important}
 
 .main_badge .badge_main{display:flex;width:auto;margin-top:30px}
+.main_badge .tit_badgemain{margin-top:-3rem}
 .main_badge .badge_main .scope_badge{width:120px;height:120px;min-width:120px}
 @media screen and (max-width: 360px) {
   .main_badge .badge_tour .link_badge{max-width:100px}
   .main_badge .badge_main .scope_badge{width:100px;height:100px;min-width:100px}
 }
 .main_badge .badge_main .tit_badge{margin-top:15px}
-.main_badge .badge_main .unset_main{margin:-11.2px 0 0 20px}
-
+.main_badge .badge_main .unset_main{margin:-3rem 0 0 20px}
 
 .slide_tour{display:flex;align-items:center;position:relative;width:100%;}
 .slide_tour .slider{display:flex;z-index:10;transition:transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);margin-left:1em}
@@ -565,5 +570,24 @@ main {
 }
 #list_diary .card-body {
     padding: 1rem;
+}
+
+
+/* 모달창 : 다이어리 뱃지, 별명 획득 */
+.modal-open .modal_badge{display:flex !important}
+.modal_badge{justify-content:center;align-items:center;height:100vh;}
+.modal_badge .modal-content{position:initial;padding:1rem;background-color:transparent;border:none 0}
+.modal_badge .modal-dialog{position:initial}
+.modal_badge .modal-body{max-height:none}
+.modal_badge .badge_tour{display:block}
+.modal_badge .badge_tour .link_badge{display:block}
+.modal_badge .badge_tour .scope_badge{width:200px;height:200px;min-width:200px;margin:0 auto}
+.modal_badge.modal-dialog{position:}
+#detail_diary .modal_badge .badge_tour .tit_badge{display:block;margin:18px 0 0 0;font-size:2rem;text-align:center;word-break:keep-all;color:#fff}
+#detail_diary .modal_badge .txt_info{margin:20px 0 0 0 !important;font-size:1.3rem;text-align:center;color:rgba(255,255,255,.8);word-break:keep-all;}
+#detail_diary .modal_badge .btn-close{position:absolute;right:1rem;top:1rem;width:50px;height:50px;overflow:hidden;color:transparent !important;box-shadow:none;font-size:1.5rem;filter:invert(1) grayscale(100);min-width:auto}
+#detail_diary .modal_badge .btn-close:hover, #detail_diary .modal_badge .btn-close:focus{background-color:transparent}
+@media screen and (max-width: 360px) {
+    .modal_badge .badge_tour .scope_badge{width:160px;height:160px;min-width:160px}
 }
 

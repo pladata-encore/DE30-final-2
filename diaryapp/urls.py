@@ -7,8 +7,8 @@ urlpatterns = [
     #### diarywrite_views.py ####
     # 다이어리 생성
     path('generate_diary/', diarywrite_views.generate_diary, name='generate_diary'),
-    path('generate_diary/<str:plan_id>/', diarywrite_views.generate_diary, name='generate_diary_plan_id'),
     path('write_diary/', diarywrite_views.write_diary, name='write_diary'),
+    path('write_diary/<str:plan_id>/', diarywrite_views.write_diary, name='write_diary_plan_id'),
     path('image/<int:pk>/', diarywrite_views.image_detail, name='image_detail'),
 
     # 다이어리 상세화면

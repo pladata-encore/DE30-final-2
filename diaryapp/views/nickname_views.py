@@ -17,7 +17,9 @@ nickname_collection = db['diaryapp_nickname']
 
 
 # 별명 생성 함수
-def create_nickname(unique_diary_id, user_email, content, plan_id):
+def create_nickname(unique_diary_id, user_email, content, plan_id=None):
+
+    print(f'--------여기는 create_nickname-- {plan_id}')
     # 별명 api 호출
     url = 'http://localhost:5000/generate-nickname/'
     params = {
@@ -112,7 +114,7 @@ def get_nickname(nickname_id=None):
 
         return nickname_id, nickname, badge_name, badge_image
     else :
-        return '별명이 없습니다.', '', ''
+        return '','별명이 없습니다.', '', ''
 
 
 

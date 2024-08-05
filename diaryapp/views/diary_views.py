@@ -23,7 +23,7 @@ db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 collection = db['areaBaseList']
 user_collection = db['users']
 diary_collection = db['diaryapp_aiwritemodel']
-plan_collection = db['J_plan']
+plan_collection = db['plan']
 
 
 logger = logging.getLogger(__name__)
@@ -70,7 +70,10 @@ def viewDiary(request, user_email=None):
 
             try:
                 diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.unique_diary_id)
-                nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+                if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
+                    nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
+                else:
+                    nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
                 enriched_diary = {
                     'diary': diary,
                     'nickname': nickname,
@@ -85,7 +88,7 @@ def viewDiary(request, user_email=None):
                     'diary': diary,
                     'nickname': 'Unknown',
                     'badge_name': 'Unknown',
-                    'badge_image': 'Unknown'
+                    'badge_image': 'Unknown',
                 })
 
     except DatabaseError as e:
@@ -99,48 +102,20 @@ def viewDiary(request, user_email=None):
     schedule_links_and_diary_links = []
     try:
         # 다이어리에서 plan_id 추출
-        # diaries = diary_collection.find({'email': user['email']})
-        # plan_id_diaries = [diary['plan_id'] for diary in diaries if 'plan_id' in diary]
-        #
-        # # 계획에서 조건에 맞는 plan_id 필터링
-        # target_plans = plan_collection.find({
-        #     'email': user['email'],
-        #     'plan_id': {'$nin': plan_id_diaries}
-        # })
+        diaries = diary_collection.find({'email': user['email']})
+        plan_id_diaries = [diary['plan_id'] for diary in diaries if 'plan_id' in diary]
 
-        # 예시 계획
-        target_plans = [{
-            'province': '경기도',
-            'city': '안산시',
-            'email': settings.DEFAULT_FROM_EMAIL,
-            'plan_id': 'plan_id입니다.generate_diary 뷰함수가 받아요.',
-            'plan_title': '일정 제목 예시입니다. 여기를 누르면 해당 일정으로 이동합니다. 지금은 임시로 나의 여행 뱃지로 이동합니다.',
-            'days':{
-                "day1": [
-                    "가경목장",
-                    "귀인한우촌",
-                    "김제한우"
-                ],
-                "day2": [
-                    "까망조개이야기",
-                    "귀인한우촌",
-                    "궁중삼계탕"
-                ],
-                "day3": [
-                    "안산신길온천역휴먼빌2차아파트",
-                    "배터지는집",
-                    "벚나무집"
-                ]
-            },
-            # 다른 항목은 생략..
-        }]
+        # 계획에서 조건에 맞는 plan_id 필터링
+        target_plans = plan_collection.find({
+            'email': user['email'],
+            'plan_id': {'$nin': plan_id_diaries}
+        })
+
 
         if target_plans:
             for plan in target_plans:
                 plan_id = plan.get('plan_id', '')
                 plan_title = plan.get('plan_title', '')
-                province = plan.get('province', '')
-                city = plan.get('city', '')
                 days = plan.get('days', {})
 
                 # 랜덤으로 타이틀 추출
@@ -168,11 +143,8 @@ def viewDiary(request, user_email=None):
                     #'plan_id': plan_id,
                     # 각 일정의 url을 추가, 예시로 list_badge로 간다
                 })
-                create_diary_url = reverse('generate_diary_plan_id', kwargs={
-                    'plan_id': plan_id,
-                    # 'plan_title': plan_title,
-                    # 'province': province,
-                    # 'city': city,
+                create_diary_url = reverse('write_diary_plan_id', kwargs={
+                    'plan_id': plan_id
                 })
 
                 schedule_links_and_diary_links.append({

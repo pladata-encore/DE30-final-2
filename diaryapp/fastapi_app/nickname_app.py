@@ -37,6 +37,7 @@ collection = db['areaBaseList']
 cat1_collection = db['categoryCode1']
 cat2_collection = db['categoryCode2']
 cat3_collection = db['categoryCode3']
+plan_collection = db['plan']
 
 
 # komoran 초기화 / fasttext model 로드
@@ -214,13 +215,26 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
 
     # 일정 여행지 plan_id
     # 일정 id를 받아 와서 일정 데이터를 불러와 title, cat1, cat2, cat3를 뽑기->plan_data
-    plan_id = 'test'
+    # plan_id = 'test'
     print('------------------', plan_id)
 
+    # 일정 여행지 list 가져 오기
+    plan = plan_collection.find_one({'plan_id': plan_id})
+    days = plan.get('days', {})
+
+    all_titles = []
+    for day, titles in days.items():
+        all_titles.extend(titles)
+
+    query = {"title": {"$in": all_titles}}
+    projection = {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0}
+    cursor = collection.find(query, projection)
+
     # 일정 여행지 list (예시)
-    cursor = collection.find({"title": {"$regex": "우도\\(해양도립공원\\)|세화해변|협재해수욕장|성산일출봉"}},
-                             {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0})
+    # cursor = collection.find({"title": {"$regex": "우도\\(해양도립공원\\)|세화해변|협재해수욕장|성산일출봉"}},
+    #                          {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0})
     plan_data = list(cursor)
+    print('------------------', plan_data)
 
     # 다이어리 content
     # 일정 여행지 list (예시)
