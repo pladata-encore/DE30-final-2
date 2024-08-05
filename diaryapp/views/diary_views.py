@@ -1,5 +1,7 @@
 import logging
 import traceback
+
+from django.contrib.auth.decorators import login_required
 from django.db import DatabaseError
 from django.http import HttpResponseServerError
 from django.shortcuts import render, get_object_or_404
@@ -9,14 +11,22 @@ from myproject import settings
 
 logger = logging.getLogger(__name__)
 
-def viewDiary(request, user_email):
-    user_email = settings.DEFAULT_FROM_EMAIL
+# @login_required
+
+def viewDiary(request, user_email=None):
+    if user_email is None:
+        user_email = request.user.email
+    else:
+        # User = get_user_model()
+        # user = get_object_or_404(User, email=user_email)
+        # user_email = user.email
+        user_email = settings.DEFAULT_FROM_EMAIL
+
     enriched_diary_list = []
 
     try:
         diaries = AiwriteModel.objects.filter(user_email=user_email).order_by('-created_at')[:5]
 
-        # 디버깅을 위한 로그 추가
         logger.info(f"Retrieved diaries for {user_email}")
         for diary in diaries:
             logger.info(f"Diary: {diary.unique_diary_id}, Title: {diary.diarytitle}, Created at: {diary.created_at}")
@@ -41,10 +51,9 @@ def viewDiary(request, user_email):
                     'badge_image': 'Unknown'
                 })
 
-    except DatabaseError as e:
-        logger.error(f"Database error occurred: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error occurred: {str(e)}")
         logger.error(traceback.format_exc())
-        enriched_diary_list = []
         return HttpResponseServerError("An error occurred while accessing the database.")
 
     context = {

@@ -58,8 +58,8 @@ urlpatterns = [
     # path('list_diary', diarywrite_views.list_user_diary, name='list_user_diary'),
 
     # 다이어리 메인
-        # path('',diarywrite_views.viewDiary),
-    path('<str:user_email>/', diary_views.viewDiary, name='user_diary_main'),
+    path('', diary_views.viewDiary, name='user_diary_main'),
+    path('/<str:user_email>', diary_views.viewDiary, name='other_user_diary_main'),
 
 ]
 
