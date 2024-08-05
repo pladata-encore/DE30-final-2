@@ -219,22 +219,29 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
     print('------------------', plan_id)
 
     # 일정 여행지 list 가져 오기
-    plan = plan_collection.find_one({'plan_id': plan_id})
-    days = plan.get('days', {})
+    if plan_id :
+        plan = plan_collection.find_one({'plan_id': plan_id})
+        days = plan.get('days', {})
 
-    all_titles = []
-    for day, titles in days.items():
-        all_titles.extend(titles)
+        all_titles = []
+        for day, titles in days.items():
+            all_titles.extend(titles)
 
-    query = {"title": {"$in": all_titles}}
-    projection = {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0}
-    cursor = collection.find(query, projection)
+        query = {"title": {"$in": all_titles}}
+        projection = {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0}
+        cursor = collection.find(query, projection)
+
+        plan_data = list(cursor)
+        print('------------------', plan_data)
+    else :
+        plan_data = [{"title": '', "cat1": '', "cat2": '', "cat3": ''}]
+
 
     # 일정 여행지 list (예시)
     # cursor = collection.find({"title": {"$regex": "우도\\(해양도립공원\\)|세화해변|협재해수욕장|성산일출봉"}},
     #                          {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0})
-    plan_data = list(cursor)
-    print('------------------', plan_data)
+    # plan_data = list(cursor)
+
 
     # 다이어리 content
     # 일정 여행지 list (예시)

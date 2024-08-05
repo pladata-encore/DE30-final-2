@@ -2,8 +2,10 @@
 <section id="write_diary" class="writediary detail_diary" xmlns="http://www.w3.org/1999/html">
     <h2 class="screen_out">다이어리 작성</h2>
     <div class="write-container">
+        {{plan_id}}
         <h1 style="color: #636363; font-weight: bold;">다이어리 작성하기</h1>
         <form id="diary-form" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="plan_id" value="{{ plan_id }}">
             {% csrf_token %}
 
             <p>
@@ -77,10 +79,13 @@
             // 로딩 스크린 표시
             document.getElementById('loading-screen').style.display = 'block';
 
+            // plan_id 가져오기 (hidden input에서)
+            var planId = form.querySelector('[name="plan_id"]').value;
+
             if (content.trim() === '') {
-                url = '{% url "generate_diary" %}';
+                url = '/diary/generate_diary/${planId}/';
             } else {
-                url = '{% url "write_diary" %}';
+                url = '/diary/write_diary/${planId}/';
             }
 
             fetch(url, {

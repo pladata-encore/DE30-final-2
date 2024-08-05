@@ -187,14 +187,17 @@ def generate_diary(request, plan_id=None):
         form = DiaryForm()
         image_form = ImageUploadForm()
 
-    return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
+    return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id' : plan_id})
 
 # 직접 일기 부분 작성
 """사용자가 일기 작성"""
 def write_diary(request, plan_id=None):
+    print(f'-------------여기가 다이어리 00번-------------{plan_id}')
     if request.method == 'POST':
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
+        plan_id = request.POST.get('plan_id', plan_id)
+        print(f'-------------여기가 다이어리 01번-------------{plan_id}')
 
         if form.is_valid() and image_form.is_valid():
             diarytitle = form.cleaned_data['diarytitle']
@@ -271,7 +274,7 @@ def write_diary(request, plan_id=None):
         form = DiaryForm()
         image_form = ImageUploadForm()
 
-    return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
+    return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id': plan_id})
 
 '''전체 일기 리스트'''
 def list_diary(request):
