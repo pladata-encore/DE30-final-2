@@ -17,8 +17,10 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Command has already been executed.'))
             return
 
-        client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
-        db = client[settings.DATABASES['default']['NAME']]
+        # MongoDB 클라이언트 설정
+        db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+
+        # 컬렉션
         badge_collection = db['diaryapp_badge']
         categoryCode1_collection = db['categoryCode1']
         categoryCode3_collection = db['categoryCode3']

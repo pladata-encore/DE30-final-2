@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from diaryapp.views import diarywrite_views, comment_views, wishlist_views
-from diaryapp.views import diarywrite_views, comment_views, base_views, diary_views, badge_views
+from diaryapp.views import diarywrite_views, comment_views, wishlist_views, base_views, diary_views, badge_views
 
 urlpatterns = [
     #### diarywrite_views.py ####
     # 다이어리 생성
     path('generate_diary/', diarywrite_views.generate_diary, name='generate_diary'),
+    path('generate_diary/<str:plan_id>/', diarywrite_views.generate_diary, name='generate_diary_plan_id'),
     path('write_diary/', diarywrite_views.write_diary, name='write_diary'),
     path('image/<int:pk>/', diarywrite_views.image_detail, name='image_detail'),
 
@@ -19,6 +19,11 @@ urlpatterns = [
 
     # 다이어리 삭제
     path('delete_diary/<str:unique_diary_id>/', diarywrite_views.delete_diary, name='delete_diary'),
+
+    # 다이어리 메인
+    path('',diary_views.viewDiary, name='my_diary'),
+    path('view/<str:user_email>/', diary_views.viewDiary, name='other_diary'),
+    path('save_title_diary/', diary_views.save_title_diary, name='save_title_diary'),
 
     # 일정 모달창
     path('plan_modal/<str:unique_diary_id>/', diarywrite_views.plan_modal, name='plan_modal'),
@@ -44,14 +49,11 @@ urlpatterns = [
     path('list_badge/set_main_badge/', badge_views.set_main_badge, name='set_main_badge'),
     path('list_badge/unset_main_badge/', badge_views.unset_main_badge, name='unset_main_badge'),
 
+
+    # Bootstrap 테마 예시 페이지
     path('index', base_views.viewIndex),
     path('elements', base_views.viewElements),
     path('generic', base_views.viewGeneric),
-    # Bootstrap 테마 예시 페이지
-    # path('index', views.viewIndex),
-    # path('elements', views.viewElements),
-
-    # path('generic', views.viewGeneric),
 
     # 리스트 다이어리
     path('all_list_diary/', diarywrite_views.list_diary, name='list_diary'),

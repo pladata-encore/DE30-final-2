@@ -13,9 +13,6 @@
       <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_badge.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_badge.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/diaryapp/views/badge_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/badge_views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/views/diary_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/diary_views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diaryapp/views/diarywrite_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/diarywrite_views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myproject/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,7 +96,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-5b207ade9991-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17890.14" />
+        <option value="bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
       </set>
     </attachedChunks>
   </component>

@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+
+import pymongo
+from decouple import config
 import os
 from dotenv import load_dotenv
 
@@ -78,7 +81,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "common.context_processors.main_badge"
+                "common.context_processors.main_badge",
+                "common.context_processors.get_user",
             ],
         },
     },
@@ -99,7 +103,7 @@ MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'MyDiary',
+        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
             'host': MONGO_URI,  # 또는 호스트 머신의 IP
@@ -150,6 +154,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# MongoDB 클라이언트 설정
+mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
+                                   username=DATABASES['default']['CLIENT']['username'],
+                                   password=DATABASES['default']['CLIENT']['password']
+                                   )
+# mongo_client를 settings에 추가
+MONGO_CLIENT = mongo_client
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

@@ -11,6 +11,8 @@ client = MongoClient(settings.MONGO_URI)
 db = client['MyDiary']
 aiwritemodel_collection = db['diaryapp_aiwritemodel']
 imagemodel_collection = db['diaryapp_imagemodel']
+
+
 def filter_diaries(year=None, month=None):
     match_condition = {}
     if year and month:
