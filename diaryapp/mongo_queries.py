@@ -1,7 +1,12 @@
 import os
+
+from django.http import JsonResponse
 from pymongo import MongoClient
 from django.conf import settings
 from datetime import datetime
+
+from diaryapp.models import AiwriteModel
+
 
 def get_mongodb_connection():
     client = MongoClient(settings.MONGO_URI)
@@ -57,3 +62,32 @@ def get_plan_by_id(plan_id):
     except Exception as e:
         print(f"Error fetching plan: {e}")
         return None
+
+
+def get_available_plans(request):
+    try:
+        user_email = 'neweeee@gmail.com'  # 실제 환경에서는 로그인한 사용자의 이메일을 사용해야 합니다
+        db = get_mongodb_connection()
+        plan_collection = db['plan']
+
+        used_plan_ids = AiwriteModel.objects.filter(user_email=user_email).values_list('plan_id', flat=True).distinct()
+
+        available_plans = plan_collection.find({
+            'email': user_email,
+            'plan_id': {'$nin': list(used_plan_ids)}
+        })
+
+        plan_list = [
+            {
+                'plan_id': plan['plan_id'],
+                'plan_title': plan['plan_title'],
+                'province': plan.get('province', ''),
+                'city': plan.get('city', '')
+            }
+            for plan in available_plans
+        ]
+
+        return JsonResponse({'plans': plan_list})
+    except Exception as e:
+        print(f"Error fetching available plans: {e}")
+        return JsonResponse({'error': 'Failed to fetch available plans'}, status=500)

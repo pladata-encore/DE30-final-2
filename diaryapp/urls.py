@@ -2,16 +2,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from diaryapp.views import diarywrite_views, comment_views, wishlist_views, base_views, diary_views, badge_views
+from .mongo_queries import get_available_plans
 
 urlpatterns = [
     #### diarywrite_views.py ####
     # 다이어리 생성
     path('api/get_plan_place/<str:plan_id>/', diarywrite_views.get_plan_place, name='get_plan_place'),
-    path('generate_diary/', diarywrite_views.generate_diary, name='generate_diary'),
-    path('generate_diary/<str:plan_id>/', diarywrite_views.generate_diary, name='generate_diary_plan_id'),
+    path('write_diary/<str:plan_id>/', diarywrite_views.write_diary, name='write_diary'),
+    path('generate_diary/<str:plan_id>/', diarywrite_views.generate_diary, name='generate_diary'),
     path('write_diary/', diarywrite_views.write_diary, name='write_diary'),
-    path('write_diary/<str:plan_id>/', diarywrite_views.write_diary, name='write_diary_plan_id'),
+    path('generate_diary/', diarywrite_views.generate_diary, name='generate_diary'),
     path('image/<int:pk>/', diarywrite_views.image_detail, name='image_detail'),
+    path('get_available_plans/', get_available_plans, name='get_available_plans'),
 
     # 다이어리 상세화면
     path('detail_diary/<str:unique_diary_id>/', diarywrite_views.detail_diary_by_id, name='detail_diary_by_id'),
