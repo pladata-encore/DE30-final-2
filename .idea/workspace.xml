@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/myproject/detailCommon.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/detailCommon.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myproject/detailIntro.py" beforeDir="false" afterPath="$PROJECT_DIR$/myproject/detailIntro.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jpage/templates/Jpage/map.html" beforeDir="false" afterPath="$PROJECT_DIR$/Jpage/templates/Jpage/map.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +56,7 @@
     "Python.map.executor": "Run",
     "Python.urls.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Merging Jpage",
+    "git-widget-placeholder": "Jpage",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/Playdata/OneDrive/바탕 화면/gitfile/Encore_Final_Project/static",
     "nodejs_package_manager_path": "npm",
