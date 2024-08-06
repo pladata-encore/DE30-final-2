@@ -9,7 +9,9 @@ urlpatterns = [
     path('place/', views.get_places, name='get_places'),
     path('coordinate/', views.get_coordinate, name='get_coordinate'),
     path('save_Plan/', views.get_Jplan, name='get_Jplan'),
-    path('stella/', views.Stella, name='views.Stella')
+    path('user_info/', views.user_info_view, name='user_info'),
+    path('user_info/<str:user_email>/', views.user_info_view, name='user_info_with_email'),
+    path('J/', views.jpagerender, name='jpagerender'),
 ]
 
 

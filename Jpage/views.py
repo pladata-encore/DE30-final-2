@@ -2,16 +2,22 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from pymongo import MongoClient
 from .models import categoryCode1, categoryCode2, categoryCode3, areaCode, cityDistrict, areaBaseList, jPlan
+from common.context_processors import get_user
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.shortcuts import render
+from django.http import HttpRequest
 
 
 
-client = MongoClient('mongodb://localhost:27017/', 27017)
+# client = MongoClient('mongodb+srv://Seora:playdata6292@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority', 27017)
+# db = client.MyDiary
+client = MongoClient('mongodb://localhost:27017/',
+                     27017)
 db = client.diaryData
 
-def Stella(request):
-    return render(request, 'Jpage/stella.html')
+def jpagerender(request):
+    return render(request, 'Jpage/Jpage.html')
 
 def get_data(request):
     # 모든 대분류 데이터를 가져옴
@@ -150,18 +156,24 @@ def get_Jplan(request):
         try:
             data = json.loads(request.body)
             print("Received data:", data)
+            plan_id = data.get('plan_id')
             city = data.get('city')
             province = data.get('province')
+            plan_title = data.get('plan_title')
+            email = data.get('email')
             places = data.get('places')
 
             if city and province:
                 plan = jPlan(
+                    plan_id=plan_id,
                     province=province,
                     city=city,
+                    plan_title=plan_title,
+                    email=email,
                     days=places
                 )
                 document = plan.to_dict()
-                result = db['J_plan'].insert_one(document)  # MongoDB에 저장
+                result = db['plan'].insert_one(document)  # MongoDB에 저장
                 return JsonResponse({"message": "Location saved successfully", "id": str(result.inserted_id)},
                                     status=200)
             else:
@@ -169,3 +181,9 @@ def get_Jplan(request):
         except json.JSONDecodeError:
             return JsonResponse({"message": "Invalid JSON"}, status=400)
     return JsonResponse({"message": "Method not allowed"}, status=405)
+
+def user_info_view(request: HttpRequest, user_email=None):
+    user_info = get_user(request, user_email)
+    return render(request, 'map.html', user_info)
+
+

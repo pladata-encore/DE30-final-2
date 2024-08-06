@@ -75,22 +75,31 @@ class cityDistrict(models.Model):
         db_table = 'cityDistrict'
 
 class jPlan:
-    def __init__(self, city, province, days):
+    def __init__(self, plan_id, city, province, plan_title, email, days):
+        self.plan_id =plan_id
         self.province = province
         self.city = city
+        self.plan_title = plan_title
+        self.email = email
         self.days = days
 
     def to_dict(self):
         return {
+            'plan_id':self.plan_id,
             'province': self.province,
             'city': self.city,
+            'plan_title': self.plan_title,
+            'email': self.email,
             'days': self.days
         }
 
     @staticmethod
     def from_dict(data):
         return jPlan(
+            plan_id=data.get('plan_id'),
             province=data.get('province'),
             city=data.get('city'),
+            plan_title=data.get('plan_title'),
+            email=data.get('email'),
             days=data.get('days')
         )
