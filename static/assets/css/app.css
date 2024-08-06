@@ -588,8 +588,6 @@ main {
 
 
 /* 모달창 : 다이어리 뱃지, 별명 획득 */
-.modal-open .modal_badge{display:flex !important}
-.modal_badge{justify-content:center;align-items:center;height:100vh;}
 .modal_badge .modal-content{position:initial;padding:1rem;background-color:transparent;border:none 0}
 .modal_badge .modal-dialog{position:initial}
 .modal_badge .modal-body{max-height:none}

@@ -2,20 +2,17 @@
 <section id="write_diary" class="writediary detail_diary" xmlns="http://www.w3.org/1999/html">
     <h2 class="screen_out">다이어리 작성</h2>
     <div class="write-container">
-        {{plan_id}}
         <h1 style="color: #636363; font-weight: bold;">다이어리 작성하기</h1>
         <form id="diary-form" method="post" enctype="multipart/form-data">
             <input type="hidden" name="plan_id" value="{{ plan_id }}">
             {% csrf_token %}
-            {{ form.plan_id }}
-
             <p>
                 <label for="id_diarytitle" style="color: #636363; font-size: 22px;">일기 제목:</label>
                 {{ form.diarytitle }}
             </p>
             <p>
                 <label for="id_place" style="color: #636363; font-size: 22px;">장소:</label>
-                {{ diary.place }}
+                <input type="text" id="id_place" name="place" value="" readonly>
             </p>
 
 <!--            <div>-->
@@ -123,6 +120,20 @@
                 document.getElementById('loading-screen').style.display = 'none';
                 console.error('Error:', error);
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var planId = document.querySelector('input[name="plan_id"]').value;
+            if (planId) {
+                fetch(`/diary/api/get_plan_place/${planId}/`)  // URL 경로 수정
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.place) {
+                            document.getElementById('id_place').value = data.place;
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
         });
     </script>
 </section>

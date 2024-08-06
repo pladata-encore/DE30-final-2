@@ -61,9 +61,15 @@ def translate_to_korean(text): # 일기 내용 한국어로 번역
     translated = translator.translate(text, src='en', dest='ko')
     return translated.text
 
+def get_plan_place(request, plan_id):
+    plan = get_plan_by_id(plan_id)
+    if plan:
+        place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+        return JsonResponse({'place': place})
+    return JsonResponse({'place': ''})
+
 """GPT3로 일기 생성"""
 def generate_diary(request, plan_id=None):
-    # print(f'-------------여기가 generate 00번-------------{plan_id}')
     if request.method == 'POST':
         start_time = time.time()
         form = DiaryForm(request.POST, request.FILES)
@@ -76,6 +82,11 @@ def generate_diary(request, plan_id=None):
 
             # plan 정보 가져오기
             plan = get_plan_by_id(plan_id) if plan_id else None
+
+            if plan:
+                place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+            else:
+                place = "Unknown location"
 
             diarytitle = form.cleaned_data['diarytitle']
             emotion = form.cleaned_data['emotion']
@@ -141,6 +152,7 @@ def generate_diary(request, plan_id=None):
                 emotion=translated_emotion,
                 withfriend=withfriend,
                 content=GPT3content,
+                place=place
             )
             diary_entry.save()
 
@@ -188,12 +200,23 @@ def generate_diary(request, plan_id=None):
                 'errors': form.errors
             })
     else:
-        form = DiaryForm()
+        form = DiaryForm(initial={'plan_id': plan_id})
         image_form = ImageUploadForm()
+
+        # plan 정보 가져오기
+        plan = get_plan_by_id(plan_id) if plan_id else None
+        place = f"{plan.get('province', '')} {plan.get('city', '')}".strip() if plan else "Unknown location"
+
+        context = {
+            'form': form,
+            'image_form': image_form,
+            'plan_id': plan_id,
+            'place': place
+        }
+        return render(request, 'diaryapp/write_diary.html', context)
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id': plan_id})
 
-# 직접 일기 부분 작성
 """사용자가 일기 작성"""
 def write_diary(request, plan_id=None):
     print(f'-------------여기가 다이어리 00번-------------{plan_id}')
@@ -209,8 +232,11 @@ def write_diary(request, plan_id=None):
         print(f'-------------여기가 write post session-------------{plan_id}')
 
         if form.is_valid() and image_form.is_valid():
-            plan_id = request.POST.get('plan_id') or request.session.get('plan_id')
-            print(f'-------------여기가 generate post plan_id-------------{plan_id}')
+            # plan_id = request.POST.get('plan_id') or request.session.get('plan_id')
+            # print(f'-------------여기가 generate post plan_id-------------{plan_id}')
+            plan_id = request.POST.get('plan_id')
+            plan = get_plan_by_id(plan_id) if plan_id else None
+            place = f"{plan.get('province', '')} {plan.get('city', '')}".strip() if plan else ""
 
             # plan 정보 가져오기
             plan = get_plan_by_id(plan_id) if plan_id else None
@@ -293,6 +319,18 @@ def write_diary(request, plan_id=None):
     else:
         form = DiaryForm(initial={'plan_id': plan_id})
         image_form = ImageUploadForm()
+
+        # plan 정보 가져오기
+        plan = get_plan_by_id(plan_id) if plan_id else None
+        place = f"{plan.get('province', '')} {plan.get('city', '')}".strip() if plan else ""
+
+        context = {
+            'form': form,
+            'image_form': image_form,
+            'plan_id': plan_id,
+            'place': place  # 장소 정보를 컨텍스트에 추가
+        }
+        return render(request, 'diaryapp/write_diary.html', context)
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id': plan_id})
 

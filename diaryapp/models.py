@@ -124,12 +124,29 @@ class CommentModel(models.Model):
 
 
 '''찜모델'''
+# class Wishlist(models.Model):
+#     user_email = models.EmailField()
+#     # user = models.ManyToManyField(UserModel, related_name='wishlists')
+#     place = models.CharField(max_length=2000)
+#     added_at = models.DateTimeField(auto_now_add=True)
+#
+#     class Meta:
+#         unique_together = ('user_email', 'place')
+#     def __str__(self):
+#         return f"{self.place} - {self.user_email}"
+#     # user모델 연결 후 변경
+#     # class Meta:
+#     #     unique_together = ('users', 'place')
+#     #
+#     # def __str__(self):
+#     #     return f"{self.place}"
 class Wishlist(models.Model):
     user_email = models.EmailField()
-    # user = models.ManyToManyField(UserModel, related_name='wishlists')
-    place = models.CharField(max_length=2000)
+    place = models.CharField(max_length=255)
+    province = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    travel_dates = models.JSONField()
     added_at = models.DateTimeField(auto_now_add=True)
-
     class Meta:
         unique_together = ('user_email', 'place')
     def __str__(self):
@@ -140,6 +157,7 @@ class Wishlist(models.Model):
     #
     # def __str__(self):
     #     return f"{self.place}"
+
 
 
 # 플래그 모델(commands 중복 방지)

@@ -8,6 +8,11 @@
             {% for item in page_obj.object_list %}
                 <li>
                     <h3 style="display: block; margin-top: 30px;"><strong>장소:</strong> {{ item.place }}</h3>
+                    <ul>
+                        {% for day, places in item.travel_dates.items %}
+                            <li>{{ day }}: {{ places|join:", " }}</li>
+                        {% endfor %}
+                    </ul>
                     <small>추가된 날짜: {{ item.added_at|date:"Y년 n월 j일 H:i" }}&nbsp;&nbsp;</small>
                     <a href="{% url 'remove_wish' place=item.place %}" class="btn-sdiary-action">삭제</a>
                 </li>
