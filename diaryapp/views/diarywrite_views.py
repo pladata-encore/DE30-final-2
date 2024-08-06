@@ -1,5 +1,6 @@
 import os
 import openai
+from django.contrib.auth.decorators import login_required
 from dotenv import load_dotenv
 import gridfs
 import torch
@@ -12,6 +13,7 @@ from torchvision import transforms
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from django.shortcuts import render, get_object_or_404, redirect
 from myproject import settings
+from .badge_views import get_main_badge
 from ..forms import *
 from ..models import *
 from ..clip_model import *
@@ -25,7 +27,7 @@ from django.contrib.auth.models import User
 from .nickname_views import *
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from ..mongo_queries import filter_diaries
+from ..mongo_queries import filter_diaries, get_plan_by_id
 
 
 # MongoDB 클라이언트 설정
@@ -67,9 +69,15 @@ def translate_to_korean(text): # 일기 내용 한국어로 번역
     translated = translator.translate(text, src='en', dest='ko')
     return translated.text
 
+def get_plan_place(request, plan_id):
+    plan = get_plan_by_id(plan_id)
+    if plan:
+        place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+        return JsonResponse({'place': place})
+    return JsonResponse({'place': ''})
+
 """GPT3로 일기 생성"""
 def generate_diary(request, plan_id=None):
-    print(f'-------------여기가 generate 00번-------------{plan_id}')
     if request.method == 'POST':
         start_time = time.time()
         form = DiaryForm(request.POST, request.FILES)
@@ -80,24 +88,21 @@ def generate_diary(request, plan_id=None):
             plan_id = request.session.pop('plan_id', None)
             print(f'-------------여기가 generate post session-------------{plan_id}')
 
+            # plan 정보 가져오기
+            plan = get_plan_by_id(plan_id) if plan_id else None
+
+            if plan:
+                place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+            else:
+                place = "Unknown location"
+
             diarytitle = form.cleaned_data['diarytitle']
-            place = form.cleaned_data['place']
             emotion = form.cleaned_data['emotion']
             withfriend = form.cleaned_data['withfriend']
             representative_image = request.FILES.get('image_file')
 
             user_email = settings.DEFAULT_FROM_EMAIL
             # user_email = request.user.email
-
-            # place 번역
-            #translated_place = translate_to_English(place)
-
-            # # CLIP 모델과 전처리기 로드
-            # model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
-            #
-            # # 적절한 반환 값을 사용하도록 수정
-            # clip_model = model_info[0]
-            # preprocess = model_info[1]
 
             image = Image.open(representative_image)
             image = image.resize((128, 128), Image.LANCZOS)
@@ -119,10 +124,15 @@ def generate_diary(request, plan_id=None):
             print('------------- CLIP image --------', CLIP_end_time - CLIP_start_time)
 
             GPT_start_time = time.time()
+            if plan:
+                place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+            else:
+                place = "Unknown location"
+
             prompt = (
                 f"Please draft my travel diary based on this information. "
-                f"I recently visited {place} in korea and I felt a strong sense of {emotion}. "
-                f"One of the notable experiences was {best_description}.I want answers in Korean. I hope it's about 5sentences long")
+                f"I recently visited {place} in Korea and I felt a strong sense of {emotion}. "
+                f"One of the notable experiences was {best_description}. I want answers in Korean. I hope it's about 5 sentences long.")
 
             # GPT-3.5 모델을 사용하여 다이어리 생성
             completion = openai.ChatCompletion.create(
@@ -146,18 +156,17 @@ def generate_diary(request, plan_id=None):
                 unique_diary_id=unique_diary_id,
                 user_email=user_email,
                 diarytitle=diarytitle,
-                place=place,
+                plan_id=plan_id,
                 emotion=translated_emotion,
                 withfriend=withfriend,
                 content=GPT3content,
+                place=place
             )
             diary_entry.save()
 
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
             # 나중에 user 정보 넘길 예정
-            print(f'-------------여기는 generate 작성 닉네임 쪽-------------{plan_id}')
-
             nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, plan_id)
             # 별명 : 세션에 show_modal 저장
             request.session['show_modal'] = True
@@ -174,7 +183,7 @@ def generate_diary(request, plan_id=None):
                 additional_image_model = ImageModel(is_representative=False)
                 additional_image_model.save_image(Image.open(img))
                 additional_image_model.save()
-                diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
+                diary_entry.images.add(additional_image_model)
 
             # 대표 이미지 처리
             if representative_image:
@@ -199,12 +208,23 @@ def generate_diary(request, plan_id=None):
                 'errors': form.errors
             })
     else:
-        form = DiaryForm()
+        form = DiaryForm(initial={'plan_id': plan_id})
         image_form = ImageUploadForm()
+
+        # plan 정보 가져오기
+        plan = get_plan_by_id(plan_id) if plan_id else None
+        place = f"{plan.get('province', '')} {plan.get('city', '')}".strip() if plan else "Unknown location"
+
+        context = {
+            'form': form,
+            'image_form': image_form,
+            'plan_id': plan_id,
+            'place': place
+        }
+        return render(request, 'diaryapp/write_diary.html', context)
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id': plan_id})
 
-# 직접 일기 부분 작성
 """사용자가 일기 작성"""
 def write_diary(request, plan_id=None):
     print(f'-------------여기가 다이어리 00번-------------{plan_id}')
@@ -220,8 +240,23 @@ def write_diary(request, plan_id=None):
         print(f'-------------여기가 write post session-------------{plan_id}')
 
         if form.is_valid() and image_form.is_valid():
+            # plan_id = request.POST.get('plan_id') or request.session.get('plan_id')
+            # print(f'-------------여기가 generate post plan_id-------------{plan_id}')
+            plan_id = request.POST.get('plan_id')
+            plan = get_plan_by_id(plan_id) if plan_id else None
+            place = f"{plan.get('province', '')} {plan.get('city', '')}".strip() if plan else ""
+
+            # plan 정보 가져오기
+            plan = get_plan_by_id(plan_id) if plan_id else None
+            print(f"Retrieved plan: {plan}")
+
+            if plan:
+                place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+            else:
+                place = ""
+            print(f"Generated place: {place}")
+
             diarytitle = form.cleaned_data['diarytitle']
-            place = form.cleaned_data['place']
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
@@ -244,13 +279,13 @@ def write_diary(request, plan_id=None):
                 unique_diary_id=unique_diary_id,
                 user_email=user_email,
                 diarytitle=diarytitle,
-                place=place,
                 withfriend=withfriend,
-                # friends=friends,
+                plan_id=plan_id,
                 content=content,
+                place=place
             )
             diary_entry.save()
-
+            print(f"Saved diary entry: {diary_entry.id}, place: {diary_entry.place}")
 
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
@@ -262,7 +297,6 @@ def write_diary(request, plan_id=None):
             # 별명 : 다이어리에 별명 ID 저장
             diary_entry.nickname_id = nickname_id
             diary_entry.save()
-
 
             # 대표 이미지 처리
             representative_image = request.FILES.get('image_file')
@@ -291,8 +325,20 @@ def write_diary(request, plan_id=None):
                 'errors': form.errors
             })
     else:
-        form = DiaryForm()
+        form = DiaryForm(initial={'plan_id': plan_id})
         image_form = ImageUploadForm()
+
+        # plan 정보 가져오기
+        plan = get_plan_by_id(plan_id) if plan_id else None
+        place = f"{plan.get('province', '')} {plan.get('city', '')}".strip() if plan else ""
+
+        context = {
+            'form': form,
+            'image_form': image_form,
+            'plan_id': plan_id,
+            'place': place  # 장소 정보를 컨텍스트에 추가
+        }
+        return render(request, 'diaryapp/write_diary.html', context)
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id': plan_id})
 
@@ -348,8 +394,6 @@ def list_diary(request):
               f"Created: {diary.get('created_at', 'No date')}, "
               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
 
-
-
     context = {
         'form': form,
         'diary_list': enriched_diary_list,
@@ -361,31 +405,70 @@ def list_diary(request):
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
 # @login_required
-# def list_user_diary(request):
-#     user = request.user
-#     diary_list = AiwriteModel.objects.filter(writer=user).order_by('-created_at')
-#     return render(request, 'diaryapp/user_list_diary.html', {'diary_list': diary_list})
+def list_user_diary(request):
+    # user = request.user
+    user_email = settings.DEFAULT_FROM_EMAIL
+    form = DateFilterForm(request.GET or None)
+    year = None
+    month = None
+    if form.is_valid():
+        year = form.cleaned_data['year']
+        month = form.cleaned_data['month']
 
-# 태그된 다이어리까지 전부 가져오기
-# @login_required
-# def tag_list_user_diary(request):
-#     user = request.user
-#     write_diary = AiwriteModel.objects.filter(writer=user).order_by('-created_at')
-#     tag_diary = AiwriteModel.objects.filter(tags__name__startswith='@').filter(tags__name__in=[tag.name for tag in user.tags.all()]).exclude(writer=user).order_by('-created_at')
-#
-#
-#     # 쓴 다이어리, 태그한 다이어리 따로 불러오기
-#     # context = {
-#     #     'write_diary': write_diary,
-#     #     'tag_diary': tag_diary
-#     # }
-#
-#     # 쓴 다이어리, 태그한 다이어리 합쳐서 시간 순으로 불러오기
-#     diary = (write_diary | tag_diary).order_by('-created_at')
-#     context = {
-#         'diary' : diary
-#     }
-#     return render(request, 'diaryapp/user_list_diary.html', context)
+    # 로그인한 사용자의 다이어리만 필터링
+    diary_list = filter_user_diaries(user_email, year, month)
+    print(f"Diaries returned to view: {len(diary_list)}")
+
+    # 페이징 설정
+    paginator = Paginator(diary_list, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    enriched_diary_list = []
+
+    for diary in page_obj:
+        print(f"Processing diary with unique_diary_id: {diary.unique_diary_id}")
+        try:
+            diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.unique_diary_id, user_email=user_email)
+            if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
+                nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+            else:
+                nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+            enriched_diary = {
+                'diary': diary,
+                'nickname': nickname,
+                'badge_name': badge_name,
+                'badge_image': badge_image
+            }
+            enriched_diary_list.append(enriched_diary)
+        except AiwriteModel.DoesNotExist:
+            print(f"AiwriteModel not found for unique_diary_id: {diary.unique_diary_id}")
+            continue
+
+        print(f"Diary in view: {diary.diarytitle}, Created: {diary.created_at}, Has Image: {'Yes' if diary.representative_image else 'No'}")
+
+    context = {
+        'form': form,
+        'diary_list': enriched_diary_list,
+        'page_obj': page_obj,
+    }
+    return render(request, 'diaryapp/user_list_diary.html', context)
+
+def filter_user_diaries(user_email, year=None, month=None):
+    diaries = AiwriteModel.objects.filter(user_email=user_email).order_by('-created_at')
+
+    if year:
+        diaries = diaries.filter(created_at__year=year)
+    if month:
+        diaries = diaries.filter(created_at__month=month)
+
+    return diaries
 
 '''일기 내용 확인'''
 def detail_diary_by_id(request, unique_diary_id):
@@ -394,8 +477,28 @@ def detail_diary_by_id(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     form = CommentForm()
     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
-    # tagged_users = diary.get_tagged_users()
-    # return render(request, 'diaryapp/detail_diary.html', {'diary': diary, 'tagged_users': tagged_users})
+
+    # 각 댓글에 대한 사용자 정보 추가
+    # for comment in comment_list:
+    #     user = comment.user.first()
+    #     if user:
+    #         _, nickname, badge_name, badge_image = get_main_badge(user.email)
+    #         comment.username = user.username
+    #         comment.nickname = nickname
+    #         comment.badge_name = badge_name
+    #         comment.badge_image = badge_image
+    #     else:
+    #         comment.username = "Unknown"
+    #         comment.nickname = "Unknown"
+    #         comment.badge_name = "Unknown"
+    #         comment.badge_image = ""
+
+    for comment in comment_list:
+        _, nickname, badge_name, badge_image = get_main_badge(comment.user_email)
+        comment.nickname = nickname
+        comment.badge_name = badge_name
+        comment.badge_image = badge_image
+
     # 디버깅을 위해 댓글 수를 출력
     print(f"Number of comments: {comment_list.count()}")
 
@@ -422,26 +525,66 @@ def detail_diary_by_id(request, unique_diary_id):
 '''다이어리 여행일정 모달 창'''
 def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-    return render(request, 'diaryapp/plan_modal.html', {'diary': diary})
+    plan_id = diary.plan_id
+
+    # plan 정보 가져오기
+    plan = get_plan_by_id(plan_id) if plan_id else None
+
+    if plan:
+        province = plan.get('province', '')
+        city = plan.get('city', '')
+        plan_title = plan.get('plan_title', '')
+        days = plan.get('days', {})
+    else:
+        province = city = plan_title = ''
+        days = {}
+
+    context = {
+        'province': province,
+        'city': city,
+        'plan_title': plan_title,
+        'days': days,
+    }
+    return JsonResponse(context)
 
 '''
-user가 생기면 변경 - 로그인한 사용자를 기준으로 본인의 일기와 다른 사용자의 일기를 볼 때 화면이 다름
+user가 생기면 변경 - 로그인한 사용자를 기준으로 자신이 작성한 일기와 다른 사용자가 작성한 일기를 볼 때 화면이 다름
 '''
 # @login_required
 # def detail_diary_by_id(request, unique_diary_id):
 #     user = request.user
 #     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-#     # tagged = diary.get_tagged_users()
-#     # comments = diary.comments.all()
+#     form = CommentForm()
+#     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
+#
+#     # 디버깅을 위해 댓글 수를 출력
+#     print(f"Number of comments: {comment_list.count()}")
+#
+#     # 별명 : db에서 가져오기
+#     if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
+#         nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+#     else:
+#         nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+#
+#     # 별명 : 세션에서 데이터 가져오기
+#     show_modal = request.session.pop('show_modal', True)  # 테스트 : False로 변경 예정
+#
+#     context = {
+#         'diary': diary,
+#         'comment_list': comment_list,
+#         'form': form,
+#         'show_modal': show_modal,
+#         'nickname': nickname,
+#         'badge_name': badge_name,
+#         'badge_image': badge_image,
+#     }
+#
+#     # 사용자가 자신의 일기를 보는 경우와 다른 사용자의 일기를 보는 경우 템플릿 분기
 #     if diary.writer == user:
 #         template = 'diaryapp/detail_diary.html'
 #     else:
 #         template = 'diaryapp/detail_diary_otheruser.html'
-#     context = {
-#         'diary':diary,
-#         # 'tagged':tagged,
-#         # 'comments':comments
-#     }
+#
 #     return render(request, template, context)
 
 '''일기 내용 업데이트'''

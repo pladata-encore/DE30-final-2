@@ -6,6 +6,7 @@ from diaryapp.views import diarywrite_views, comment_views, wishlist_views, base
 urlpatterns = [
     #### diarywrite_views.py ####
     # 다이어리 생성
+    path('api/get_plan_place/<str:plan_id>/', diarywrite_views.get_plan_place, name='get_plan_place'),
     path('generate_diary/', diarywrite_views.generate_diary, name='generate_diary'),
     path('generate_diary/<str:plan_id>/', diarywrite_views.generate_diary, name='generate_diary_plan_id'),
     path('write_diary/', diarywrite_views.write_diary, name='write_diary'),
@@ -57,11 +58,14 @@ urlpatterns = [
     path('generic', base_views.viewGeneric),
 
     # 리스트 다이어리
-    path('list_diary/', diarywrite_views.list_diary, name='list_diary'),
+    path('all_list_diary/', diarywrite_views.list_diary, name='list_diary'),
+    path('list_diary/', diarywrite_views.list_user_diary, name='list_user_diary'),
+
+    # 다이어리 메인
+    path('', diary_views.viewDiary, name='user_diary_main'),
+    path('<str:user_email>', diary_views.viewDiary, name='other_user_diary_main'),
 
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-

@@ -13,6 +13,7 @@ from pymongo import MongoClient
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from django.shortcuts import render, get_object_or_404, redirect
 from myproject import settings
+from .badge_views import get_main_badge
 from ..forms import *
 from ..models import *
 from googletrans import Translator
@@ -20,19 +21,6 @@ import base64
 
 from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
-
-
-'''뱃지 아이디 가져오기-해당유저를 찾은 후 유저가 매핑되어 있는 뱃지를 찾는다'''
-# def get_user_badge_id(user):
-#     # 사용자의 프로필 정보를 가져오는 예시 코드
-#     try:
-#         # 사용자 모델에 profile 필드가 있다고 가정
-#         profile = user.profile  # 사용자의 프로필 정보 가져오기
-#         badge_id = profile.badge_id  # 프로필에서 뱃지 ID 가져오기
-#     except AttributeError:
-#         # 프로필 정보나 뱃지 ID가 없는 경우에 대한 에러 처리
-#         badge_id = None  # 또는 기본값 설정 등
-#     return badge_id
 
 '''댓글 생성'''
 # @login_required
@@ -54,11 +42,18 @@ def create_comment(request, unique_diary_id):
 
 '''해당 다이어리에 달린 댓글들 리스트 확인
     CommentModel 컬렉션에서 해당 다이어리의 unique_diary_id가 저장되어있는 데이터들을 모두 반환'''
-def list_comment(request,unique_diary_id):
+def list_comment(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
-    return render(request, 'diaryapp/detail_diary.html', {'comment_list': comment_list})
 
+    # 각 댓글에 대한 뱃지 정보 가져오기
+    for comment in comment_list:
+        _, nickname, badge_name, badge_image = get_main_badge(comment.user_email)
+        comment.nickname = nickname
+        comment.badge_name = badge_name
+        comment.badge_image = badge_image
+
+    return render(request, 'diaryapp/detail_diary.html', {'comment_list': comment_list})
 ''' 댓글 삭제하기
     # 로그인된 사용자와 해당 댓글 작성자가 일치할 경우에만 삭제버튼 활성화 '''
 # @login_required

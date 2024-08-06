@@ -58,12 +58,13 @@ class AiwriteModel(models.Model):
         ('Annoyance', '짜증'),
     ]
     unique_diary_id = models.CharField(max_length=255, unique=True)  # 실제 사용하는 아이디
-    user_email = models.EmailField()    # user가 생기면 writer 변경
-    # writer = models.CharField(max_length=255, blank=True, null=True)
+    user_email = models.EmailField()    # user모델 생기면 아래걸로 변경
+    # user = models.ManyToManyField(UserModel, related_name='diaries')
     diarytitle = models.CharField(max_length=100, default='제목을 작성해주세요.')
     emotion = models.CharField(max_length=100, choices=EMOTION_CHOICES)
     content = models.TextField(blank=True, null=True)
-    place = models.CharField(max_length=100, default='장소는 일정에서 불러옵니다.')
+    place = models.CharField(max_length=200, blank=True, null=True)
+    plan_id = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     withfriend = models.CharField(max_length=100, blank=True, null=True)
     images = models.ManyToManyField(ImageModel, related_name='aiwrite_models')
@@ -83,51 +84,79 @@ class AiwriteModel(models.Model):
 class CommentModel(models.Model):
     comment_id = models.CharField(max_length=255, unique=True)      # 실제 사용하는 아이디
     user_email = models.EmailField()
-    # author = models.ManyToManyField(UserModel, related_name='user_models')
+    # user = models.ManyToManyField(UserModel, related_name='comments')
     diary_id = models.ManyToManyField('AiwriteModel', related_name='diary_comments')
     comment = models.TextField(blank=True, null=True, default='댓글을 작성해주세요.')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = timezone.now()
+        if not self.comment_id:
+            # user가 ManyToMany 필드이므로, 첫 번째 사용자의 이메일을 사용
+            user_email = self.user.first().email if self.user.exists() else 'unknown'
+            self.comment_id = f"{self.created_at.strftime('%Y%m%d%H%M%S')}{user_email}"
+        super().save(*args, **kwargs)
+    class Meta:
+        ordering = ['-created_at']
+
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = timezone.now()
         if not self.comment_id:
             self.comment_id = f"{self.created_at.strftime('%Y%m%d%H%M%S')}{self.user_email}"
         super().save(*args, **kwargs)
-    # def __str__(self):
-    #     return f'{self.user.username}의 댓글 - {self.diary_id.unique_diary_id}'
+
     def __str__(self):
-        return f'{self.user_email}의 댓글 - {self.diary_id.unique_diary_id}'
+        return f'{self.user_email}의 댓글 - {self.diary_id.first().unique_diary_id if self.diary_id.exists() else "Unknown"}'
+
+    def can_delete(self, user_email):
+        return user_email == self.user_email
+    # user모델 연결 후 변경
+    # def __str__(self):
+    #     return f'댓글 - {self.diary_id.first().unique_diary_id}'
+    #
     # def can_delete(self, user):
-    #     return user == self.user
-    def can_delete(self, user):
-        return user == self.user_email
+    #     return user in self.users.all()
+
 
 '''찜모델'''
 # class Wishlist(models.Model):
-#     # user = models.ForeignKey(User, on_delete=models.CASCADE)
 #     user_email = models.EmailField()
+#     # user = models.ManyToManyField(UserModel, related_name='wishlists')
 #     place = models.CharField(max_length=2000)
 #     added_at = models.DateTimeField(auto_now_add=True)
 #
 #     class Meta:
-#         unique_together = ('user', 'place')
-#
+#         unique_together = ('user_email', 'place')
 #     def __str__(self):
 #         return f"{self.place} - {self.user_email}"
-
+#     # user모델 연결 후 변경
+#     # class Meta:
+#     #     unique_together = ('users', 'place')
+#     #
+#     # def __str__(self):
+#     #     return f"{self.place}"
 class Wishlist(models.Model):
     user_email = models.EmailField()
-    place = models.CharField(max_length=2000)
+    place = models.CharField(max_length=255)
+    province = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    travel_dates = models.JSONField()
     added_at = models.DateTimeField(auto_now_add=True)
-
     class Meta:
-        unique_together = ('user_email', 'place')  # 'user'를 'user_email'로 변경
-
+        unique_together = ('user_email', 'place')
     def __str__(self):
         return f"{self.place} - {self.user_email}"
+    # user모델 연결 후 변경
+    # class Meta:
+    #     unique_together = ('users', 'place')
+    #
+    # def __str__(self):
+    #     return f"{self.place}"
 
 
 

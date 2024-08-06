@@ -1,94 +1,173 @@
-<!--로그인을 하지 않은 다른 사용자의 블로그-->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ diary.diarytitle }}</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <style>
-        /* Additional CSS styles for modal */
-        .modal-content {
-            padding: 20px;
-        }
-    </style>
-</head>
-    <body>
-    <h1>{{ diary.diarytitle }}</h1>
-        <p><strong>여행 장소:</strong> <a href="#" class="open-modal" data-diary-id="{{ diary.id }}">{{ diary.place }}</a></p>
-        <p><strong>동행자:</strong> {{ diary.withfriend }}</p>
-        <p><strong>내용:</strong> {{ diary.content }}</p>
-        <p><strong>작성 날짜:</strong> {{ diary.created_at }}</p>
+{% include 'header.html' %}
+<section id="detail_diary" class="diary detail_diary">
+    <h2 class="screen_out">여행 다이어리 화면</h2>
+
+    <div class="write-container">
+        <h1 style="color: #636363; font-weight: bold;">{{ diary.diarytitle }}</h1>
+        <div class="badge_tour">
+            <a href="" class="link_badge">
+                <span class="scope_badge">
+                    <!-- Add any additional badge content here if needed -->
+                    <em class="screen_out">{{ badge_name }} 뱃지</em>
+                    <img src="data:image/png;base64,{{ badge_image }}" class="img_badge"  alt={{ badge_name }}>
+                </span>
+                <em class="screen_out">별명</em>
+                <strong class="tit_badge">{{ nickname }}</strong>
+            </a>
+            &nbsp;&nbsp;&nbsp;{{ diary.created_at|date:"Y년 n월 j일" }}
+        </div>
+        <hr/>
+        <p><strong>장소:</strong> <a href="#" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
+        <p><strong>함께 한 친구:</strong> {{ diary.withfriend }}</p>
+        <p>{{ diary.content }}</p>
+        {% load humanize %}
 
         {% if diary.representative_image %}
-            <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" alt="Representative Image" width="150">
+            <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" width="300" alt="Representative Image">
+        {% else %}
+            <span class="txt_noimg">No image</span>
         {% endif %}
 
         {% for image in diary.images.all %}
             {% if not image.is_representative %}
-                <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image" width="150">
+                <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image" width="300">
             {% endif %}
         {% empty %}
         {% endfor %}
 
-        <h2>댓글</h2>
-        <form method="post" action="{% url 'create_comment' diary.unique_diary_id %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">댓글 작성</button>
-        </form>
+        <div class="diary-actions">
+            <!-- 리스트로 돌아가는 버튼 -->
+            <button class="btn-diary-action">
+                <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
+            </button>
+        </div>
+        <br/><br/>
 
-        {% for comment in diary.diary_comments.all %}
-            <p><strong>{{ comment.user_email }}:</strong> {{ comment.comment }}</p>
-            <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id">댓글 삭제</a>
-        {% empty %}
-            <p>댓글이 없습니다.</p>
-        {% endfor %}
+        <!-- 댓글 버튼 -->
+        <div class="diary-comment-actions">
+            <form method="post" action="{% url 'create_comment' diary.unique_diary_id %}">
+                <h3>댓글</h3>
+                {% csrf_token %}
+                {{ form.comment }}
+                <button type="submit" class="btn-diary-action">댓글 작성</button>
+            </form>
+        </div>
+        <br/>
+        <!-- 댓글 내용 및 삭제 버튼 -->
+        <div class="diary-comment-actions">
+            <ul>
+                {% for comment in comment_list %}
+                    <div class="badge_tour">
+                        {% if comment.badge_name and comment.badge_image %}
+                            <span class="scope_badge">
+                                <img src="data:image/png;base64,{{ comment.badge_image }}" alt="{{ comment.badge_name }} 뱃지" class="img_badge">
+                                {{ comment.badge_name }} 뱃지
+                            </span>
+                        {% endif %}
+                        <strong>{{ comment.nickname }}</strong>
+                        {{ comment.created_at|date:"Y년 n월 j일" }}
+                    </div>
+                    <p>{{ comment.comment }}</p>
+                    {% if request.user.email == comment.user_email %}
+                        <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
+                    {% endif %}
+                    <hr>
+                {% empty %}
+                    <p>댓글이 없습니다.</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 
-        <button>
-            <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
-        </button>
-        <!-- 모달 창 -->
-        <div class="modal fade" id="diaryModal" tabindex="-1" role="dialog" aria-labelledby="diaryModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="diaryModalLabel">일기 세부 정보</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="modal-body-content">
-                            <!-- 모달 내용이 들어갈 자리 -->
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                    </div>
+    <!-- 모달 창 : 장소 정보 -->
+    <div class="modal fade" id="planModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="planModalLabel">여행 장소 정보</h5>
+                </div>
+                <div class="modal-body">
+                    <section id="diary" class="planmodal plan_modal">
+                        <h2 class="screen_out">여행 다이어리 장소 모달</h2>
+                        <p><strong>여행 장소:</strong> {{ diary.place }}</p>
+                    </section>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button id="wishlistBtn" data-place="{{ diary.place }}" class="btn btn-secondary">찜하기</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script>
-        $(document).ready(function() {
-            $('.open-modal').click(function(e) {
-                e.preventDefault();
-                var uniqueDiaryId = $(this).data('unique-diary-id');
-                var url = '/plan_modal/' + uniqueDiaryId + '/';
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM fully loaded and parsed');
 
-                // AJAX를 통해 일기의 세부 정보를 가져와서 모달에 채워 넣기
-                $.get(url, function(data) {
-                    $('#modal-body-content').html(data);
-                    $('#diaryModal').modal('show');
+        var openModalButtons = document.querySelectorAll('.open-modal');
+        console.log('Found open-modal elements:', openModalButtons.length);
+
+        if (openModalButtons.length > 0) {
+            openModalButtons.forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var planModal = new bootstrap.Modal(document.getElementById('planModal'));
+                    planModal.show();
                 });
             });
-        });
+        } else {
+            console.error('No .open-modal elements found');
+        }
 
-        </script>
-    </body>
-</html>
+        // 모달이 닫혔을 때 내용 비우기
+        var planModalElement = document.getElementById('planModal');
+        if (planModalElement) {
+            var planModal = new bootstrap.Modal(planModalElement);
+            planModalElement.addEventListener('hidden.bs.modal', function () {
+                // No content to clear as it's included directly in HTML
+            });
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('planModal'));
+
+         document.getElementById('planModal').addEventListener('shown.bs.modal', function () {
+           const modalBody = document.querySelector('#planModal .modal-body');
+           const bodyHeight = window.innerHeight * 0.5; // 화면 50% 높이
+           modalBody.style.maxHeight = `${bodyHeight}px`;
+           modalBody.style.overflowY = 'auto';
+         });
+    });
+
+    // 찜하기 버튼 클릭 이벤트
+    document.getElementById('wishlistBtn').addEventListener('click', function() {
+        var place = this.getAttribute('data-place');
+        fetch("{% url 'add_wish' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams({
+                'place': place
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (data.created) {
+                    alert('찜 목록에 추가되었습니다!');
+                } else {
+                    alert('이미 찜 목록에 있습니다.');
+                }
+            } else {
+                alert('이미 찜 목록에 있습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('이미 찜 목록에 있습니다.');
+        });
+    });
+    </script>
+</section>
+{% include 'footer.html' %}

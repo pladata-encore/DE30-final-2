@@ -11,9 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+
+import pymongo
 from decouple import config
 import os
-import pymongo
 from dotenv import load_dotenv
 
 
@@ -34,7 +35,7 @@ load_dotenv(dotenv_path=env_path)
 SECRET_KEY = "django-insecure-a&)gx3mp+#9epz5&okvg@x6e*a#z%9%#p(k_uwl7w%bkwcntve"
 OPEN_API_KEY = os.getenv('OPEN_API_KEY')
 # DEBUG 설정
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = True
 
 # ALLOWED_HOSTS 설정
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
@@ -93,49 +94,26 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
+# MongoDB 설정
+MONGO_URI = os.getenv('MONGO_URI')
+MONGO_USERNAME = os.getenv('MONGO_USERNAME')
+MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
-#         'ENFORCE_SCHEMA': False,
-#         'CLIENT': {
-#             'host': 'mongodb://localhost',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-#             'port': 27017,  # MongoDB 포트 (기본적으로는 27017)
-#         }
-#     }
-# }
-
-
-# 아틀라스 db
+# # MongoDB atlas
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': os.getenv('DB_HOST'),  # MongoDB 호스트 주소 (기본적으로는 localhost)
-            'username': os.getenv('DB_USERNAME'),
-            'password': os.getenv('DB_PASSWORD'),
+            'host': MONGO_URI,  # 또는 호스트 머신의 IP
+            'username': MONGO_USERNAME,
+            'password': MONGO_PASSWORD,
         }
     }
 }
-# MongoDB 클라이언트 설정
-mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
-                                   username=DATABASES['default']['CLIENT']['username'],
-                                   password=DATABASES['default']['CLIENT']['password']
-                                   )
-# mongo_client를 settings에 추가
-MONGO_CLIENT = mongo_client
 
-
-# 설아님 로컬 도커 db
+# # MongoDB 도커
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'djongo',
@@ -146,11 +124,6 @@ MONGO_CLIENT = mongo_client
 #         }
 #     }
 # }
-# # MongoDB 클라이언트 설정
-# mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'])
-# # mongo_client를 settings에 추가
-# MONGO_CLIENT = mongo_client
-
 
 # 미디어 파일 저장 경로
 MEDIA_URL = '/media/'
@@ -181,6 +154,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# MongoDB 클라이언트 설정
+mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
+                                   username=DATABASES['default']['CLIENT']['username'],
+                                   password=DATABASES['default']['CLIENT']['password']
+                                   )
+# mongo_client를 settings에 추가
+MONGO_CLIENT = mongo_client
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -208,6 +188,5 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# DEFAULT_FROM_EMAIL = "new@gmail.com"
 DEFAULT_FROM_EMAIL = "neweeee@gmail.com"
-# DEFAULT_FROM_EMAIL = "fx567849@gmail.com"
+# DEFAULT_FROM_EMAIL = "dobi1@nate.com"

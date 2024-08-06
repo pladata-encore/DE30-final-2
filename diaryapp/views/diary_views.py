@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404
 import logging
 import random
 import traceback
-import pymongo
 from django.db import DatabaseError
 from django.http import HttpResponseServerError
 from django.contrib.auth.decorators import login_required
@@ -28,8 +27,6 @@ plan_collection = db['plan']
 
 logger = logging.getLogger(__name__)
 
-
-
 # 다이어리 메인
 #@login_required
 def viewDiary(request, user_email=None):
@@ -39,10 +36,8 @@ def viewDiary(request, user_email=None):
     user = user_info['user']
     is_own_page = user_info['is_own_page']
 
-
     # 사용자 다이어리 전체 이름 가져오기
     user['title_diary'] = user.get('title_diary', f"{user.get('name', '즐거운 여행자')}의 여행 다이어리")
-
 
     # 사용자 메인 뱃지 가져오기
     main_nickname_id, main_nickname, main_badge_name, main_badge_image = get_main_badge(user['email'])
@@ -59,6 +54,7 @@ def viewDiary(request, user_email=None):
 
     # 사용자 다이어리 슬라이드
     enriched_diary_list = []
+
     try:
         diaries = AiwriteModel.objects.filter(user_email=user['email']).order_by('-created_at')[:5]
 
@@ -91,10 +87,9 @@ def viewDiary(request, user_email=None):
                     'badge_image': 'Unknown',
                 })
 
-    except DatabaseError as e:
-        logger.error(f"Database error occurred: {str(e)}")
+    except Exception as e:
+        logger.error(f"Error occurred: {str(e)}")
         logger.error(traceback.format_exc())
-        enriched_diary_list = []
         return HttpResponseServerError("An error occurred while accessing the database.")
 
 
