@@ -4,6 +4,7 @@
     <div class="write-container">
         <h1 style="color: #636363; font-weight: bold;">다이어리 작성하기</h1>
         <form id="diary-form" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="plan_id" value="{{ plan_id }}">
             {% csrf_token %}
             <p>
                 <label for="id_diarytitle" style="color: #636363; font-size: 22px;">일기 제목:</label>
@@ -94,12 +95,24 @@
             document.getElementById('loading-screen').style.display = 'block';
 
             // plan_id 가져오기
-            var planId = document.getElementById('id_plan').value;
+            // Fetch the plan ID from the visible input element
+            var planIdElement = document.getElementById('id_plan');
+            var planId = planIdElement ? planIdElement.value : null;
+
+            // If the visible input doesn't have a value, use the hidden input value
+            if (!planId) {
+                var hiddenPlanIdElement = document.getElementById('hidden_plan_id');
+                planId = hiddenPlanIdElement ? hiddenPlanIdElement.value : null;
+            }
+
+            // Ensure the plan ID is set in the hidden input for form submission
+            var planIdInput = document.getElementById('plan_id');
+            planIdInput.value = planId;
 
             if (content.trim() === '') {
-                url = planId ? `/diary/generate_diary/${planId}/` : '/diary/generate_diary/';
+                url = `/diary/generate_diary/${planId}/`;
             } else {
-                url = planId ? `/diary/write_diary/${planId}/` : '/diary/write_diary/';
+                url = `/diary/write_diary/${planId}/`;
             }
 
             fetch(url, {

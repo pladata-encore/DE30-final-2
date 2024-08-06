@@ -80,12 +80,16 @@ def get_plan_place(request, plan_id):
 """GPT3로 일기 생성"""
 def generate_diary(request, plan_id=None):
     if request.method == 'POST':
+        start_time = time.time()
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
 
         if form.is_valid() and image_form.is_valid():
             if not plan_id:
-                return JsonResponse({'success': False, 'errors': 'No plan_id provided'}, status=400)
+                # return JsonResponse({'success': False, 'errors': 'No plan_id provided'}, status=400)
+                print(f'-------------여기가 generate 01번-------------{plan_id}')
+                plan_id = request.session.pop('plan_id', None)
+                print(f'-------------여기가 generate post session-------------{plan_id}')
 
             plan = get_plan_by_id(plan_id)
             if not plan:
@@ -103,6 +107,7 @@ def generate_diary(request, plan_id=None):
             image = Image.open(representative_image)
             image = image.resize((128, 128), Image.LANCZOS)
             processed_image = preprocess(image).unsqueeze(0)
+            CLIP_start_time = time.time()
 
             descriptions = generate_dynamic_descriptions()
             tokens = open_clip.tokenize(descriptions)
@@ -112,6 +117,14 @@ def generate_diary(request, plan_id=None):
                 similarity = torch.softmax((100.0 * image_features @ text_features.T), dim=-1)
                 best_description_idx = similarity.argmax().item()
                 best_description = descriptions[best_description_idx]
+            CLIP_end_time = time.time()
+            print('------------- CLIP image --------', CLIP_end_time - CLIP_start_time)
+
+            GPT_start_time = time.time()
+            if plan:
+                place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+            else:
+                place = "Unknown location"
 
             prompt = (
                 f"Please draft my travel diary based on this information. "
@@ -127,6 +140,10 @@ def generate_diary(request, plan_id=None):
                 temperature=1
             )
             GPT3content = completion['choices'][0]['message']['content']
+
+            GPT_end_time = time.time()
+            print('------------- gpt image --------', GPT_end_time - GPT_start_time)
+
 
             translated_emotion = translate_to_korean(emotion)
 
@@ -148,6 +165,8 @@ def generate_diary(request, plan_id=None):
             diary_entry.nickname_id = nickname_id
             diary_entry.save()
 
+            image_start_time = time.time()
+
             images = request.FILES.getlist('images')
             for img in images:
                 additional_image_model = ImageModel(is_representative=False)
@@ -161,6 +180,11 @@ def generate_diary(request, plan_id=None):
                 image_model.save()
                 diary_entry.representative_image = image_model
                 diary_entry.save()
+
+            image_end_time = time.time()
+            print('------------- get image --------', image_end_time - image_start_time)
+            end_time = time.time()
+            print('------------- total end --------', end_time - start_time)
 
             return JsonResponse({
                 'success': True,
@@ -190,13 +214,19 @@ def generate_diary(request, plan_id=None):
 """사용자가 일기 작성"""
 def write_diary(request, plan_id=None):
     if request.method == 'POST':
+        print(f'-------------여기가 다이어리 00번-------------{plan_id}')
+        request.session['plan_id'] = plan_id
+        print(f'-------------여기가 session-------------{plan_id}')
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
 
         if form.is_valid() and image_form.is_valid():
             plan_id = request.POST.get('plan_id') or plan_id
             if not plan_id:
-                return JsonResponse({'success': False, 'errors': 'No plan_id provided'}, status=400)
+                # return JsonResponse({'success': False, 'errors': 'No plan_id provided'}, status=400)
+                print(f'-------------여기가 다이어리 01번-------------{plan_id}')
+                plan_id = request.session.pop('plan_id', None)
+                print(f'-------------여기가 write post session-------------{plan_id}')
 
             plan = get_plan_by_id(plan_id)
             if not plan:
@@ -221,6 +251,8 @@ def write_diary(request, plan_id=None):
                 content=content,
                 place=place
             )
+            diary_entry.save()
+            print(f"Saved diary entry: {diary_entry.id}, place: {diary_entry.place}")
 
             nickname_id = create_nickname(unique_diary_id, user_email, content, plan_id)
             request.session['show_modal'] = True
