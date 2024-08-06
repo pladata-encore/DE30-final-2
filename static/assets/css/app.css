@@ -221,7 +221,7 @@ main {
 .carousel-control-next, .carousel-control-prev{
     top:auto;
     bottom:auto;
-    z-index:100;
+    z-index:50;
     min-width:auto;
     width:5em;
     height:5em;

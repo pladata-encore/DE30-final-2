@@ -40,7 +40,7 @@
         <h3 class="tit_main">여행 다이어리</h3>
         <div class="slider-container">
             <div class="slider">
-            {% if diary_list and schedule_links_and_diary_links %}
+            {% if diary_list or schedule_links_and_diary_links %}
 
                 {% if is_own_page %}
                 {% for link in schedule_links_and_diary_links %}

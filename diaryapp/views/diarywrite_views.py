@@ -61,12 +61,17 @@ def translate_to_korean(text): # 일기 내용 한국어로 번역
 
 """GPT3로 일기 생성"""
 def generate_diary(request, plan_id=None):
+    print(f'-------------여기가 generate 00번-------------{plan_id}')
     if request.method == 'POST':
         start_time = time.time()
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
 
         if form.is_valid() and image_form.is_valid():
+            print(f'-------------여기가 generate 01번-------------{plan_id}')
+            plan_id = request.session.pop('plan_id', None)
+            print(f'-------------여기가 generate post session-------------{plan_id}')
+
             diarytitle = form.cleaned_data['diarytitle']
             place = form.cleaned_data['place']
             emotion = form.cleaned_data['emotion']
@@ -143,6 +148,8 @@ def generate_diary(request, plan_id=None):
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
             # 나중에 user 정보 넘길 예정
+            print(f'-------------여기는 generate 작성 닉네임 쪽-------------{plan_id}')
+
             nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, plan_id)
             # 별명 : 세션에 show_modal 저장
             request.session['show_modal'] = True
@@ -187,17 +194,22 @@ def generate_diary(request, plan_id=None):
         form = DiaryForm()
         image_form = ImageUploadForm()
 
-    return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id' : plan_id})
+    return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id': plan_id})
 
 # 직접 일기 부분 작성
 """사용자가 일기 작성"""
 def write_diary(request, plan_id=None):
     print(f'-------------여기가 다이어리 00번-------------{plan_id}')
+    request.session['plan_id'] = plan_id
+    print(f'-------------여기가 session-------------{plan_id}')
+
     if request.method == 'POST':
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
         plan_id = request.POST.get('plan_id', plan_id)
         print(f'-------------여기가 다이어리 01번-------------{plan_id}')
+        plan_id = request.session.pop('plan_id', None)
+        print(f'-------------여기가 write post session-------------{plan_id}')
 
         if form.is_valid() and image_form.is_valid():
             diarytitle = form.cleaned_data['diarytitle']
