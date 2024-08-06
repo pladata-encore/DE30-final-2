@@ -36,6 +36,7 @@ def viewDiary(request, user_email=None):
     user = user_info['user']
     is_own_page = user_info['is_own_page']
 
+
     # 사용자 다이어리 전체 이름 가져오기
     user['title_diary'] = user.get('title_diary', f"{user.get('name', '즐거운 여행자')}의 여행 다이어리")
 
@@ -52,11 +53,17 @@ def viewDiary(request, user_email=None):
         else :
             badge_link = "#"
 
+
+
+
     # 사용자 다이어리 슬라이드
     enriched_diary_list = []
 
+    # 사용자 다이어리 정보 가져오기
+    user_diaries = AiwriteModel.objects.filter(user_email=user['email'])
+
     try:
-        diaries = AiwriteModel.objects.filter(user_email=user['email']).order_by('-created_at')[:5]
+        diaries = user_diaries.order_by('-created_at')[:5]
 
         # 디버깅을 위한 로그 추가
         logger.info(f"Retrieved diaries for {user_email}")
@@ -65,11 +72,10 @@ def viewDiary(request, user_email=None):
             logger.info(f"Diary: {diary.unique_diary_id}, Title: {diary.diarytitle}, Created at: {diary.created_at}")
 
             try:
-                diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.unique_diary_id)
-                if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
+                if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
                     nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
                 else:
-                    nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+                    nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
                 enriched_diary = {
                     'diary': diary,
                     'nickname': nickname,
@@ -97,8 +103,8 @@ def viewDiary(request, user_email=None):
     schedule_links_and_diary_links = []
     try:
         # 다이어리에서 plan_id 추출
-        diaries = diary_collection.find({'email': user['email']})
-        plan_id_diaries = [diary['plan_id'] for diary in diaries if 'plan_id' in diary]
+        plan_id_diaries = [diary.plan_id for diary in user_diaries if diary.plan_id]
+        print(f'---------------plan_id_diaries-----------{plan_id_diaries}')
 
         # 계획에서 조건에 맞는 plan_id 필터링
         target_plans = plan_collection.find({
@@ -106,12 +112,12 @@ def viewDiary(request, user_email=None):
             'plan_id': {'$nin': plan_id_diaries}
         })
 
-
         if target_plans:
             for plan in target_plans:
                 plan_id = plan.get('plan_id', '')
                 plan_title = plan.get('plan_title', '')
                 days = plan.get('days', {})
+                print(f'---------------plan_title-----------{plan_title}')
 
                 # 랜덤으로 타이틀 추출
                 all_titles = []
