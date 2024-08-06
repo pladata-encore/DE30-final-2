@@ -13,6 +13,7 @@ from torchvision import transforms
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from django.shortcuts import render, get_object_or_404, redirect
 from myproject import settings
+from .badge_views import get_main_badge
 from ..forms import *
 from ..models import *
 from ..clip_model import *
@@ -30,13 +31,6 @@ from ..mongo_queries import filter_diaries
 """GPT3.5 키"""
 load_dotenv()
 openai.api_key = os.getenv("OPEN_API_KEY")
-
-"""태그된 사용자 자동 완성 기능"""
-# def user_suggestions(request):
-#     query = request.GET.get('query', '')
-#     users = User.objects.filter(username__icontains=query)  # 사용자가 'social_id'로 정의되어 있다면 필드를 변경하세요.
-#     suggestions = [{'username': user.username} for user in users]
-#     return JsonResponse({'suggestions': suggestions})
 
 """GPT3.5 처리에 필요한 코드들"""
 def image_detail(request, pk):
@@ -74,18 +68,14 @@ def generate_diary(request, plan_id=None):
             withfriend = form.cleaned_data['withfriend']
             representative_image = request.FILES.get('image_file')
 
+            # if plan_id:
+            #     plan = plan_collection.find_one({'plan_id': plan_id})
+            #     place = f"{plan['province']} {plan['city']}"
+            # else:
+            #     place = form.cleaned_data['place']
+
             user_email = settings.DEFAULT_FROM_EMAIL
             # user_email = request.user.email
-
-            # place 번역
-            #translated_place = translate_to_English(place)
-
-            # # CLIP 모델과 전처리기 로드
-            # model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
-            #
-            # # 적절한 반환 값을 사용하도록 수정
-            # clip_model = model_info[0]
-            # preprocess = model_info[1]
 
             image = Image.open(representative_image)
             image = image.resize((128, 128), Image.LANCZOS)
@@ -144,15 +134,38 @@ def generate_diary(request, plan_id=None):
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
             # 나중에 user 정보 넘길 예정
-            nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, plan_id)
-            # 별명 : 세션에 show_modal 저장
-            request.session['show_modal'] = True
-            # 별명 : 다이어리에 별명 ID 저장
-            diary_entry.nickname_id = nickname_id
-            diary_entry.save()
+            # nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, plan_id)
+            # # 별명 : 세션에 show_modal 저장
+            # request.session['show_modal'] = True
+            # # 별명 : 다이어리에 별명 ID 저장
+            # diary_entry.nickname_id = nickname_id
+            # diary_entry.save()
 
 
             image_start_time = time.time()
+
+            # # 추가 이미지 처리
+            # images = request.FILES.getlist('images')
+            # for img in images:
+            #     additional_image_model = ImageModel(is_representative=False)
+            #     additional_image_model.save_image(Image.open(img))
+            #     additional_image_model.save()
+            #     diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
+            #
+            # # 대표 이미지 처리
+            # if representative_image:
+            #     image_model = ImageModel(is_representative=True)
+            #     image_model.save_image(Image.open(representative_image))
+            #     image_model.save()
+            #     diary_entry.representative_image = image_model
+            #     diary_entry.save()
+            # 이미지 처리
+            if representative_image:
+                image_model = ImageModel(is_representative=True)
+                image_model.save_image(Image.open(representative_image))
+                image_model.save()
+                diary_entry.representative_image = image_model
+                diary_entry.save()
 
             # 추가 이미지 처리
             images = request.FILES.getlist('images')
@@ -160,15 +173,12 @@ def generate_diary(request, plan_id=None):
                 additional_image_model = ImageModel(is_representative=False)
                 additional_image_model.save_image(Image.open(img))
                 additional_image_model.save()
-                diary_entry.images.add(additional_image_model)  # ManyToMany 관계 설정
+                diary_entry.images.add(additional_image_model)
 
-            # 대표 이미지 처리
-            if representative_image:
-                image_model = ImageModel(is_representative=True)
-                image_model.save_image(Image.open(representative_image))
-                image_model.save()
-                diary_entry.representative_image = image_model
-                diary_entry.save()
+            # 닉네임 처리
+            nickname_id = create_nickname(unique_diary_id, user_email, GPT3content, plan_id)
+            diary_entry.nickname_id = nickname_id
+            diary_entry.save()
 
             image_end_time = time.time()
             print('------------- get image --------', image_end_time - image_start_time)
@@ -188,7 +198,25 @@ def generate_diary(request, plan_id=None):
         form = DiaryForm()
         image_form = ImageUploadForm()
 
+        # if plan_id:
+        #     plan = plan_collection.find_one({'plan_id': plan_id})
+        #     form.fields['place'].initial = f"{plan['province']} {plan['city']}"
+        #
+        #     # 사용 가능한 여행 계획 목록 가져오기
+        # diaries = diary_collection.find({'email': user_email})
+        # plan_id_diaries = [diary['plan_id'] for diary in diaries if 'plan_id' in diary]
+        #
+        # target_plans = plan_collection.find({
+        #     'email': user_email,
+        #     'plan_id': {'$nin': plan_id_diaries}
+        # })
+
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
+    # return render(request, 'diaryapp/write_diary.html', {
+    #         'form': form,
+    #         'image_form': image_form,
+    #         'available_plans': list(target_plans),
+    #     })
 
 # 직접 일기 부분 작성
 """사용자가 일기 작성"""
@@ -203,7 +231,12 @@ def write_diary(request):
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
-            # writer = request.user.social_id
+            # if plan_id:
+            #     plan = plan_collection.find_one({'plan_id': plan_id})
+            #     place = f"{plan['province']} {plan['city']}"
+            # else:
+            #     place = form.cleaned_data['place']
+
             user_email = settings.DEFAULT_FROM_EMAIL
 
             # # 태그된 사용자 목록에 다이어리 추가
@@ -271,7 +304,22 @@ def write_diary(request):
         form = DiaryForm()
         image_form = ImageUploadForm()
 
+        # # 사용 가능한 여행 계획 목록 가져오기
+        # user_email = settings.DEFAULT_FROM_EMAIL
+        # diaries = diary_collection.find({'email': user_email})
+        # plan_id_diaries = [diary['plan_id'] for diary in diaries if 'plan_id' in diary]
+        #
+        # target_plans = plan_collection.find({
+        #     'email': user_email,
+        #     'plan_id': {'$nin': plan_id_diaries}
+        # })
+
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form})
+    # return render(request, 'diaryapp/write_diary.html', {
+    #     'form': form,
+    #     'image_form': image_form,
+    #     'available_plans': list(target_plans),
+    # })
 
 '''전체 일기 리스트'''
 def list_diary(request):
@@ -325,8 +373,6 @@ def list_diary(request):
               f"Created: {diary.get('created_at', 'No date')}, "
               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
 
-
-
     context = {
         'form': form,
         'diary_list': enriched_diary_list,
@@ -338,71 +384,70 @@ def list_diary(request):
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
 # @login_required
-# def list_user_diary(request):
-#     user = request.user
-#     form = DateFilterForm(request.GET or None)
-#     year = None
-#     month = None
-#     if form.is_valid():
-#         year = form.cleaned_data['year']
-#         month = form.cleaned_data['month']
-#
-#     # 로그인한 사용자의 다이어리만 필터링
-#     diary_list = filter_user_diaries(user, year, month)
-#     print(f"Diaries returned to view: {len(diary_list)}")
-#
-#     # 페이징 설정
-#     paginator = Paginator(diary_list, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
-#     page_number = request.GET.get('page')
-#
-#     try:
-#         page_obj = paginator.page(page_number)
-#     except PageNotAnInteger:
-#         page_obj = paginator.page(1)
-#     except EmptyPage:
-#         page_obj = paginator.page(paginator.num_pages)
-#
-#     enriched_diary_list = []
-#
-#     for diary in page_obj:
-#         print(f"Processing diary with unique_diary_id: {diary.get('unique_diary_id')}")
-#         try:
-#             diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'), writer=user)
-#             if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
-#                 nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
-#             else:
-#                 nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
-#             enriched_diary = {
-#                 'diary': diary,
-#                 'nickname': nickname,
-#                 'badge_name': badge_name,
-#                 'badge_image': badge_image
-#             }
-#             enriched_diary_list.append(enriched_diary)
-#         except AiwriteModel.DoesNotExist:
-#             print(f"AiwriteModel not found for unique_diary_id: {diary.get('unique_diary_id')}")
-#             continue
-#
-#         print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
-#               f"Created: {diary.get('created_at', 'No date')}, "
-#               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
-#
-#     context = {
-#         'form': form,
-#         'diary_list': enriched_diary_list,
-#         'page_obj': page_obj,
-#     }
-#     return render(request, 'diaryapp/user_list_diary.html', context)
-#
-# def filter_user_diaries(user, year=None, month=None):
-#     diaries = AiwriteModel.objects.filter(writer=user).order_by('-created_at')
-#
-#     if year:
-#         diaries = diaries.filter(created_at__year=year)
-#     if month:
-#         diaries = diaries.filter(created_at__month=month)
-#
-#     return diaries
+def list_user_diary(request):
+    # user = request.user
+    user_email = settings.DEFAULT_FROM_EMAIL
+    form = DateFilterForm(request.GET or None)
+    year = None
+    month = None
+    if form.is_valid():
+        year = form.cleaned_data['year']
+        month = form.cleaned_data['month']
+
+    # 로그인한 사용자의 다이어리만 필터링
+    diary_list = filter_user_diaries(user_email, year, month)
+    print(f"Diaries returned to view: {len(diary_list)}")
+
+    # 페이징 설정
+    paginator = Paginator(diary_list, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
+    page_number = request.GET.get('page')
+
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    enriched_diary_list = []
+
+    for diary in page_obj:
+        print(f"Processing diary with unique_diary_id: {diary.unique_diary_id}")
+        try:
+            diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.unique_diary_id, user_email=user_email)
+            if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
+                nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+            else:
+                nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+            enriched_diary = {
+                'diary': diary,
+                'nickname': nickname,
+                'badge_name': badge_name,
+                'badge_image': badge_image
+            }
+            enriched_diary_list.append(enriched_diary)
+        except AiwriteModel.DoesNotExist:
+            print(f"AiwriteModel not found for unique_diary_id: {diary.unique_diary_id}")
+            continue
+
+        print(f"Diary in view: {diary.diarytitle}, Created: {diary.created_at}, Has Image: {'Yes' if diary.representative_image else 'No'}")
+
+    context = {
+        'form': form,
+        'diary_list': enriched_diary_list,
+        'page_obj': page_obj,
+    }
+    return render(request, 'diaryapp/user_list_diary.html', context)
+
+def filter_user_diaries(user_email, year=None, month=None):
+    diaries = AiwriteModel.objects.filter(user_email=user_email).order_by('-created_at')
+
+    if year:
+        diaries = diaries.filter(created_at__year=year)
+    if month:
+        diaries = diaries.filter(created_at__month=month)
+
+    return diaries
 
 '''일기 내용 확인'''
 def detail_diary_by_id(request, unique_diary_id):
@@ -411,6 +456,28 @@ def detail_diary_by_id(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     form = CommentForm()
     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
+
+    # 각 댓글에 대한 사용자 정보 추가
+    # for comment in comment_list:
+    #     user = comment.user.first()
+    #     if user:
+    #         _, nickname, badge_name, badge_image = get_main_badge(user.email)
+    #         comment.username = user.username
+    #         comment.nickname = nickname
+    #         comment.badge_name = badge_name
+    #         comment.badge_image = badge_image
+    #     else:
+    #         comment.username = "Unknown"
+    #         comment.nickname = "Unknown"
+    #         comment.badge_name = "Unknown"
+    #         comment.badge_image = ""
+
+    for comment in comment_list:
+        _, nickname, badge_name, badge_image = get_main_badge(comment.user_email)
+        comment.nickname = nickname
+        comment.badge_name = badge_name
+        comment.badge_image = badge_image
+
     # 디버깅을 위해 댓글 수를 출력
     print(f"Number of comments: {comment_list.count()}")
 

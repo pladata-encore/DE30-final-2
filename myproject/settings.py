@@ -35,7 +35,7 @@ load_dotenv(dotenv_path=env_path)
 SECRET_KEY = "django-insecure-a&)gx3mp+#9epz5&okvg@x6e*a#z%9%#p(k_uwl7w%bkwcntve"
 OPEN_API_KEY = os.getenv('OPEN_API_KEY')
 # DEBUG 설정
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = True
 
 # ALLOWED_HOSTS 설정
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
@@ -188,6 +188,5 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# DEFAULT_FROM_EMAIL = "new@gmail.com"
 DEFAULT_FROM_EMAIL = "neweeee@gmail.com"
-# DEFAULT_FROM_EMAIL = "fx567849@gmail.com"
+# DEFAULT_FROM_EMAIL = "dobi1@nate.com"

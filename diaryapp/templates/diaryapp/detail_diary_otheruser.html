@@ -57,24 +57,23 @@
         <div class="diary-comment-actions">
             <ul>
                 {% for comment in comment_list %}
-                    <li>
-                        <div class="badge_tour">
+                    <div class="badge_tour">
+                        {% if comment.badge_name and comment.badge_image %}
                             <span class="scope_badge">
-                                <!-- Add any additional badge content here if needed -->
-                                <img src="" class="img_badge">성산일출봉 뱃지
+                                <img src="data:image/png;base64,{{ comment.badge_image }}" alt="{{ comment.badge_name }} 뱃지" class="img_badge">
+                                {{ comment.badge_name }} 뱃지
                             </span>
-                            <strong class="tit_badge">반짝이는 성산일출봉</strong>
-                            &nbsp;&nbsp;&nbsp;{{ comment.created_at|date:"Y년 n월 j일" }}
-                        </div>
-                        <p>{{ comment.comment }}</p>
-                        <!--삭제 버튼에 조건으로 본인이 작성한 댓글만 삭제할 수 있게해야함 -->
-                        <button class="btn-diary-action">
-                            <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
-                        </button>
-                        <hr/>
-                    </li>
+                        {% endif %}
+                        <strong>{{ comment.nickname }}</strong>
+                        {{ comment.created_at|date:"Y년 n월 j일" }}
+                    </div>
+                    <p>{{ comment.comment }}</p>
+                    {% if request.user.email == comment.user_email %}
+                        <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
+                    {% endif %}
+                    <hr>
                 {% empty %}
-                    <li>댓글이 없습니다.</li>
+                    <p>댓글이 없습니다.</p>
                 {% endfor %}
             </ul>
         </div>

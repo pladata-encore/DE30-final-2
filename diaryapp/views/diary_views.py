@@ -25,10 +25,8 @@ def viewDiary(request, user_email=None):
     user = user_info['user']
     is_own_page = user_info['is_own_page']
 
-
     # 사용자 다이어리 전체 이름 가져오기
     user['title_diary'] = user.get('title_diary', f"{user.get('name', '즐거운 여행자')}의 여행 다이어리")
-
 
     # 사용자 메인 뱃지 가져오기
     main_nickname_id, main_nickname, main_badge_name, main_badge_image = get_main_badge(user['email'])

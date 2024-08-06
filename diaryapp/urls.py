@@ -9,6 +9,7 @@ urlpatterns = [
     path('generate_diary/', diarywrite_views.generate_diary, name='generate_diary'),
     path('generate_diary/<str:plan_id>/', diarywrite_views.generate_diary, name='generate_diary_plan_id'),
     path('write_diary/', diarywrite_views.write_diary, name='write_diary'),
+    path('write_diary/<str:plan_id>/', diarywrite_views.write_diary, name='write_diary_plan_id'),
     path('image/<int:pk>/', diarywrite_views.image_detail, name='image_detail'),
 
     # 다이어리 상세화면
@@ -57,11 +58,11 @@ urlpatterns = [
 
     # 리스트 다이어리
     path('all_list_diary/', diarywrite_views.list_diary, name='list_diary'),
-    # path('list_diary', diarywrite_views.list_user_diary, name='list_user_diary'),
+    path('list_diary/', diarywrite_views.list_user_diary, name='list_user_diary'),
 
     # 다이어리 메인
     path('', diary_views.viewDiary, name='user_diary_main'),
-    path('/<str:user_email>', diary_views.viewDiary, name='other_user_diary_main'),
+    path('<str:user_email>', diary_views.viewDiary, name='other_user_diary_main'),
 
 ]
 
