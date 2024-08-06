@@ -1,19 +1,18 @@
 import os
-
-import pymongo
 from pymongo import MongoClient
 from django.conf import settings
 from datetime import datetime
-from django.conf import settings
 
-client = MongoClient(settings.MONGO_URI)
-# client = MongoClient('mongodb://192.168.0.25:27017/',27017)
-db = client['MyDiary']
-aiwritemodel_collection = db['diaryapp_aiwritemodel']
-imagemodel_collection = db['diaryapp_imagemodel']
-
+def get_mongodb_connection():
+    client = MongoClient(settings.MONGO_URI)
+    db = client['MyDiary']
+    return db
 
 def filter_diaries(year=None, month=None):
+    db = get_mongodb_connection()
+    aiwritemodel_collection = db['diaryapp_aiwritemodel']
+    imagemodel_collection = db['diaryapp_imagemodel']
+
     match_condition = {}
     if year and month:
         start_date = datetime(year=int(year), month=int(month), day=1)
@@ -47,3 +46,14 @@ def filter_diaries(year=None, month=None):
               f"Created: {diary.get('created_at', 'No date')}, "
               f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
     return result
+
+def get_plan_by_id(plan_id):
+    try:
+        db = get_mongodb_connection()
+        plan_collection = db['plan']
+        plan = plan_collection.find_one({'plan_id': plan_id})
+        print(f"Plan found for id {plan_id}: {plan}")
+        return plan
+    except Exception as e:
+        print(f"Error fetching plan: {e}")
+        return None

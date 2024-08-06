@@ -7,6 +7,7 @@
         <form id="diary-form" method="post" enctype="multipart/form-data">
             <input type="hidden" name="plan_id" value="{{ plan_id }}">
             {% csrf_token %}
+            {{ form.plan_id }}
 
             <p>
                 <label for="id_diarytitle" style="color: #636363; font-size: 22px;">일기 제목:</label>
@@ -14,7 +15,7 @@
             </p>
             <p>
                 <label for="id_place" style="color: #636363; font-size: 22px;">장소:</label>
-                {{ form.place }}
+                {{ diary.place }}
             </p>
 
 <!--            <div>-->

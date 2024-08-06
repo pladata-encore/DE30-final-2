@@ -26,7 +26,7 @@ from django.contrib.auth.models import User
 from .nickname_views import *
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from ..mongo_queries import filter_diaries
+from ..mongo_queries import filter_diaries, get_plan_by_id
 
 """GPT3.5 키"""
 load_dotenv()
@@ -63,7 +63,7 @@ def translate_to_korean(text): # 일기 내용 한국어로 번역
 
 """GPT3로 일기 생성"""
 def generate_diary(request, plan_id=None):
-    print(f'-------------여기가 generate 00번-------------{plan_id}')
+    # print(f'-------------여기가 generate 00번-------------{plan_id}')
     if request.method == 'POST':
         start_time = time.time()
         form = DiaryForm(request.POST, request.FILES)
@@ -74,30 +74,16 @@ def generate_diary(request, plan_id=None):
             plan_id = request.session.pop('plan_id', None)
             print(f'-------------여기가 generate post session-------------{plan_id}')
 
+            # plan 정보 가져오기
+            plan = get_plan_by_id(plan_id) if plan_id else None
+
             diarytitle = form.cleaned_data['diarytitle']
-            place = form.cleaned_data['place']
             emotion = form.cleaned_data['emotion']
             withfriend = form.cleaned_data['withfriend']
             representative_image = request.FILES.get('image_file')
 
-            # if plan_id:
-            #     plan = plan_collection.find_one({'plan_id': plan_id})
-            #     place = f"{plan['province']} {plan['city']}"
-            # else:
-            #     place = form.cleaned_data['place']
-
             user_email = settings.DEFAULT_FROM_EMAIL
             # user_email = request.user.email
-
-            # place 번역
-            #translated_place = translate_to_English(place)
-
-            # # CLIP 모델과 전처리기 로드
-            # model_info = open_clip.create_model_and_transforms('ViT-B-32', pretrained='openai')
-            #
-            # # 적절한 반환 값을 사용하도록 수정
-            # clip_model = model_info[0]
-            # preprocess = model_info[1]
 
             image = Image.open(representative_image)
             image = image.resize((128, 128), Image.LANCZOS)
@@ -119,10 +105,15 @@ def generate_diary(request, plan_id=None):
             print('------------- CLIP image --------', CLIP_end_time - CLIP_start_time)
 
             GPT_start_time = time.time()
+            if plan:
+                place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+            else:
+                place = "Unknown location"
+
             prompt = (
                 f"Please draft my travel diary based on this information. "
-                f"I recently visited {place} in korea and I felt a strong sense of {emotion}. "
-                f"One of the notable experiences was {best_description}.I want answers in Korean. I hope it's about 5sentences long")
+                f"I recently visited {place} in Korea and I felt a strong sense of {emotion}. "
+                f"One of the notable experiences was {best_description}. I want answers in Korean. I hope it's about 5 sentences long.")
 
             # GPT-3.5 모델을 사용하여 다이어리 생성
             completion = openai.ChatCompletion.create(
@@ -146,7 +137,7 @@ def generate_diary(request, plan_id=None):
                 unique_diary_id=unique_diary_id,
                 user_email=user_email,
                 diarytitle=diarytitle,
-                place=place,
+                plan_id=plan_id,
                 emotion=translated_emotion,
                 withfriend=withfriend,
                 content=GPT3content,
@@ -218,8 +209,20 @@ def write_diary(request, plan_id=None):
         print(f'-------------여기가 write post session-------------{plan_id}')
 
         if form.is_valid() and image_form.is_valid():
+            plan_id = request.POST.get('plan_id') or request.session.get('plan_id')
+            print(f'-------------여기가 generate post plan_id-------------{plan_id}')
+
+            # plan 정보 가져오기
+            plan = get_plan_by_id(plan_id) if plan_id else None
+            print(f"Retrieved plan: {plan}")
+
+            if plan:
+                place = f"{plan.get('province', '')} {plan.get('city', '')}".strip()
+            else:
+                place = ""
+            print(f"Generated place: {place}")
+
             diarytitle = form.cleaned_data['diarytitle']
-            place = form.cleaned_data['place']
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
@@ -242,13 +245,13 @@ def write_diary(request, plan_id=None):
                 unique_diary_id=unique_diary_id,
                 user_email=user_email,
                 diarytitle=diarytitle,
-                place=place,
                 withfriend=withfriend,
-                # friends=friends,
+                plan_id=plan_id,
                 content=content,
+                place=place
             )
             diary_entry.save()
-
+            print(f"Saved diary entry: {diary_entry.id}, place: {diary_entry.place}")
 
             # 별명 : 별명 생성
             # 나중에 일정 plan_id도 넘길 예정
@@ -260,7 +263,6 @@ def write_diary(request, plan_id=None):
             # 별명 : 다이어리에 별명 ID 저장
             diary_entry.nickname_id = nickname_id
             diary_entry.save()
-
 
             # 대표 이미지 처리
             representative_image = request.FILES.get('image_file')
@@ -289,7 +291,7 @@ def write_diary(request, plan_id=None):
                 'errors': form.errors
             })
     else:
-        form = DiaryForm()
+        form = DiaryForm(initial={'plan_id': plan_id})
         image_form = ImageUploadForm()
 
     return render(request, 'diaryapp/write_diary.html', {'form': form, 'image_form': image_form, 'plan_id': plan_id})
@@ -477,7 +479,27 @@ def detail_diary_by_id(request, unique_diary_id):
 '''다이어리 여행일정 모달 창'''
 def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-    return render(request, 'diaryapp/plan_modal.html', {'diary': diary})
+    plan_id = diary.plan_id
+
+    # plan 정보 가져오기
+    plan = get_plan_by_id(plan_id) if plan_id else None
+
+    if plan:
+        province = plan.get('province', '')
+        city = plan.get('city', '')
+        plan_title = plan.get('plan_title', '')
+        days = plan.get('days', {})
+    else:
+        province = city = plan_title = ''
+        days = {}
+
+    context = {
+        'province': province,
+        'city': city,
+        'plan_title': plan_title,
+        'days': days,
+    }
+    return JsonResponse(context)
 
 '''
 user가 생기면 변경 - 로그인한 사용자를 기준으로 자신이 작성한 일기와 다른 사용자가 작성한 일기를 볼 때 화면이 다름

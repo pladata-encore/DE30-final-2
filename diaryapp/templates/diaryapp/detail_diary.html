@@ -17,7 +17,7 @@
             &nbsp;&nbsp;&nbsp;{{ diary.created_at|date:"Y년 n월 j일" }}
         </div>
         <hr/>
-        <p><strong>장소:</strong> <a href="#" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
+        <p><strong>장소:</strong> <a href="javascript:void(0);" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
         <p><strong>함께 한 친구:</strong> {{ diary.withfriend }}</p>
         <p>{{ diary.content }}</p>
         {% load humanize %}
@@ -98,10 +98,7 @@
                     <h5 class="modal-title" id="planModalLabel">여행 장소 정보</h5>
                 </div>
                 <div class="modal-body">
-                    <section id="diary" class="planmodal plan_modal">
-                        <h2 class="screen_out">여행 다이어리 장소 모달</h2>
-                        <p><strong>여행 장소:</strong> {{ diary.place }}</p>
-                    </section>
+                    <!-- JavaScript로 동적으로 내용이 삽입됩니다. -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
@@ -111,6 +108,7 @@
             </div>
         </div>
     </div>
+
 
     {% if show_modal %}
     <!-- 모달 창 : 뱃지, 별명 획득 -->
@@ -148,71 +146,86 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM fully loaded and parsed');
-
         var openModalButtons = document.querySelectorAll('.open-modal');
-        console.log('Found open-modal elements:', openModalButtons.length);
 
-        if (openModalButtons.length > 0) {
-            openModalButtons.forEach(function(element) {
-                element.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    var planModal = new bootstrap.Modal(document.getElementById('planModal'));
-                    planModal.show();
-                });
+        openModalButtons.forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                var uniqueDiaryId = this.getAttribute('data-unique-diary-id');
+                fetch(`/diary/plan_modal/${uniqueDiaryId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var modalBody = document.querySelector('#planModal .modal-body');
+                        if (data.error) {
+                            console.error('Error fetching plan modal content:', data.error);
+                            return;
+                        }
+                        modalBody.innerHTML = `
+                            <section id="diary" class="planmodal plan_modal">
+                                <h2 class="screen_out">여행 다이어리 장소 모달</h2>
+                                <p><strong>여행 제목:</strong> ${data.plan_title}</p>
+                                <p><strong>장소:</strong> ${data.province} ${data.city}</p>
+                                <p><strong>여행 날짜:</strong> ${data.days ? Object.keys(data.days).join(', ') : '없음'}</p>
+                            </section>
+                        `;
+                        var planModal = new bootstrap.Modal(document.getElementById('planModal'));
+                        planModal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching plan modal content:', error);
+                    });
             });
-        } else {
-            console.error('No .open-modal elements found');
-        }
+        });
 
         // 모달이 닫혔을 때 내용 비우기
         var planModalElement = document.getElementById('planModal');
         if (planModalElement) {
-            var planModal = new bootstrap.Modal(planModalElement);
             planModalElement.addEventListener('hidden.bs.modal', function () {
-                // No content to clear as it's included directly in HTML
+                document.querySelector('#planModal .modal-body').innerHTML = '';
             });
         }
 
         const modal = new bootstrap.Modal(document.getElementById('planModal'));
 
-         document.getElementById('planModal').addEventListener('shown.bs.modal', function () {
-           const modalBody = document.querySelector('#planModal .modal-body');
-           const bodyHeight = window.innerHeight * 0.5; // 화면 50% 높이
-           modalBody.style.maxHeight = `${bodyHeight}px`;
-           modalBody.style.overflowY = 'auto';
-         });
+        document.getElementById('planModal').addEventListener('shown.bs.modal', function () {
+            const modalBody = document.querySelector('#planModal .modal-body');
+            const bodyHeight = window.innerHeight * 0.5; // 화면 50% 높이
+            modalBody.style.maxHeight = `${bodyHeight}px`;
+            modalBody.style.overflowY = 'auto';
+        });
     });
 
     // 찜하기 버튼 클릭 이벤트
-    document.getElementById('wishlistBtn').addEventListener('click', function() {
-        var place = this.getAttribute('data-place');
-        fetch("{% url 'add_wish' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: new URLSearchParams({
-                'place': place
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.id === 'wishlistBtn') {
+            var place = event.target.getAttribute('data-place');
+            fetch("{% url 'add_wish' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new URLSearchParams({
+                    'place': place
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                if (data.created) {
-                    alert('찜 목록에 추가되었습니다!');
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (data.created) {
+                        alert('찜 목록에 추가되었습니다!');
+                    } else {
+                        alert('이미 찜 목록에 있습니다.');
+                    }
                 } else {
                     alert('이미 찜 목록에 있습니다.');
                 }
-            } else {
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 alert('이미 찜 목록에 있습니다.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('이미 찜 목록에 있습니다.');
-        });
+            });
+        }
     });
     </script>
 </section>

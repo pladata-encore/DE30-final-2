@@ -11,18 +11,7 @@ class DiaryForm(forms.ModelForm):
 
     class Meta:
         model = AiwriteModel
-        fields = ['diarytitle', 'place', 'emotion', 'withfriend', 'content']
-        # fields = ['diarytitle', 'emotion', 'content', 'withfriend]
-
-    # 태그 데이터 처리
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     withfriend = cleaned_data.get("withfriend")
-    #
-    #     # @social_id 형식으로 태그된 사용자 추출
-    #     tags = re.findall(r'@(\w+)', withfriend)
-    #     cleaned_data['withfriend'] = ' '.join(tags)
-    #     return cleaned_data
+        fields = ['diarytitle', 'plan_id', 'emotion', 'withfriend', 'content']
 
     def save(self, commit=True):
         instance = super(DiaryForm, self).save(commit=False)
