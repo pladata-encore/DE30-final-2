@@ -18,6 +18,7 @@ from ..clip_model import *
 from diaryapp.forms import *
 import base64
 import time
+from django.conf import settings
 
 from django.forms.models import modelformset_factory
 from django.contrib.auth.models import User
@@ -25,6 +26,13 @@ from .nickname_views import *
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from ..mongo_queries import filter_diaries
+
+
+# MongoDB 클라이언트 설정
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+
+# 컬렉션
+collection = db['diaryapp_nickname']
 
 """GPT3.5 키"""
 load_dotenv()
@@ -398,7 +406,7 @@ def detail_diary_by_id(request, unique_diary_id):
         nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
 
     # 별명 : 세션에서 데이터 가져오기
-    show_modal = request.session.pop('show_modal', True) # 테스트 : False로 변경 예정
+    show_modal = request.session.pop('show_modal', False) # 테스트 : True로 해서 테스트
 
     context = {
         'diary': diary,
@@ -501,7 +509,9 @@ def delete_diary(request, unique_diary_id):
     # user_email = request.user.email
     user_email = settings.DEFAULT_FROM_EMAIL
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+
     if request.method == 'POST':
         diary.delete()
+        nickname_collection.delete_one({"nickname_id": diary.nickname_id})
         return redirect('list_diary')
     return redirect('list_diary')

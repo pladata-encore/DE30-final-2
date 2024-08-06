@@ -114,7 +114,7 @@
     {% if show_modal %}
     <!-- 모달 창 : 뱃지, 별명 획득 -->
     <div class="modal_badge modal fade" id="badgeModal" tabindex="-1" role="dialog" aria-labelledby="badgeModalLabel" aria-hidden="false">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <h2 class="screen_out">다이어리 뱃지, 별명 획득 모달창</h2>
                 <div class="modal-body">
@@ -130,17 +130,69 @@
                 </div>
             </div>
         </div>
+        <canvas id="badgeCanvas"></canvas>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">닫기</button>
     </div>
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .modal-backdrop{z-index:100 !important}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script>
-        // 모달 창 : 뱃지, 별명 획득
         document.addEventListener('DOMContentLoaded', (event) => {
             var badgeModal = new bootstrap.Modal(document.getElementById('badgeModal'), {
                 keyboard: false,
-                backdrop : true,
-                show: true
-            })
+                backdrop: true,
+                show: true // 모달을 자동으로 표시
+            });
             badgeModal.show();
+
+            var count = 1000;
+            var defaults = {
+              origin: { y: 0.7 }
+            };
+
+            var confettiInterval;
+            var timeouts = [];
+
+            function fire(particleRatio, opts) {
+              confetti({
+                ...defaults,
+                ...opts,
+                particleCount: Math.floor(count * particleRatio)
+              });
+            }
+
+           // Confetti 효과
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+
+            // 추가 애니메이션 효과
+            fire(0.2, { spread: 80, startVelocity: 70, decay: 0.9, scalar: 1.1 });
+            fire(0.15, { spread: 150, startVelocity: 30, decay: 0.85, scalar: 1.3 });
+            fire(0.15, { spread: 140, startVelocity: 60, decay: 0.88, scalar: 0.9 });
+            fire(0.05, { spread: 200, startVelocity: 50, decay: 0.95, scalar: 1.5 });
+            fire(0.1, { spread: 160, startVelocity: 75, decay: 0.93, scalar: 1.4 });
+
+
+            function stopConfetti() {
+                clearInterval(confettiInterval);
+                confetti.reset();
+            }
+
+            document.getElementById('badgeModal').addEventListener('hidden.bs.modal', () => {
+                stopConfetti();
+            });
         });
     </script>
     {% endif %}
