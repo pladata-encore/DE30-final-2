@@ -9,7 +9,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.urls import reverse
 
-from diaryapp.models import AiwriteModel
+from diaryapp.models import AiwriteModel, ImageModel
 from .nickname_views import get_nickname
 from .badge_views import get_main_badge
 from common.context_processors import get_user
@@ -22,7 +22,9 @@ db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 collection = db['areaBaseList']
 user_collection = db['users']
 diary_collection = db['diaryapp_aiwritemodel']
+image_collection = db['diaryapp_imagemodel']
 plan_collection = db['plan']
+
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +40,8 @@ def viewDiary(request, user_email=None):
 
 
     # 사용자 다이어리 전체 이름 가져오기
-    user['title_diary'] = user.get('title_diary', f"{user.get('name', '즐거운 여행자')}의 여행 다이어리")
+    user['title_diary'] = user.get('title_diary', f"{user.get('username', '즐거운 여행자')}의 여행 다이어리")
+
 
     # 사용자 메인 뱃지 가져오기
     main_nickname_id, main_nickname, main_badge_name, main_badge_image = get_main_badge(user['email'])
@@ -54,30 +57,36 @@ def viewDiary(request, user_email=None):
             badge_link = "#"
 
 
-
-
     # 사용자 다이어리 슬라이드
     enriched_diary_list = []
 
     # 사용자 다이어리 정보 가져오기
     user_diaries = AiwriteModel.objects.filter(user_email=user['email'])
+    #user_diaries = diary_collection.find({'user_email': user['email']})
 
     try:
         diaries = user_diaries.order_by('-created_at')[:5]
+        #diaries = user_diaries.sort('created_at', 1).limit(5)
 
-        # 디버깅을 위한 로그 추가
-        logger.info(f"Retrieved diaries for {user_email}")
-        print()
         for diary in diaries:
-            logger.info(f"Diary: {diary.unique_diary_id}, Title: {diary.diarytitle}, Created at: {diary.created_at}")
 
             try:
+
                 if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
+                #if diary.get('nickname_id') == '<JsonResponse status_code=500, "application/json">':
                     nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
                 else:
                     nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+                    #nickname_id, nickname, badge_name, badge_image = get_nickname(diary.get('nickname_id'))
+
+                # representative_image = ImageModel.objects.filter(id=diary.representative_image_id)
+                # representative_image = diary.diary_images.filter(is_representative=True).first()
+                # representative_image = image_collection.find_one({'id': diary.representative_image_id})
+
+
                 enriched_diary = {
                     'diary': diary,
+                    #'representative_image': representative_image,
                     'nickname': nickname,
                     'badge_name': badge_name,
                     'badge_image': badge_image
@@ -88,6 +97,7 @@ def viewDiary(request, user_email=None):
                 logger.error(traceback.format_exc())
                 enriched_diary_list.append({
                     'diary': diary,
+                    #'representative_image': None,
                     'nickname': 'Unknown',
                     'badge_name': 'Unknown',
                     'badge_image': 'Unknown',
@@ -167,7 +177,6 @@ def viewDiary(request, user_email=None):
         'user': user,
         'is_own_page': is_own_page,
         'diary_list': enriched_diary_list,
-        'user_email': user_email,
         'schedule_links_and_diary_links': schedule_links_and_diary_links,
         'badge_link': badge_link,
     }
@@ -193,7 +202,7 @@ def save_title_diary(request):
                 return JsonResponse({'success': True})
 
             if not title:
-                title = f"{user.get('name', '즐거운 여행자')}의 여행 다이어리"
+                title = f"{user.get('username', '즐거운 여행자')}의 여행 다이어리"
 
             result = user_collection.update_one(
                 {'email': user_email},

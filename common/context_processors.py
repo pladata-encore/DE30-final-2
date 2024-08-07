@@ -5,7 +5,7 @@ from diaryapp.views.badge_views import get_main_badge
 db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
-user_collection = db['users_usermodel']
+user_collection = db['users']
 
 
 
@@ -21,7 +21,7 @@ def get_user(request, user_email=None):
         # 로그인 사용자 예시 이메일
         user = {
             'email': 'neweeee@gmail.com',
-            'name': '로그인 사용자'
+            'username': '로그인 사용자'
         }
 
     # 로그인 사용자 확인
