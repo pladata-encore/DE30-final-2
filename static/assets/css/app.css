@@ -202,7 +202,6 @@ main {
 .link_all{position:absolute;right:1em;top:0;font-size:.8em;line-height:2.5;font-weight:400}
 .link_all svg{vertical-align:text-top}
 
-
 /* slider */
 .slider-container {
   display:flex;
@@ -293,6 +292,8 @@ main {
 .slide_tour{display:flex;align-items:center;position:relative;width:100%;}
 .slide_tour .slider{display:flex;z-index:10;transition:transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);margin-left:1em}
 .main_badge .slide_tour{margin-top:30px}
+.main_badge .carousel-control-next{right:-1em}
+.main_badge .carousel-control-prev{left:-1em}
 .main_badge .list_badge{list-style:none;margin:0;padding-left:0}
 .main_badge .list_badge li{position:relative;margin-left:1em;padding-left:0}
 .main_badge .list_badge li:first-child{margin-left:0}
@@ -562,11 +563,6 @@ main {
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
-}
-#list_diary .card-img img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
 }
 #list_diary .card-body {
     padding: 1rem;
