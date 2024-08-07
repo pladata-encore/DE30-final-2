@@ -112,6 +112,13 @@ DATABASES = {
         }
     }
 }
+# MongoDB 클라이언트 설정
+mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
+                                   username=DATABASES['default']['CLIENT']['username'],
+                                   password=DATABASES['default']['CLIENT']['password']
+                                   )
+# mongo_client를 settings에 추가
+MONGO_CLIENT = mongo_client
 
 # # MongoDB 도커
 # DATABASES = {
@@ -124,6 +131,12 @@ DATABASES = {
 #         }
 #     }
 # }
+# # MongoDB 클라이언트 설정
+# mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
+#                                    )
+# # mongo_client를 settings에 추가
+# MONGO_CLIENT = mongo_client
+
 
 # 미디어 파일 저장 경로
 MEDIA_URL = '/media/'
@@ -154,13 +167,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# MongoDB 클라이언트 설정
-mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
-                                   username=DATABASES['default']['CLIENT']['username'],
-                                   password=DATABASES['default']['CLIENT']['password']
-                                   )
-# mongo_client를 settings에 추가
-MONGO_CLIENT = mongo_client
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
