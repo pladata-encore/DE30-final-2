@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
+# from decouple import config
 import os
 
 # Build paths inside the myproject like this: BASE_DIR / 'subdir'.
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "travel_recommend",
     "diaryapp",
+    'Jpage',
 ]
 
 MIDDLEWARE = [
@@ -70,29 +71,40 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "common.context_processors.get_user",
             ],
         },
     },
 ]
 
+import os
+from pathlib import Path
+
+# SECRET_KEY = '자신의 키를 입력하세요'
+#
+# DEBUG = True
+#
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # 실제 호스트를 추가해야 합니다.
+
+
+CSRF_COOKIE_NAME = 'csrftoken'  # CSRF 쿠키 이름 설정
+CSRF_COOKIE_SECURE = True       # HTTPS에서만 쿠키 전송
+CSRF_COOKIE_HTTPONLY = True     # JavaScript에서 접근 불가
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # CSRF 토큰을 포함할 헤더 이름
+#
+# ROOT_URLCONF = 'myproject.urls'
+
+
 WSGI_APPLICATION = "myproject.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
+
             'host': 'mongodb://127.0.0.1:27017/MyDiary',  # MongoDB 호스트 주소 (기본적으로는 localhost)
         },
         'CONN_MAX_AGE': 0
@@ -164,6 +176,50 @@ STATICFILES_DIRS = [
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+#
+# MONGO_DB_URI = 'mongodb://localhost:27017/MyDiary'  # 로컬 MongoDB URI
+# =======
+#             'host': 'mongodb://192.168.0.25:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+#         }
+#     }
+# }
 
-MONGO_DB_URI = 'mongodb://localhost:27017/MyDiary'  # 로컬 MongoDB URI
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'diaryData',
+#         'ENFORCE_SCHEMA': False,
+#         'CLIENT': {
+#             'host': 'mongodb://localhost:27017/',
+#             'username': '자신의 키를 입력하세요',
+#             'password': '자신의 키를 입력하세요',
+#             'authMechanism': 'SCRAM-SHA-1',  # MongoDB 클라우드에 맞는 인증 메커니즘 설정
+#         }
+#     }
+# }
+
+# AUTH_PASSWORD_VALIDATORS = [
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+#     },
+#     {
+#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+#     },
+# ]
+#
+# STATIC_URL = '/static/'  # 정적 파일 URL 끝에 슬래시 추가
+# STATICFILES_DIRS = [
+#     BASE_DIR /'static/'
+# ]
+#
+# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+#

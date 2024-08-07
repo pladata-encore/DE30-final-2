@@ -32,6 +32,7 @@ __pycache__/
 /miniconda3/
 /node_modules/
 /root@192.168.111.100
+/diaryapp/models/
 
 # Ignore other directories and files at root level
 ../.*

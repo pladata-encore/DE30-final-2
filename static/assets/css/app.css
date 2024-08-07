@@ -95,6 +95,9 @@ strong, b{color:inherit}
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    height: 36px;
+    font-size:1em;
+    line-height: 38px;
 }
 @media screen and (max-width: 480px) {
   .head_tour .badge_tour .tit_badge{display:none}
@@ -197,13 +200,31 @@ main {
 .main_diary .badge_main{margin-top:1em}
 .main_diary .badge_main .scope_badge{width:60px;height:60px;min-width:60px}
 .main_diary .badge_main .tit_badge{font-size:1.1rem}
+
+
+
+
+/* diary */
+
+#main > .main_diary{
+    padding-left:0;
+    padding-right:0;
+    }
+.info_diary{padding:0 1em}
+.info_diary .badge_tour{margin-top:1em}
 .card_diary{position:relative;margin-top:3em}
 .card_diary .tit_main{margin-left:1em;}
 .link_all{position:absolute;right:1em;top:0;font-size:.8em;line-height:2.5;font-weight:400}
 .link_all svg{vertical-align:text-top}
 
 
+
 /* slider */
+#main .btn_setting{width:32px;height:32px;overflow:hidden;box-shadow:none;font-size:0;line-height: 0;opacity:0.5; transition: opacity 0.2s ease;}
+#main .btn_setting:hover, #main .btn_setting:active, #main .btn_setting:focus{background:none;opacity:1}
+
+/* slider */
+
 .slider-container {
   display:flex;
   align-items:center;
@@ -222,6 +243,7 @@ main {
     top:auto;
     bottom:auto;
     z-index:50;
+    z-index:100;
     min-width:auto;
     width:5em;
     height:5em;
@@ -249,6 +271,8 @@ main {
 .card-body .card-title{display:block;font-weight:600;width:100%;text-overflow: ellipsis;white-space: nowrap;overflow:hidden;}
 .card-body .badge_tour .scope_badge{width:32px;height:32px;min-width:32px}
 .card-body .badge_tour .tit_badge{display:block;font-size:.8em;opacity:.8;width:80%;white-space:nowrap;}
+.card-body .badge_tour .scope_badge{width:32px;height:32px}
+.card-body .badge_tour .tit_badge{font-size:.8em;opacity:.8;width:80%;text-overflow: ellipsis;white-space: nowrap;overflow:hidden;}
 
 /* card - 일정 */
 .card.add .card-img{height:100%;border-radius:inherit}
@@ -266,6 +290,8 @@ main {
 
 .main_diary .slider-container{margin-top:30px}
 .main_diary .no-diaries{padding:0 1em}
+.card-add svg{filter: invert(1) grayscale(100)}
+.card-add .txt_add{display:block;color:#fff;margin-top:.5em}
 
 
 
@@ -289,16 +315,38 @@ main {
 }
 .main_badge .badge_main .tit_badge{margin-top:15px}
 .main_badge .badge_main .unset_main{margin:-3rem 0 0 20px}
+.main_badge .scope_info{padding:0 1em}
+
+.main_badge .badge_tour{display:inline-block;width:128px}
+.main_badge .badge_tour .link_badge{display:block;}
+.main_badge .badge_tour .scope_badge{width:70px;height:70px;margin:0 auto}
+.main_badge .badge_tour .tit_badge{display:block;height:45px;margin:10px 0 0 0;text-align:center;line-height:1.4;word-break:keep-all;}
+.main_badge .badge_tour button{display:block;min-width:auto;margin:10px auto 0;font-weight:400}
+
+.main_badge .tit_badgemain{width:28px;height:28px;overflow:hidden;font-size: 0;line-height: 0;margin-top:-11.2px}
+.main_badge .tit_badgemain svg{color:#8cc9f0}
+.main_badge .badge_main{display:flex;width:auto;margin-top:30px}
+.main_badge .badge_main .link_badge{margin-left:15px}
+.main_badge .badge_main .scope_badge{width:120px;height:120px}
+.main_badge .badge_main .tit_badge{margin-top:15px;height:auto}
+.main_badge .badge_main .unset_main{margin:-11.2px 0 0 20px}
 
 .slide_tour{display:flex;align-items:center;position:relative;width:100%;}
 .slide_tour .slider{display:flex;z-index:10;transition:transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);margin-left:1em}
 .main_badge .slide_tour{margin-top:30px}
 .main_badge .list_badge{list-style:none;margin:0;padding-left:0}
 .main_badge .list_badge li{position:relative;margin-left:1em;padding-left:0}
+
 .main_badge .list_badge li:first-child{margin-left:0}
 .main_badge .list_badge .main-selected .scope_badge{border:3px solid #011052}
 .main_badge .list_badge .link_badge:hover .scope_badge{transform:scale3d(1.02, 1.02, 1.02);box-shadow: 2px 4px 18px #00000029;}
 .main_badge .txt_info{display:block;font-size:.8rem;margin:30px 0 0 0}
+
+.main_badge .list_badge .main-selected .scope_badge{border:3px solid #011052}
+.main_badge .list_badge .link_badge:hover .scope_badge{transform:scale3d(1.02, 1.02, 1.02);box-shadow: 2px 4px 18px #00000029;}
+.main_badge .list_badge .scope_badge.dragging{}
+.main_badge .txt_info{display:block;padding:0 1em;margin:30px 0 0 0}
+
 @media (hover: none) {
     .main_badge .txt_info{display:none}
 }
@@ -571,6 +619,7 @@ main {
 #list_diary .card-body {
     padding: 1rem;
 }
+
 #detail_diary .btn-third {
     padding: 0.6rem 0.375rem !important; /* 패딩 조정 (상하좌우) */
     font-size: 1.0rem !important; /* 폰트 크기 조정 */
@@ -602,3 +651,4 @@ main {
 @media screen and (max-width: 360px) {
     .modal_badge .badge_tour .scope_badge{width:160px;height:160px;min-width:160px}
 }
+

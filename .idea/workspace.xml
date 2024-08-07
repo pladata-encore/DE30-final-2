@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AutoImportSettings">
@@ -95,4 +96,123 @@
       <path value="$PROJECT_DIR$/code" />
     </ignored-roots>
   </component>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jpage/templates/Jpage/map.html" beforeDir="false" afterPath="$PROJECT_DIR$/Jpage/templates/Jpage/map.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2iAL7KUd1LZbLQIytOIVoj7pw12" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.ContentTypeId.executor": "Run",
+    "Python.api.executor": "Run",
+    "Python.apps.executor": "Run",
+    "Python.areaBaseList.executor": "Run",
+    "Python.areaCode.executor": "Run",
+    "Python.category.executor": "Run",
+    "Python.categoryCode.executor": "Run",
+    "Python.categoryCode2.executor": "Run",
+    "Python.categoryCode3.executor": "Run",
+    "Python.cityDistrict.executor": "Run",
+    "Python.detailCommon.executor": "Run",
+    "Python.detailInfo.executor": "Run",
+    "Python.detailIntro.executor": "Run",
+    "Python.map.executor": "Run",
+    "Python.urls.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "Jpage",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Playdata/OneDrive/바탕 화면/gitfile/Encore_Final_Project/static",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "editor.preferences.tabs",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\static" />
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\common_templates" />
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\Jpage\templates\Jpage" />
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\Jpage\static" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\static\assets\js" />
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\static\assets\css" />
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\Jpage\resource" />
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\Jpage\templates\Jpage" />
+      <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\static\assets\css\images" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-5b207ade9991-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17890.14" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="" />
+      <created>1718928267546</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1718928267546</updated>
+      <workItem from="1721614441593" duration="276000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+>>>>>>> JPage
 </project>

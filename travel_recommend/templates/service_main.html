@@ -3,8 +3,8 @@
     <h2 class="screen_out">메인</h2>
     <div class="container">
     <div class="jumbotron text-center">
-        <h1 class="display-4">나만의 여행 일정을 만들어보세요!</h1>
-        <p class="lead">자동 생성 또는 직접 생성 옵션 중에서 선택하세요.</p>
+        <h1 class="display-4">나만의 여행 일정과 다이어리를 만들어보세요!</h1>
+        <p class="lead">원하는 서비스를 선택하세요!</p>
     </div>
 
     <div class="row">
@@ -12,12 +12,12 @@
             <div class="card option-card text-center" onclick="location.href='{% url 'recommend' %}'">
                 <div class="card-body">
                     <h5 class="card-title">자동 생성</h5>
-                    <p class="card-text">사용자 맞춤형 여행 일정을 자동으로 생성합니다.</p>
+                    <p class="card-text"></p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card option-card text-center" onclick="location.href='#'">
+            <div class="card option-card text-center" onclick="location.href='{% url 'Jpage:jpagerender' %}'">
                 <div class="card-body">
                     <h5 class="card-title">직접 생성</h5>
                     <p class="card-text">직접 여행 일정을 만들어보세요.</p>

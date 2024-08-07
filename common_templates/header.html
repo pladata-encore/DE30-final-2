@@ -19,7 +19,7 @@
 <header id="head" class="navbar navbar-dark head_tour">
 	<div class="container-fluid">
 		<h1 class="tit_tour">
-			<a href="/" class="link_tit"><span class="ico_tit">tourdiary</span></a>
+			<a href="/travel" class="link_tit"><span class="ico_tit">tourdiary</span></a>
 		</h1>
 		<button class="btn_nav" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
 		  <span class="navbar-toggler-icon">메뉴 열기</span>
@@ -36,8 +36,8 @@
 					</button>
 					<div class="collapse show" id="home-collapse" style="">
 						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-							<li><a href="#" class="link-dark rounded">여행 계획 만들기</a></li>
-							<li><a href="#" class="link-dark rounded">여행 계획</a></li>
+							<li><a href="travel/recommend" class="link-dark rounded">직접 여행 계획 만들기</a></li>
+							<li><a href="jpages/J" class="link-dark rounded">자동 여행 계획 만들기</a></li>
 						</ul>
 					</div>
 				</li>
@@ -71,5 +71,6 @@
 			<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 		</div>
 	</div>
+{% include 'main_badge.html' %}
 </header>
 <div id="main" class="cont_tour">

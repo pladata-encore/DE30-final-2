@@ -52,12 +52,15 @@ function initializeSlider() {
         const cards = sliderContainer.querySelectorAll('.card');
 ``
         if (cards.length === 0 || sliderWidth <= sliderContainerWidth) {
+
+         if (slides.length === 0 || sliderWidth <= sliderContainerWidth) {
             nextButton.style.display = 'none';
             prevButton.style.display = 'none';
             currentIndex = 0;
             updateSliderPosition();
         } else {
             nextButton.style.display = currentIndex === cards.length - 1 ? 'none' : 'flex';
+            nextButton.style.display = currentIndex === slides.length - 1 ? 'none' : 'flex';
             prevButton.style.display = currentIndex === 0 ? 'none' : 'flex';
         }
     }
