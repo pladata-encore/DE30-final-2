@@ -103,9 +103,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jpage/templates/Jpage/map.html" beforeDir="false" afterPath="$PROJECT_DIR$/Jpage/templates/Jpage/map.html" afterDir="false" />
+=======
+    <list default="true" id="dcd1f622-9fbd-4330-9ce0-b25d3f40d667" name="Changes" comment="">
+    <list default="true" id="66fb4d72-e793-489e-b109-633a82a13a0a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/mongo_queries.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/mongo_queries.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common_templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/common_templates/header.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/diary.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/diary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_badge.html" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/templates/diaryapp/list_badge.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/diaryapp/views/badge_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/diaryapp/views/badge_views.py" afterDir="false" />
+>>>>>>> 8718befd92fb8d19c10e55ea27e956adb04fd59d
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,6 +127,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="HTML File" />
         <option value="Python Script" />
         <option value="HTML File" />
       </list>
@@ -123,13 +136,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 6
+  &quot;associatedIndex&quot;: 3
 }</component>
+<<<<<<< HEAD
   <component name="ProjectId" id="2iAL7KUd1LZbLQIytOIVoj7pw12" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
+=======
+  <component name="ProjectId" id="2jSQGpvZb26cmWZPMIOvROQMhDi" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+>>>>>>> 8718befd92fb8d19c10e55ea27e956adb04fd59d
   </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -137,6 +158,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+<<<<<<< HEAD
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "DefaultHtmlFileTemplate": "HTML File",
     "Python.ContentTypeId.executor": "Run",
@@ -176,22 +198,69 @@
       <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\Jpage\resource" />
       <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\Jpage\templates\Jpage" />
       <recent name="C:\Users\Playdata\OneDrive\바탕 화면\gitfile\Encore_Final_Project\static\assets\css\images" />
+=======
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.django.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "jjwdiary",
+    "last_opened_file_path": "C:/Users/fx567/PycharmProjects/myproject/myproject",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="django" type="PythonConfigurationType" factoryName="Python">
+      <module name="myproject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (myproject)" />
+      <option name="WORKING_DIRECTORY" value="C:\Users\fx567\PycharmProjects\myproject\myproject" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/manage.py" />
+      <option name="PARAMETERS" value="runserver" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\projects\Encore_Final_Project\diaryapp\fastapi_app" />
+      <recent name="C:\projects\Encore_Final_Project\diaryapp\views" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\projects\Encore_Final_Project" />
+      <recent name="C:\projects\Encore_Final_Project\myproject" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/diaryapp/models" />
+      <recent name="C:\projects\Encore_Final_Project\diaryapp\models" />
+>>>>>>> 8718befd92fb8d19c10e55ea27e956adb04fd59d
     </key>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-5b207ade9991-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17890.14" />
+        <option value="bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
       </set>
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="737bdc5c-aaed-4eb9-813f-f8a7079d30cf" name="Changes" comment="" />
-      <created>1718928267546</created>
+      <changelist id="66fb4d72-e793-489e-b109-633a82a13a0a" name="Changes" comment="" />
+      <created>1721377906195</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
+<<<<<<< HEAD
       <updated>1718928267546</updated>
       <workItem from="1721614441593" duration="276000" />
     </task>
@@ -200,6 +269,12 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+=======
+      <updated>1721377906195</updated>
+    </task>
+    <servers />
+  </component>
+>>>>>>> 8718befd92fb8d19c10e55ea27e956adb04fd59d
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
@@ -211,8 +286,11 @@
       </map>
     </option>
   </component>
+<<<<<<< HEAD
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 >>>>>>> JPage
+=======
+>>>>>>> 8718befd92fb8d19c10e55ea27e956adb04fd59d
 </project>

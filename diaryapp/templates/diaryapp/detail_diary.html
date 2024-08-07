@@ -1,0 +1,307 @@
+{% include 'header.html' %}
+<section id="detail_diary" class="diary detail_diary">
+    <h2 class="screen_out">여행 다이어리 화면</h2>
+
+    <div class="write-container">
+        <h1 style="color: #636363; font-weight: bold;">{{ diary.diarytitle }}</h1>
+        <div class="badge_tour">
+            <a {% if is_own_page %}href="{% url 'list_badge' %}"{% endif %} class="link_badge">
+                <span class="scope_badge">
+                    <em class="screen_out">{{ badge_name }} 뱃지</em>
+                    <img src="data:image/png;base64,{{ badge_image }}" class="img_badge" alt="{{ badge_name }}">
+                </span>
+                <em class="screen_out">별명</em>
+                <strong class="tit_badge">{{ nickname }}</strong>
+            </a>
+            &nbsp;&nbsp;&nbsp;{{ diary.created_at|date:"Y년 n월 j일" }}
+        </div>
+        <hr/>
+        <p><strong>장소:</strong> <a href="javascript:void(0);" class="open-modal" data-unique-diary-id="{{ diary.unique_diary_id }}">{{ diary.place }}</a></p>
+        <p><strong>함께 한 친구:</strong> {{ diary.withfriend }}</p>
+        <p>{{ diary.content }}</p>
+        {% load humanize %}
+
+        {% if diary.representative_image %}
+            <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" width="300" alt="Representative Image">
+        {% else %}
+            <span class="txt_noimg">No image</span>
+        {% endif %}
+
+        {% for image in diary.images.all %}
+            {% if not image.is_representative %}
+                <img src="data:image/png;base64,{{ image.image_file }}" alt="Diary Image" width="300">
+            {% endif %}
+        {% empty %}
+        {% endfor %}
+
+        <div class="diary-actions">
+            <!-- 수정 버튼 -->
+            <button class="btn-diary-action">
+                <a href="{% url 'update_diary' unique_diary_id=diary.unique_diary_id %}">일기수정하기</a>
+            </button>
+
+            <!-- 삭제 버튼 -->
+            <form action="{% url 'delete_diary' unique_diary_id=diary.unique_diary_id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="삭제하기" class="btn-diary-action">
+            </form>
+
+            <!-- 리스트로 돌아가는 버튼 -->
+            <button class="btn-diary-action">
+                <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
+            </button>
+        </div>
+        <br/><br/>
+
+        <!-- 댓글 버튼 -->
+        <div class="diary-comment-actions">
+            <form method="post" action="{% url 'create_comment' diary.unique_diary_id %}">
+                <h3>댓글</h3>
+                {% csrf_token %}
+                {{ form.comment }}
+                <button type="submit" class="btn-diary-action">댓글 작성</button>
+            </form>
+        </div>
+        <br/>
+        <!-- 댓글 내용 및 삭제 버튼 -->
+        <div class="diary-comment-actions">
+            <ul>
+                {% for comment in comment_list %}
+                    <div class="badge_tour">
+                        {% if comment.badge_name and comment.badge_image %}
+                            <span class="scope_badge">
+                                <a href="{% url 'other_diary' comment.user_email %}">
+                                    <img src="data:image/png;base64,{{ comment.badge_image }}" alt="{{ comment.badge_name }} 뱃지" class="img_badge">
+                                    {{ comment.badge_name }} 뱃지
+                                </a>
+                            </span>
+                        {% endif %}
+                        <a href="{% url 'other_diary' comment.user_email %}">
+                            <strong>{{ comment.nickname }}</strong>
+                        </a>
+                        {{ comment.created_at|date:"Y년 n월 j일" }}
+                    </div>
+                    <p>{{ comment.comment }}</p>
+                    {% if request.user.email == comment.user_email %}
+                        <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
+                    {% endif %}
+                    <hr>
+                {% empty %}
+                    <p>댓글이 없습니다.</p>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- 모달 창 : 장소 정보 -->
+    <div class="modal fade" id="planModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="planModalLabel">여행 장소 정보</h5>
+                </div>
+                <div class="modal-body">
+                    <!-- JavaScript로 동적으로 내용이 삽입됩니다. -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button id="wishlistBtn" data-place="{{ diary.place }}" class="btn btn-secondary">찜하기</button>
+                    <a id="travelPlanBtn" class="btn btn-third" href="#">여행 계획으로 이동</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if show_modal %}
+    <!-- 모달 창 : 뱃지, 별명 획득 -->
+    <div class="modal_badge modal fade" id="badgeModal" tabindex="-1" role="dialog" aria-labelledby="badgeModalLabel" aria-hidden="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <h2 class="screen_out">다이어리 뱃지, 별명 획득 모달창</h2>
+                <div class="modal-body">
+                    <div class="badge_tour">
+                        <span class="scope_badge">
+                            <em class="screen_out">{{ badge_name }} 뱃지</em>
+                            <img src="data:image/png;base64,{{ badge_image }}" class="img_badge"  alt="{{ badge_name }}">
+                        </span>
+                        <em class="screen_out">별명</em>
+                        <strong class="tit_badge">{{ nickname }}</strong>
+                    </div>
+                    <p class="txt_info">축하합니다! 뱃지와 별명을 획득했습니다.</p>
+                </div>
+            </div>
+        </div>
+        <canvas id="badgeCanvas"></canvas>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">닫기</button>
+    </div>
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .modal-backdrop{z-index:100 !important}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var badgeModal = new bootstrap.Modal(document.getElementById('badgeModal'), {
+                keyboard: false,
+                backdrop: true,
+                show: true // 모달을 자동으로 표시
+            });
+            badgeModal.show();
+
+            var count = 1000;
+            var defaults = {
+              origin: { y: 0.7 }
+            };
+
+            var confettiInterval;
+            var timeouts = [];
+
+            function fire(particleRatio, opts) {
+              confetti({
+                ...defaults,
+                ...opts,
+                particleCount: Math.floor(count * particleRatio)
+              });
+            }
+
+           // Confetti 효과
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+
+            // 추가 애니메이션 효과
+            fire(0.2, { spread: 80, startVelocity: 70, decay: 0.9, scalar: 1.1 });
+            fire(0.15, { spread: 150, startVelocity: 30, decay: 0.85, scalar: 1.3 });
+            fire(0.15, { spread: 140, startVelocity: 60, decay: 0.88, scalar: 0.9 });
+            fire(0.05, { spread: 200, startVelocity: 50, decay: 0.95, scalar: 1.5 });
+            fire(0.1, { spread: 160, startVelocity: 75, decay: 0.93, scalar: 1.4 });
+
+
+            function stopConfetti() {
+                clearInterval(confettiInterval);
+                confetti.reset();
+            }
+
+            document.getElementById('badgeModal').addEventListener('hidden.bs.modal', () => {
+                stopConfetti();
+            });
+        });
+    </script>
+    {% endif %}
+
+    <script>
+        // 장소 모달
+        $('.open-modal').on('click', function(e) {
+            e.preventDefault();
+            var uniqueDiaryId = $(this).data('unique-diary-id');
+            $.ajax({
+                url: `/diary/plan_modal/${uniqueDiaryId}/`,
+                type: 'GET',
+                success: function(data) {
+                    if (data.error) {
+                        console.error('Error fetching plan modal content:', data.error);
+                        return;
+                    }
+                    var modalContent = `
+                        <section id="diary" class="planmodal plan_modal">
+                            <h2 class="screen_out">여행 다이어리 장소 모달</h2>
+                            <p><strong>여행 제목:</strong> ${data.plan_title}</p>
+                            <p><strong>장소:</strong> ${data.province} ${data.city}</p>
+                            <p><strong>여행 날짜:</strong></p>
+                            <ul>
+                                ${Object.entries(data.days).map(([day, places]) => `
+                                    <li>${day}: ${places.length > 0 ? places.join(', ') : '일정 없음'}</li>
+                                `).join('')}
+                            </ul>
+                        </section>
+                    `;
+                    $('#planModal .modal-body').html(modalContent);
+                    $('#wishlistBtn').data('province', data.province);
+                    $('#wishlistBtn').data('city', data.city);
+                    $('#wishlistBtn').data('travel-dates', JSON.stringify(data.days));
+                    $('#planModal').modal('show');
+                },
+                error: function(error) {
+                    console.error('Error fetching plan modal content:', error);
+                }
+            });
+        });
+
+        // 모달 닫기
+        $(document).on('click', '[data-dismiss="modal"], [data-bs-dismiss="modal"]', function() {
+          $(this).closest('.modal').modal('hide');
+        });
+
+        // 모달이 닫혔을 때 내용 비우기
+        $('#planModal').on('hidden.bs.modal', function() {
+            $(this).find('.modal-body').empty();
+        });
+
+        // 모달 높이 조정
+        $('#planModal').on('shown.bs.modal', function() {
+            var modalBody = $(this).find('.modal-body');
+            var bodyHeight = $(window).height() * 0.5;
+            modalBody.css({
+                'max-height': bodyHeight + 'px',
+                'overflow-y': 'auto'
+            });
+        });
+
+        // 찜하기 버튼 클릭 이벤트
+        $('#wishlistBtn').on('click', function() {
+            var place = $(this).data('place');
+            var province = $(this).data('province');
+            var city = $(this).data('city');
+            var travel_dates = $(this).data('travel-dates');
+
+            console.log("Sending data to server:", {
+                'place': place,
+                'province': province,
+                'city': city,
+                'travel_dates': travel_dates
+            });
+
+            $.ajax({
+                url: "{% url 'add_wish' %}",
+                type: 'POST',
+                data: {
+                    'place': place,
+                    'province': province,
+                    'city': city,
+                    'travel_dates': travel_dates,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    if (data.status === 'success') {
+                        if (data.created) {
+                            alert('찜 목록에 추가되었습니다!');
+                        } else {
+                            alert('이미 찜 목록에 있습니다.');
+                        }
+                    } else {
+                        alert('처리 중 오류가 발생했습니다.');
+                    }
+                },
+                error: function() {
+                    alert('처리 중 오류가 발생했습니다.');
+                }
+            });
+        });
+
+        // 여행 계획으로 이동 버튼 클릭 이벤트
+        $('#travelPlanBtn').on('click', function(e) {
+            e.preventDefault();
+            window.location.href = "{% url 'list_diary' %}";
+        });
+    </script>
+</section>
+{% include 'footer.html' %}

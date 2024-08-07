@@ -15,11 +15,11 @@ class Command(BaseCommand):
 
         # API 설정
         API_URL = "http://apis.data.go.kr/B551011/KorService1/detailCommon1"
-        SERVICE_KEY = "Sb/v0Bw7bSK6dHNb77i4CJ7crREM7ge1TXIk6MtE2a299gX7LgWJuglX4z2p9tmLTRRtjbjkpOIxRR+OtlK1MA=="
+        SERVICE_KEY = "cKgW9OjLbXENzsZJvmEUpJWalpOy3KRgzL50EuJDsV2ZzSuDtvz9bk00ugl96WdpbO3N/P2zuqAO+SCXksBByg=="
 
         params = {
             'MobileOS': 'ETC',
-            'MobileApp': 'MobileApp',
+            'MobileApp': 'AppTest',
             '_type': 'xml',
             'contentTypeId': 32,
             'overviewYN': 'Y',
@@ -58,3 +58,4 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f"Failed to fetch data for contentid {content_id}: {response.status_code}"))
 
         self.stdout.write(self.style.SUCCESS("Finished updating overviews"))
+

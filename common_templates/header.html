@@ -47,9 +47,9 @@
 					</button>
 					<div class="collapse show" id="dashboard-collapse" style="">
 						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li><a href="" class="link-dark rounded">여행 다이어리 만들기</a></li>
-							<li><a href="" class="link-dark rounded">여행 다이어리</a></li>
-							<li><a href="" class="link-dark rounded">다이어리 구경하기</a></li>
+                            <li><a href="{% url 'write_diary' %}" class="link-dark rounded">여행 다이어리 만들기</a></li>
+							<li><a href="{% url 'my_diary' %}" class="link-dark rounded">여행 다이어리</a></li>
+							<li><a href="{% url 'list_diary' %}" class="link-dark rounded">다이어리 구경하기</a></li>
 						</ul>
 					</div>
 				</li>
@@ -60,8 +60,8 @@
 					</button>
 					<div class="collapse show" id="account-collapse" style="">
 						<ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-							<li><a href="" class="link-dark rounded">나의 여행 뱃지</a></li>
-							<li><a href="" class="link-dark rounded">찜한 여행지</a></li>
+							<li><a href="{% url 'list_badge' %}" class="link-dark rounded">나의 여행 뱃지</a></li>
+							<li><a href="{% url 'wishlist_view' %}" class="link-dark rounded">찜한 여행지</a></li>
 							<li><a href="#" class="link-dark rounded">프로필 수정</a></li>
 							<li><a href="#" class="link-dark rounded">Sign out</a></li>
 						</ul>

@@ -1,0 +1,167 @@
+{% include 'header.html' %}
+<section id="mainDiary" class="main main_diary">
+    <h2 class="screen_out">여행 다이어리</h2>
+    <div class="info_main">
+        <div class="scope_tit">
+            <h3 id="titleDiary" class="tit_diary">{{ user.title_diary }}</h3>
+            {% if is_own_page %}
+            <button id="settingTitleButton" type="button" class="btn_setting">
+                제목 설정
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                  <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+                  <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+                </svg>
+            </button>
+            <div id="writeTitleDiary" class="scope_input" style="display:none">
+                <input type="text" id="inputTitleDiary" placeholder="다이어리 제목을 입력하세요.">
+                <button id="saveTitleButton" class="primary" type="button">저장</button>
+                <button id="cancelTitleButton" type="button">취소</button>
+            </div>
+            {% endif %}
+        </div>
+        <div class="badge_tour badge_main">
+            <h4 class="tit_badgemain">
+                대표 여행 뱃지
+                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                  <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                </svg>
+            </h4>
+            <a href="{{badge_link}}" class="link_badge">
+                <span class="scope_badge">
+                    <em class="screen_out">{{ user_badge_name }} 뱃지</em>
+                    <img src="data:image/png;base64,{{ user_badge_image }}" class="img_badge"  alt="{{ user_badge_name }}">
+                </span>
+                <em class="screen_out">별명</em>
+                <strong class="tit_badge">{{ user_nickname }}</strong>
+            </a>
+        </div>
+    </div>
+    <div class="card_diary">
+        <h3 class="tit_main">여행 다이어리</h3>
+        <div class="slider-container">
+            <div class="slider">
+            {% if diary_list or schedule_links_and_diary_links %}
+
+                {% if is_own_page %}
+                {% for link in schedule_links_and_diary_links %}
+                <div class="card add">
+                    <strong class="card-title"><a href="{{ link.schedule_url }}" class="link_title">{{ link.plan_title }}</a><span class="badge text-bg-dark">new</span></strong>
+                    <a href="{{ link.create_diary_url }}" class="link_card">
+                        <div class="card-img">
+                            {% if link.bg %}
+                            <img src="{{link.bg}}" alt="{{link.title}}">
+                            {% endif %}
+                            <span class="txt_noimg">No image</span>
+                        </div>
+                        <div class="card-add">
+                            <div class="inner-add">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                </svg>
+                                <span class="txt_add">다이어리 만들기</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                {% for item in diary_list %}
+                <div class="card">
+                    <a href="{% url 'detail_diary_by_id' unique_diary_id=item.diary.unique_diary_id %}" class="link_card">
+                        <div class="card-img">
+                            <span class="txt_noimg">No image</span>
+                        </div>
+                        <div class="card-body">
+                            <strong class="card-title">{{ item.diary.diarytitle }}</strong>
+                            <div class="badge_tour">
+                                <span class="scope_badge">
+                                    <em class="screen_out">{{ item.badge_name }} 뱃지</em>
+                                    <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge" alt="{{ item.badge_name }}">
+                                </span>
+                                <em class="screen_out">별명</em>
+                                <strong class="tit_badge">{{ item.nickname }}</strong>
+                            </div>
+                            <p class="card-date">{{ item.diary.created_at|date:"Y년 n월 j일" }}</p>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+
+                {% else %}
+                <div class="no-diaries">
+                    <p>작성된 다이어리가 없습니다.</p>
+                </div>
+                {% endif %}
+            </div>
+            <button class="carousel-control-prev" type="button" id="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" id="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <a href="{% url 'list_user_diary' %}" class="link_all">
+            전체보기
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+            </svg>
+        </a>
+    </div>
+</section>
+<script>
+$(document).ready(function() {
+
+    // 제목 설정 버튼 클릭
+    $('#mainDiary').on('click', '#settingTitleButton', function(event){
+
+        var currentTitle = $('#titleDiary').text().trim();
+        $('#inputTitleDiary').val(currentTitle);
+
+        $('#titleDiary').hide();
+        $(this).hide();
+        $('#writeTitleDiary').show();
+    });
+
+    // 저장 버튼 클릭
+    $('#mainDiary').on('click', '#saveTitleButton', function(event) {
+        var titleDiary = $('#inputTitleDiary').val().trim();
+
+        // 제목이 비어있으면 기본 제목 설정
+        if (titleDiary === "") {
+            titleDiary = "{{ user.username|default:'여행자' }}의 여행 다이어리";
+        }
+
+        $.ajax({
+            url: 'save_title_diary/',
+            type: 'POST',
+            data: {
+                'title': titleDiary,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#titleDiary').text(titleDiary).show();
+                    $('#writeTitleDiary').hide();
+                    $('#settingTitleButton').show();
+                } else {
+                    alert('제목 저장 실패');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX 요청 실패:", status, error);
+            }
+        });
+    });
+    // 취소 버튼 클릭
+    $('#mainDiary').on('click', '#cancelTitleButton', function(event) {
+        $('#writeTitleDiary').hide();
+        $('#titleDiary').show();
+        $('#settingTitleButton').show();
+    });
+});
+</script>
+{% include 'footer.html' %}
