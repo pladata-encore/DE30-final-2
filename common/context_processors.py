@@ -13,12 +13,11 @@ user_collection = db['users']
 def get_user(request, user_email=None):
     # 사용자 정보 조회
     if user_email :
-        user = user_collection.find_one({'email': user_email})
         # 다른 사용자 예시 db
-        # user = user_collection.find_one({'email': 'dobi@nate.com'})
+        user = user_collection.find_one({'email': user_email})
     else:
+        # 로그인 사용자
         # user = user_collection.find_one({'email': request.user.email})
-        # 로그인 사용자 예시 이메일
         user = {
             'email': 'neweeee@gmail.com',
             'username': '로그인 사용자'
