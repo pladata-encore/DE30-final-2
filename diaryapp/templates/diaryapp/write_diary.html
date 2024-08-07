@@ -10,12 +10,14 @@
                 <label for="id_diarytitle" style="color: #636363; font-size: 22px;">일기 제목:</label>
                 {{ form.diarytitle }}
             </p>
+            <div id="place-display"></div>
             <p>
                 <label for="id_plan" style="color: #636363; font-size: 22px;">장소:</label>
                 <select name="plan_id" id="id_plan">
                     <option value="">장소를 선택하세요</option>
                 </select>
             </p>
+            <div id="place-display"></div>
             <p>
                 <label for="id_withfriend" style="color: #636363; font-size: 22px;">함께한 친구:</label>
                 {{ form.withfriend }}
@@ -53,26 +55,32 @@
     </div>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var planSelect = document.getElementById('id_plan');
+        let currentPlanId = null;
+        const planSelect = document.getElementById('id_plan');
+        const placeDisplay = document.getElementById('place-display');
+        const aiButton = document.getElementById('ai-button');
+        const emotionField = document.getElementById('emotion-field');
+        const diaryForm = document.getElementById('diary-form');
+        const hiddenPlanId = diaryForm.querySelector('[name="plan_id"]').value;
 
-        // 사용 가능한 plan 목록 가져오기
-        fetch('/diary/get_available_plans/')
-            .then(response => response.json())
-            .then(data => {
-                data.plans.forEach(plan => {
-                    var option = document.createElement('option');
-                    option.value = plan.plan_id;
-                    option.textContent = `${plan.province} ${plan.city} - ${plan.plan_title}`;
-                    planSelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error:', error));
+        // available plans 로드
+        loadAvailablePlans();
 
-        // AI 버튼과 감정 필드 요소 가져오기
-        var aiButton = document.getElementById('ai-button');
-        var emotionField = document.getElementById('emotion-field');
+        // 드롭다운 변경 이벤트 리스너
+        planSelect.addEventListener('change', function() {
+            const selectedValue = this.value;
 
-        // AI 버튼 클릭 이벤트 리스너 추가
+            // 선택된 값이 비어 있을 경우 숨겨진 입력 필드의 값 사용
+            currentPlanId = selectedValue.trim() === '' ? hiddenPlanId.value : selectedValue;
+
+            // 해당 ID로 장소 정보 로드
+            loadPlaceInfo(currentPlanId);
+
+            // 콘솔에 현재 Plan ID 출력
+            console.log(currentPlanId);
+        });
+
+        // AI 버튼 클릭 이벤트 리스너
         aiButton.addEventListener('click', function() {
             // 폼의 현재 display 속성을 확인하고, 이를 기반으로 토글합니다.
             if (emotionField.style.display === 'none') {
@@ -83,52 +91,33 @@
         });
 
         // 폼 제출 이벤트 리스너
-        document.getElementById('diary-form').addEventListener('submit', function(event) {
+        diaryForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
-            var content = document.getElementById('id_content').value;
-            var form = event.target;
-            var formData = new FormData(form);
-            var url;
+            if (currentPlanId === null || currentPlanId === undefined) {
+                currentPlanId = diaryForm.querySelector('[name="plan_id"]').value;
+            }
+            const content = document.getElementById('id_content').value;
+            const formData = new FormData(this);
+            const url = content.trim() === ''
+                ? `/diary/generate_diary/${currentPlanId}/`
+                : `/diary/write_diary/${currentPlanId}/`;
 
             // 로딩 스크린 표시
             document.getElementById('loading-screen').style.display = 'block';
-
-            // plan_id 가져오기
-            // Fetch the plan ID from the visible input element
-            var planIdElement = document.getElementById('id_plan');
-            var planId = planIdElement ? planIdElement.value : null;
-
-            // If the visible input doesn't have a value, use the hidden input value
-            if (!planId) {
-                var hiddenPlanIdElement = document.getElementById('hidden_plan_id');
-                planId = hiddenPlanIdElement ? hiddenPlanIdElement.value : null;
-            }
-
-            // Ensure the plan ID is set in the hidden input for form submission
-            var planIdInput = document.getElementById('plan_id');
-            planIdInput.value = planId;
-
-            if (content.trim() === '') {
-                url = `/diary/generate_diary/${planId}/`;
-            } else {
-                url = `/diary/write_diary/${planId}/`;
-            }
 
             fetch(url, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value
+                    'X-CSRFToken': this.querySelector('[name="csrfmiddlewaretoken"]').value
                 }
             }).then(response => response.json())
             .then(data => {
-                // 로딩 스크린 숨기기
                 document.getElementById('loading-screen').style.display = 'none';
                 if (data.success) {
                     window.location.href = data.redirect_url;
                 } else {
-                    // Handle form errors
                     console.error('Form errors:', data.errors);
                 }
             }).catch(error => {
@@ -136,6 +125,32 @@
                 console.error('Error:', error);
             });
         });
+
+        function loadPlaceInfo(currentPlanId) {
+            fetch(`/diary/api/get_plan_place/${currentPlanId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    placeDisplay.textContent = data.place;
+                });
+        }
+
+        function loadAvailablePlans() {
+            fetch('/diary/get_available_plans/')
+                .then(response => response.json())
+                .then(data => {
+                    data.plans.forEach(plan => {
+                        const option = document.createElement('option');
+                        option.value = plan.plan_id;
+                        option.textContent = `${plan.province} ${plan.city} - ${plan.plan_title}`;
+                        planSelect.appendChild(option);
+                    });
+                    // URL에서 온 plan_id가 있으면 해당 옵션 선택
+                    if (currentPlanId) {
+                        planSelect.value = currentPlanId;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
     });
     </script>
 </section>

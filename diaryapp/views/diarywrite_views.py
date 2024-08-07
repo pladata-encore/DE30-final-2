@@ -215,13 +215,25 @@ def generate_diary(request, plan_id=None):
 def write_diary(request, plan_id=None):
     if request.method == 'POST':
         print(f'-------------여기가 다이어리 00번-------------{plan_id}')
-        request.session['plan_id'] = plan_id
-        print(f'-------------여기가 session-------------{plan_id}')
+
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
 
+        # currentPlanId 또는 plan_id 가져오기
+        currentPlanId = request.POST.get('plan_id', None)
+
+        if currentPlanId:
+            # currentPlanId가 있으면 세션에 저장
+            request.session['plan_id'] = currentPlanId
+            print(f'-------------여기가  폼 currentPlanId session-------------{currentPlanId}')
+        elif plan_id:
+            # plan_id가 있으면 세션에 저장
+            request.session['plan_id'] = plan_id
+            print(f'-------------여기가 주소 plan_id session-------------{plan_id}')
+
+
         if form.is_valid() and image_form.is_valid():
-            plan_id = request.POST.get('plan_id') or plan_id
+            plan_id = currentPlanId or plan_id
             if not plan_id:
                 # return JsonResponse({'success': False, 'errors': 'No plan_id provided'}, status=400)
                 print(f'-------------여기가 다이어리 01번-------------{plan_id}')
