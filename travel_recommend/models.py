@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Region(models.Model):
     code = models.CharField(max_length=10)
@@ -43,7 +44,7 @@ class Destination(models.Model):
         return self.title
 
 class UserPreferences(models.Model):
-    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)  # 사용자와 연결
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자와 연결
     region = models.CharField(max_length=100)
     subregion = models.CharField(max_length=100)
     start_date = models.DateField()
@@ -58,7 +59,7 @@ class UserPreferences(models.Model):
         return f"Preferences of {self.user.username}"
 
 class TravelPlan(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)  # 사용자와 연결
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자와 연결
     start_date = models.DateField()
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)

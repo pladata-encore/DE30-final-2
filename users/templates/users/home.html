@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{% csrf_token %}">
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--=============== FAVICON ===============-->
+    <link rel="shortcut icon" href="{% static 'users/assets/img/favicon.png' %}" type="image/png">
+
+    <!--=============== REMIXICONS ===============-->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!--=============== SWIPER CSS ===============-->
+    <link rel="stylesheet" href="{% static 'users/assets/css/swiper-bundle.min.css' %}">
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="{% static 'users/assets/css/styles.css' %}">
+
+    <title>Responsive Website Travel</title>
+    <style>
+        .section__title {
+            text-align: center; /* 텍스트 왼쪽 정렬 */
+            line-height: 2; /* 문장 사이의 간격 조정 */
+            margin: 0; /* 기본 마진 제거 */
+            padding: 0; /* 기본 패딩 제거 */
+            font-size: 44px; /* 기본 폰트 크기 조정 */
+        }
+
+        .small-text {
+            font-size: 30px; /* <br>로 구분된 부분의 폰트 크기 조정 */
+        }
+
+        /* 타이핑 효과를 위한 CSS */
+        .typing {
+            border-right: 2px solid #000; /* 타이핑 커서 스타일 */
+            white-space: nowrap; /* 텍스트가 줄 바꿈 없이 계속되도록 함 */
+            overflow: hidden; /* 텍스트가 넘치지 않도록 함 */
+            animation: blink-caret 0.75s step-end infinite; /* 커서 깜박임 애니메이션 */
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: black; }
+        }
+
+        /* 개발자 전용 UI 숨기기 */
+        .developer-only {
+            display: none;
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header" id="header">
+        <nav class="nav container">
+            <a href="#" class="nav__logo">Travel</a>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item">
+                        <a href="#home" class="nav__link active-link">Home</a>
+                    </li>
+                    <!--<li class="nav__item">
+                        <button id="logout-button" type="button" class="nav__link" style="background:none; border:none; padding:0; cursor:pointer;">Logout</button>
+                    </li>-->
+                    <li class="nav__item">
+                        <a href="{% url 'users:login' %}" class="nav__link">Login</a>
+                    </li>
+                </ul>
+
+                <div class="nav__dark">
+                    <!-- Theme change button -->
+                    <span class="change-theme-name">Dark mode</span>
+                    <i class="ri-moon-line change-theme" id="theme-button"></i>
+                </div>
+
+                <i class="ri-close-line nav__close" id="nav-close"></i>
+            </div>
+            <div class="nav__toggle" id="nav-toggle">
+                <i class="ri-function-line"></i>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <!--==================== HOME ====================-->
+        <section class="home">
+            <img src="{% static 'users/assets/img/home1.jpg' %}" alt="" class="home__img">
+
+
+            <div class="home__container container grid">
+                <div class="home__data">
+                    <span class="home__data-subtitle">여행, 떠나고 싶다면</span>
+                    <h1 id="typing-effect" class="home__data-title">일정부터 여행일기까지 <br> 처리해주는 Seola Tour <b>  <br> </b></h1>
+                </div>
+            </div>
+
+        <div class="controls developer-only">
+            <label for="speed">타이핑 속도(ms):</label>
+            <input type="number" id="speed" value="150" min="20" step="20">
+            <button onclick="startTyping()">시작</button>
+        </div>
+
+        <script>
+        let typingSpeed = 100; // 기본 타이핑 속도 (ms)
+        let text = "일정부터 여행일기까지 처리해주는 Seola Tour";
+        let index = 0;
+        let element;
+
+        function type() {
+            if (index < text.length) {
+                element.innerHTML = text.substring(0, index + 1);
+                index++;
+                setTimeout(type, typingSpeed); // 사용자 지정 속도로 타이핑
+            }
+        }
+
+        function startTyping() {
+           // 입력 필드에서 타이핑 속도 가져오기
+            typingSpeed = parseInt(document.getElementById('speed').value);
+            element = document.getElementById('typing-effect');
+            index = 0;
+            element.innerHTML = ''; // 초기화
+            type(); // 타이핑 시작
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startTyping(); // 페이지 로드 시 타이핑 시작
+        });
+        </script>
+    </section>
+
+        <!--==================== ABOUT ====================-->
+        <section class="about section" id="about">
+            <div class="about__container container grid">
+                <div class="about__data">
+                    <h2 class="section__title about__title">Seola Tour<br> AI Diary</h2>
+                    <p class="about__description">Seola Tour flexibly designs your travel plans based on the
+                        Machine Running Model. Based on MBTI, you can also choose between
+                        planned J-type and P-type travel plans.
+
+                        with one picture, the AI diary where your travel diary is completed
+                        is also waiting for you.
+                    </p>
+<!--                    <a href="#" class="button">일기 쓰기</a>-->
+                </div>
+            </div>
+        </section>
+
+        <!--==================== DISCOVER ====================-->
+        <section class="discover section" id="discover">
+            <h2 id="typing-effect2" class="section__title">
+            <!-- 타이핑 효과가 적용될 텍스트 -->
+                Seola Tour로 여행을 준비 하면, 10시간 이상을 절약할 수 있어요.
+                <br> <span class="small-text"> 진해 여좌천에서 가까운 팥죽 집은 어딜까요?</span>
+                <br> <span class="small-text"> 삼척 장호항에서 가장 좋은 리뷰를 받은 오징어 횟집은?</span>
+                <br> <span class="small-text"> 태종대에서 가장 많은 사람들이 방문한 장소는?</span>
+                <br> <span class="small-text"> 설아 투어에는 다 있죠.</span>
+            </h2>
+
+
+            <div class="discover__container container swiper-container">
+                <div class="swiper-wrapper">
+                     <!--==================== DISCOVER 1 ====================-->
+                    <div class="discover__card swiper-slide">
+                        <img src="{% static 'users/assets/img/discover1.jpg' %}" alt="" class="discover__img">
+                        <div class="discover__data">
+                            <h2 class="discover__title">진해 여좌천</h2>
+                        </div>
+                    </div>
+                    <!--==================== DISCOVER 2 ====================-->
+                    <div class="discover__card swiper-slide">
+                        <img src="{% static 'users/assets/img/discover2.jpg' %}" alt="" class="discover__img">
+                        <div class="discover__data">
+                            <h2 class="discover__title">삼척 장호항</h2>
+                        </div>
+                    </div>
+                    <!--==================== DISCOVER 3 ====================-->
+                    <div class="discover__card swiper-slide">
+                        <img src="{% static 'users/assets/img/discover3.jpg' %}" alt="" class="discover__img">
+                        <div class="discover__data">
+                            <h2 class="discover__title">태종대</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!--==================== EXPERIENCE ====================-->
+        <section class="experience section">
+            <h2 class="section__title"> AI가 써주는 당신의 여행 일기장
+            <br> 궁금하지 않나요?</h2>
+
+            <div class="experience__container container grid">
+                <div class="experience__content grid">
+                    <div class="experience__data">
+                        <h2 class="experience__number"></h2>
+                    </div>
+
+                <div class="experience__img grid">
+                    <div class="experience__overlay">
+                        <img src="{% static 'users/assets/img/experience1.jpg' %}" alt="" class="experience__img-one">
+                    </div>
+
+                    <div class="experience__overlay">
+                        <img src="{% static 'users/assets/img/experience2.png' %}" alt="" class="experience__img-two">
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <!--==================== VIDEO ====================-->
+        <section class="video section">
+            <h2 class="section__title">Video</h2>
+            <div class="video__container container">
+                <p class="video__description">AI가 써주는 당신의 여행 기록,
+                    <br>J와 P 버전으로 귀엽고 아기자기한 여행 계획을 세워보세요</p>
+                <div class="video__content">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/yZPCbLJYL0U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/RV2kXtLvfn8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!--==================== PLACES ====================-->
+        <section class="place section" id="place">
+            <h2 class="section__title">여행을 다닐 때마다 획득하는 영광의 뱃지, <br>당신 거에요!</h2>
+
+            <div class="place__container container grid">
+                <!--==================== PLACES CARD 1 ====================-->
+                <div class="place__card">
+                    <span class="scope_badge">
+                        <img src="{% static 'users/assets/img/place1.png' %}" alt="" class="place__img">
+                    </span>
+
+                    <div class="place__content">
+                        <span class="place__rating"></span>
+
+                        <div class="place__data">
+                            <h3 class="place__title">고성</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!--==================== PLACES CARD 2 ====================-->
+                <div class="place__card">
+                    <span class="scope_badge">
+                        <img src="{% static 'users/assets/img/place2.png' %}" alt="" class="place__img">
+                    </span>
+                    <div class="place__content">
+                        <span class="place__rating"></span>
+
+                        <div class="place__data">
+                            <h3 class="place__title">통영</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!--==================== PLACES CARD 3 ====================-->
+                <div class="place__card">
+                    <span class="scope_badge">
+                    <img src="{% static 'users/assets/img/place3.png' %}" alt="" class="place__img">
+                    </span>
+                    <div class="place__content">
+                        <span class="place__rating"></span>
+
+                        <div class="place__data">
+                            <h3 class="place__title">포항</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!--==================== PLACES CARD 4 ====================-->
+                <div class="place__card">
+                    <span class="scope_badge">
+                    <img src="{% static 'users/assets/img/place4.png' %}" alt="" class="place__img">
+                    </span>
+                    <div class="place__content">
+                        <span class="place__rating"></span>
+
+                        <div class="place__data">
+                            <h3 class="place__title">독도</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!--==================== PLACES CARD 5 ====================-->
+                <div class="place__card">
+                    <span class="scope_badge">
+                    <img src="{% static 'users/assets/img/place5.png' %}" alt="" class="place__img">
+                    </span>
+                    <div class="place__content">
+                        <span class="place__rating"></span>
+
+                        <div class="place__data">
+                            <h3 class="place__title">경주</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!--==================== PLACES CARD 6 ====================-->
+                <div class="place__card">
+                    <span class="scope_badge">
+                    <img src="{% static 'users/assets/img/place6.png' %}" alt="" class="place__img">
+                    </span>
+                    <div class="place__content">
+                        <span class="place__rating"></span>
+
+                        <div class="place__data">
+                            <h3 class="place__title">남한산성</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!--==================== FOOTER ====================-->
+    <footer class="footer section">
+        <div class="footer__container container grid">
+            <div class="footer__content grid">
+                <div class="footer__data">
+                    <h3 class="footer__title">Travel</h3>
+                    <p class="footer__description">Travel you choose the <br> destination, we offer you the <br> experience.</p>
+                </div>
+
+                <div class="footer__data">
+                    <h3 class="footer__subtitle">About</h3>
+                    <ul>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">About Us</a>
+                        </li>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">Features</a>
+                        </li>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">News & Blogs</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="footer__data">
+                    <h3 class="footer__subtitle">Company</h3>
+                    <ul>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">Team</a>
+                        </li>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">Plan & Pricing</a>
+                        </li>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">Become a member</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="footer__data">
+                    <h3 class="footer__subtitle">Support</h3>
+                    <ul>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">FAQs</a>
+                        </li>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">Support Center</a>
+                        </li>
+                        <li class="footer__item">
+                            <a href="#" class="footer__link">Contact Us</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer__rights">
+                <p class="footer__copy">&#169; Bedimcode. All rights reserved.</p>
+                <div class="footer__terms">
+                    <a href="#" class="footer__terms-link">Terms & Agreements</a>
+                    <a href="#" class="footer__terms-link">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--========== SCROLL UP ==========-->
+    <a href="#" class="scrollup" id="scroll-up">
+        <i class="ri-arrow-up-line scrollup__icon"></i>
+    </a>
+
+    <!--=============== SCROLL REVEAL ===============-->
+    <script src="{% static 'users/assets/js/scrollreveal.min.js' %}"></script>
+
+    <!--=============== SWIPER JS ===============-->
+    <script src="{% static 'users/assets/js/swiper-bundle.min.js' %}"></script>
+
+    <!--=============== MAIN JS ===============-->
+    <script src="{% static 'users/assets/js/main.js' %}"></script>
+
+    <script>
+        // Ensure the DOM is fully loaded before running the script
+        document.addEventListener('DOMContentLoaded', (event) => {
+            /*==================== DARK LIGHT THEME ====================*/
+            const themeButton = document.getElementById('theme-button');
+            const darkTheme = 'dark-theme';
+            const iconTheme = 'ri-sun-line';
+
+            // Previously selected topic (if user selected)
+            const selectedTheme = localStorage.getItem('selected-theme');
+            const selectedIcon = localStorage.getItem('selected-icon');
+
+            // We obtain the current theme that the interface has by validating the dark-theme class
+            const getCurrentTheme = () => document.body.classList.contains(darkTheme) ? 'dark' : 'light';
+            const getCurrentIcon = () => themeButton.classList.contains(iconTheme) ? 'ri-moon-line' : 'ri-sun-line';
+
+            // We validate if the user previously chose a topic
+            if (selectedTheme) {
+                // If the validation is fulfilled, we ask what the issue was to know if we activated or deactivated the dark
+                document.body.classList[selectedTheme === 'dark' ? 'add' : 'remove'](darkTheme);
+                themeButton.classList[selectedIcon === 'ri-moon-line' ? 'add' : 'remove'](iconTheme);
+            }
+
+            // Activate / deactivate the theme manually with the button
+            themeButton.addEventListener('click', () => {
+                // Add or remove the dark / icon theme
+                document.body.classList.toggle(darkTheme);
+                themeButton.classList.toggle(iconTheme);
+                // We save the theme and the current icon that the user chose
+                localStorage.setItem('selected-theme', getCurrentTheme());
+                localStorage.setItem('selected-icon', getCurrentIcon());
+            });
+
+            // logout
+               function logout() {
+
+                fetch("{% url 'users:logout' %}", {
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                         'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // 로그아웃 성공 시 서버에서 지정한 URL로 리다이렉트
+                        window.location.href = data.redirect;
+                    } else {
+                        // 로그아웃 실패 시 서버에서 전달한 메시지 표시
+                        if (data.message) {
+                            alert(data.message);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('로그아웃 에러:', error);
+                    alert('로그아웃 중 오류가 발생했습니다.');
+                });
+            }
+
+            // Attach event listener to logout button
+            document.getElementById('logout-button').addEventListener('click', logout);
+
+
+
+        });
+    </script>
+</body>
+</html>
