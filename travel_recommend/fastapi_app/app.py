@@ -655,7 +655,7 @@ async def recommend_schedule(user_input: UserInput):
             'province': user_input.region,
             'city': user_input.subregion,
             'plan_title': f"{user_input.region}의 여행 일정",
-            'email': 'example@example.com',  # 이 부분은 실제 이메일로 교체해야 합니다.
+            'email': 'neweeee@gmail.com',  # 이 부분은 실제 이메일로 교체해야 합니다.
             'days': itinerary
         }
         db.plan.insert_one(plan_data)
