@@ -260,4 +260,4 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
 
 import uvicorn
 if __name__ == "__main__":
-    uvicorn.run("nickname_app:app", host='0.0.0.0', port=5012, reload=True)
+    uvicorn.run("nickname_app:app", host='0.0.0.0', port=5000, reload=True)

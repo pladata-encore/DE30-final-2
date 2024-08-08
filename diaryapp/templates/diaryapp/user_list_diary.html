@@ -33,8 +33,10 @@
                 <div class="card">
                     <a href="{% url 'detail_diary_by_id' unique_diary_id=item.diary.unique_diary_id %}" class="link_card">
                         <div class="card-img">
-                            {% if item.diary.representative_image %}
-                                <img src="data:image/png;base64,{{ item.diary.representative_image.image_file }}" width="300" alt="Representative Image">
+                            {% if item.representative_image %}
+                                <img src="data:image/png;base64,{{ item.representative_image }}"
+                                     width="300"
+                                     alt="Representative Image">
                             {% else %}
                                 <span class="txt_noimg">No image</span>
                             {% endif %}
@@ -44,7 +46,9 @@
                             <div class="badge_tour">
                                 <span class="scope_badge">
                                     <em class="screen_out">{{ item.badge_name }} 뱃지</em>
-                                    <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge"  alt={{ item.badge_name }}>
+                                    {% if item.badge_image %}
+                                        <img src="data:image/png;base64,{{ item.badge_image }}" class="img_badge" alt="{{ item.badge_name }}">
+                                    {% endif %}
                                 </span>
                                 <em class="screen_out">별명</em>
                                 <strong class="tit_badge">{{ item.nickname }}</strong>

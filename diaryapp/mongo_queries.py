@@ -1,5 +1,5 @@
 import os
-
+import base64
 from django.http import JsonResponse
 from pymongo import MongoClient
 from django.conf import settings
@@ -91,3 +91,14 @@ def get_available_plans(request):
     except Exception as e:
         print(f"Error fetching available plans: {e}")
         return JsonResponse({'error': 'Failed to fetch available plans'}, status=500)
+
+
+def decode_image(encoded_image):
+    if encoded_image:
+        # base64 문자열이 이미 'data:image/png;base64,' 접두사를 포함하고 있는지 확인
+        if encoded_image.startswith('data:image'):
+            return encoded_image
+        else:
+            # 접두사가 없는 경우, 추가합니다
+            return f"data:image/png;base64,{encoded_image}"
+    return None
