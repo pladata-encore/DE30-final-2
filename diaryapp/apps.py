@@ -7,10 +7,6 @@ class DiaryappConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'diaryapp'
 
-# class AiwriteConfig(AppConfig):
-#     default_auto_field = "django.db.models.BigAutoField"
-#     name = "diaryapp"
-
 # CLIP모델
     def ready(self):
         load_model()

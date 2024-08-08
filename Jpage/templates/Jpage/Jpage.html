@@ -1,0 +1,25 @@
+{% include 'header.html' %}
+
+<style>
+#main.cont_tour {
+    width: 90%;  /* 원하는 너비 비율 또는 픽셀값 */
+    height: 100%;
+    margin: 0 auto;
+}
+</style>
+
+<iframe src= "{% url 'Jpage:get_data' %}" style="width: 100%; border: none; display: block; margin: 0 auto;" title="Main Content"></iframe>
+
+{% include 'footer.html' %}
+
+<script>
+        function resizeIframe() {
+            var iframe = window.parent.document.querySelector('iframe');
+            if (iframe) {
+                iframe.style.height = document.documentElement.scrollHeight + 'px';
+            }
+        }
+        window.onload = resizeIframe;
+        window.onresize = resizeIframe;
+    </script>
+

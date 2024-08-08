@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Poor+Story&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/datedropper.css" rel="stylesheet"/>
+    <title>현나</title>
+    <style>
+        .btn-outline-primary:hover {
+            border-color: #ff007b;
+            color: #ff007b;
+            background-color: rgba(255, 0, 123, 0.1);
+        }
+        .picker-input:hover{
+        color: #ff007b;
+        }
+        .btn:hover {
+        color: #ff007b;
+        }
+        .btn:hover {
+        color: #ff007b;
+        }
+        .add-btn:hover {
+        color: #000000; /* hover 시 폰트 색상 변경 */
+        background-color: #ff007b; /* hover 시 배경 색상 변경 */
+        background-color: rgba(255, 0, 123, 0.1);
+        }
+        .btn-outline-primary:not(:disabled):not(.disabled).active,
+        .btn-outline-primary:not(:disabled):not(.disabled):active,
+        .show>.btn-outline-primary.dropdown-toggle {
+            color: #fff;
+            background-color: rgba(255, 0, 123, 0.5);
+            border-color: #ff007b;
+            box-shadow: inset 0 0 0 2px rgba(255, 0, 100, 0.5) !important;
+        }
+        #app-container {
+            background-color: #fff;
+            border-radius: 5px;
+            margin: 0 auto;
+            width : 80%;
+        }
+        #map-container {
+            border: 2px solid #333;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+        }
+        #map {
+            width: 90%;
+            height: 400px;
+        }
+        .list-group {
+            margin: 20px 0;
+        }
+        .custom-backdrop {
+        background-color: rgba(123, 31, 162, 0.7) !important;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding : 12px;
+        }
+        .place-item {
+            cursor: pointer;
+        }
+        .place-item.selected {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        .day-btn {
+            margin-right: 5px;
+        }
+        .day-section {
+            display: none;
+        }
+        .day-section.active {
+            display: block;
+        }
+        .places {
+            flex: 1;
+        }
+        .day-selection {
+           flex: 3;
+        }
+        .center-text {
+        text-align: center;
+        }
+        #addressResults {
+            max-height: 400px; /* 원하는 높이로 조정 가능 */
+            overflow-y: auto;
+        }
+        .selected-place {
+            background-color: #d3d3d3;
+        }
+        .popout {
+            animation: popout 0.5s ease-out;
+        }
+
+        @keyframes popout {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .selected-item {
+            cursor: pointer;
+            margin-bottom: 5px;
+            color: #000;
+        }
+        #floatingLabel {
+            display: none; /* 기본적으로 숨김 */
+            position: absolute; /* 카드의 위치에 상대적으로 배치 */
+            bottom: 20px; /* 카드 하단에서 20px */
+            right: 20px; /* 카드 오른쪽에서 20px */
+            background: rgba(0, 0, 0, 0.7); /* 반투명 검정 배경 */
+            color: #fff; /* 흰색 폰트 */
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 9999; /* 가장 위에 표시되도록 설정 */
+        }
+        .selected-item.active-border {
+            border: 2px solid red;
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        .card-container {
+            position: relative; /* 카드의 위치를 기준으로 설정 */
+        }
+    </style>
+</head>
+<body>
+<section id="app-container" style="position: relative; padding-bottom: 140px; font-family: Poor Story">
+    <div class="container">
+        <div id="selectedLocation" class="mb-3">
+            <h4><span id="locationDisplay"></span></h4>
+        </div>
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+        <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="locationModalLabel">Select Location</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="provinceSelect">광역시/도</label>
+                                <select id="provinceSelect" class="form-control" onchange="fetchCities()">
+                                    <option value="">select</option>
+                                    {% for Areacode in Areacodes %}
+                                    <option value="{{ Areacode.code }}">{{ Areacode.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="citySelect">시/군/구</label>
+                                <select id="citySelect" class="form-control">
+                                    <option value="">select</option>
+                                    {% for citydistrict in citydistricts %}
+                                    <option value="{{ citydistrict.code }}">{{ citydistrict.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn text-white" style="background-color: #935d8c;" data-dismiss="modal">
+                            Close
+                        </button>
+                        <button type="button" class="btn text-white" style="background-color: #935d8c;" data-dismiss="modal" onclick="saveLocation()">
+                            Save changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-3">
+        <div class="row">
+            <!-- 왼쪽에 버튼들 배치 -->
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <button type="button" class="btn mr-4" style="border-color: black; background-color: #ffffff; margin-top: 10px;" data-toggle="modal" data-target="#locationModal">
+                    Select Location
+                </button>
+                <button type="button" class="btn" style="border-color: black; background-color: #ffffff; margin-top: 10px;" data-toggle="modal" data-target="#categoryModal">
+                    Select Category
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-4" style="margin-top: -20px;">
+                        <label>From</label>
+                        <input type="text" id="startDate" class="form-control" style="border-color: black; background-color: #ffffff;">
+                    </div>
+                    <div class="col-md-4" style="margin-top: -20px;">
+                        <label>To</label>
+                        <input type="text" id="endDate" class="form-control" style="border-color: black; background-color: #ffffff;">
+                    </div>
+                    <div class="col-md-4" style="margin-top: -20px;">
+                        <label>✨</label>
+                        <button id="addTripButton" class="btn" style="border-color: black; background-color: #ffffff;">
+                            Add a trip
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 카테고리 선택하는 모달 -->
+    <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalLabel">select category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm" method="GET" action="{% url 'Jpage:get_data' %}">
+                        <div class="form-group">
+                            <label for="selectCategory1">대분류</label>
+                            <select class="form-control" id="selectCategory1" name="cat1_code" onchange="fetchMiddleCategories()">
+                                <option value="">select</option>
+                                {% for largecategory in largecategories %}
+                                <option value="{{ largecategory.code }}">{{ largecategory.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectCategory2">중분류</label>
+                            <select class="form-control" id="selectCategory2" name="cat2_code" onchange="fetchSmallCategories()">
+                                <option value="">select</option>
+                                {% for middlecategory in middlecategories %}
+                                <option value="{{ middlecategory.code }}">{{ middlecategory.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectCategory3">소분류</label>
+                            <select class="form-control" id="selectCategory3">
+                                <option value="">select</option>
+                                {% for smallcategory in smallcategories %}
+                                <option value="{{ smallcategory.code }}">{{ smallcategory.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn text-white" style="background-color: #935d8c;" data-dismiss="modal">Close
+                    </button>
+                    <button type="button" class="btn text-white" style="background-color: #935d8c;" data-dismiss="modal" onclick="saveCategory()">Save changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="selectedcategory" class="col-md-6 d-flex justify-content-center align-items-center mt-4">
+        <h4><span id="categoryDisplay"></span></h4>
+    </div>
+    <div class="container mt-2">
+        <div class="row">
+            <!-- 장소 리스트 카드 -->
+            <div class="col-md-6 d-flex justify-content-center align-items-center position-relative">
+                <div class="card place-card" style="width: 400px; height: 400px; background-color: #f5f5f5; border-radius: 0px; box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);">
+                    <div class="card-body">
+                        <h3 class="card-title text-center">Place List ✏️</h3>
+                        <div class="card-text" style="max-height: 280px; overflow-y: auto;">
+                            <ul id="place" class="list-group">
+                                <!-- 여기에 리스트 아이템들 추가 -->
+                            </ul>
+                        </div>
+                    </div>
+                    <button id="addBtn" class="btn add-btn">추가</button>
+                </div>
+            </div>
+
+            <!-- 일차별 선택된 장소 목록 카드 -->
+            <div class="col-md-6 d-flex justify-content-center align-items-center position-relative">
+                <div class="card" style="width: 400px; height: 400px; background-color: #f5f5f5; border-radius: 0px; box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);">
+                    <div class="card-body">
+                        <div class="btn-group d-flex justify-content-center" role="group" aria-label="일차 선택">
+                            <div id="dayButtons"></div>
+                        </div>
+                        <div id="day-sections" class="mt-4"></div>
+                    </div>
+                    <!-- 버튼을 카드의 오른쪽 하단에 위치시킵니다. -->
+                    <button type="button" id="openModalButton" class="btn add-btn" data-toggle="modal" data-target="#addressModal">장소 추가</button>
+                </div>
+                <div id="floatingLabel">
+                    두 번 클릭하면 삭제됩니다.
+                </div>
+            </div>
+        </div>
+
+        <!-- 모달 -->
+        <div class="modal fade" id="addressModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <!-- 모달 헤더 -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">주소 검색</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <!-- 모달 바디 -->
+                    <div class="modal-body">
+                        <div class="input-group">
+                            <input type="text" id="addressInput" class="form-control" placeholder="주소를 입력하세요">
+                            <div class="input-group-append">
+                                <button type="button" id="searchButton" class="btn text-white" style="background-color: #935d8c;">검색</button>
+                            </div>
+                        </div>
+                        <div id="addressResults" class="overflow-auto mt-3"></div>
+                    </div>
+                    <!-- 모달 푸터 -->
+                    <div class="modal-footer">
+                        <button type="button" id="addSelectedPlaceButton" class="btn text-white" style="background-color: #935d8c; font-size:16px;">추가</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            <button id="saveButton" class="btn" data-toggle="modal" data-target="#titleModal"
+                    style="border-color: black;  background-color: #ffffff; position: absolute; right: 20px; bottom: 20px; padding: 12px 24px; font-size: 16px;">
+                Save Plan
+            </button>
+            <div class="modal fade" id="titleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">제목을 입력해주세요</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" id="planTitle" class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="modalSaveButton" class="btn text-white"
+                                    style="background-color: #935d8c;"
+                                    onclick="saveTitle()">저장
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/datedropper.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=64ca09990c4ef115e5bdda00a2c4bc44"></script>
+<script>
+    var selectedCity = ''; // 선택된 도시 코드
+    var selectedProvince = ''; // 선택된 광역시/도 코드
+
+    function fetchCities() {
+        var AreaCode = document.getElementById('provinceSelect').value;
+        var citydistrictSelect = document.getElementById('citySelect');
+
+        $.ajax({
+            url: '/citydistrict/',
+            type: 'GET',
+            data: {
+                'areacode': AreaCode
+            },
+            success: function(data) {
+                data.citydistricts.forEach(function(city) {
+                    var option = document.createElement('option');
+                    option.value = city.code;
+                    option.textContent = city.name;
+                    citydistrictSelect.appendChild(option);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching citydistrict:', error);
+            }
+        });
+    }
+
+    function saveLocation() {
+        selectedProvince = document.getElementById('provinceSelect').value;
+        selectedCity = document.getElementById('citySelect').value;
+        updateLocationDisplay();
+
+        if (selectedProvince && selectedCity) {
+            fetchPlaces();
+        }
+    }
+
+    function updateLocationDisplay() {
+        var provinceName = document.querySelector('#provinceSelect option:checked').textContent;
+        var cityName = document.querySelector('#citySelect option:checked').textContent;
+        var locationDisplay = document.getElementById('locationDisplay');
+        console.log('City name:', cityName);
+        console.log('Province name:', provinceName);
+
+         if (provinceName && cityName) {
+    locationDisplay.textContent = `${provinceName} ${cityName} 여행 계획서`;
+    locationDisplay.innerHTML += ' ✈️'; // 이모티콘 추가
+} else {
+    locationDisplay.textContent = '위치를 선택해주세요.';
+}
+}
+
+    $(document).ready(function() {
+        $('#locationModal').on('show.bs.modal', function () {
+            $('.modal-backdrop').addClass('custom-backdrop'); // backdrop에 custom-backdrop 클래스 추가
+        });
+
+        $('#locationModal').on('hidden.bs.modal', function () {
+            $('.modal-backdrop').removeClass('custom-backdrop'); // backdrop에서 custom-backdrop 클래스 제거
+        });
+    });
+</script>
+<script>
+    var selectedCategory1 = '';
+    var selectedCategory2 = '';
+    var selectedCategory3 = '';
+    var selectedPlaces = [];
+
+    function fetchMiddleCategories() {
+        var largeCategory = document.getElementById('selectCategory1').value;
+        var middleCategorySelect = document.getElementById('selectCategory2');
+        middleCategorySelect.innerHTML = '<option value="">select</option>'; // 초기화
+
+        $.ajax({
+            url: '/middlecategory/',
+            type: 'GET',
+            data: { 'cat1_code': largeCategory },
+            success: function(data) {
+                data.middlecategories.forEach(function(category) {
+                    var option = document.createElement('option');
+                    option.value = category.code;
+                    option.textContent = category.name;
+                    middleCategorySelect.appendChild(option);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching middle categories:', error);
+            }
+        });
+    }
+
+    function fetchSmallCategories() {
+        var middleCategory = document.getElementById('selectCategory2').value;
+        var smallCategorySelect = document.getElementById('selectCategory3');
+        smallCategorySelect.innerHTML = '<option value="">select</option>'; // 초기화
+
+        $.ajax({
+            url: '/smallcategory/',
+            type: 'GET',
+            data: { 'cat2_code': middleCategory },
+            success: function(data) {
+                data.smallcategories.forEach(function(category) {
+                    var option = document.createElement('option');
+                    option.value = category.code;
+                    option.textContent = category.name;
+                    smallCategorySelect.appendChild(option);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching small categories:', error);
+            }
+        });
+    }
+
+    function saveCategory() {
+        selectedCategory1 = document.getElementById('selectCategory1').value;
+        selectedCategory2 = document.getElementById('selectCategory2').value;
+        selectedCategory3 = document.getElementById('selectCategory3').value;
+
+        // 선택된 장소 초기화
+        selectedPlaces = [];
+        $('#place').empty(); // 기존의 장소 리스트를 비웁니다
+
+        if (selectedCategory1 && selectedCategory2 && selectedCategory3) {
+            fetchPlaces();
+        }
+        updateCategoryDisplay();
+    }
+
+    function updateCategoryDisplay() {
+        var smallCategory = document.querySelector('#selectCategory3 option:checked')?.textContent;
+        var categoryDisplay = document.getElementById('categoryDisplay');
+
+        if (smallCategory) {
+            categoryDisplay.textContent = `${smallCategory}의 검색 결과입니다`;
+            categoryDisplay.innerHTML += '🔎'; // 이모티콘 추가
+        } else {
+            categoryDisplay.textContent = '카테고리를 선택해주세요.';
+        }
+    }
+
+    function fetchPlaces() {
+        var $placeList = $('#place');
+        $placeList.empty(); // 기존의 리스트를 비웁니다
+
+        if (selectedCategory1 && selectedCategory2 && selectedCategory3) {
+            $.ajax({
+                url: '/place/',
+                type: 'GET',
+                data: {
+                    'area_code': selectedProvince,
+                    'city_code': selectedCity,
+                    'category_code': selectedCategory3
+                },
+                success: function(data) {
+                    // 데이터가 성공적으로 도착하면, <ul> 리스트를 업데이트합니다
+                    $.each(data.places, function(index, place) {
+                        var $li = $('<li></li>')
+                            .addClass('list-group-item place-item')
+                            .attr('data-place-id', index + 1)
+                            .text(place.title); // place 객체의 title 속성에 접근합니다
+                        $placeList.append($li);
+                    });
+
+                    // 기존 이벤트 핸들러를 제거한 후 새로운 핸들러 등록
+                    $placeList.off('click', '.place-item').on('click', '.place-item', function() {
+                        $(this).toggleClass('selected');
+                        var placeId = $(this).data('place-id');
+                        if ($(this).hasClass('selected')) {
+                            selectedPlaces.push(placeId);
+                        } else {
+                            var index = selectedPlaces.indexOf(placeId);
+                            if (index > -1) {
+                                selectedPlaces.splice(index, 1);
+                            }
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching places:', error);
+                }
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        $('#categoryModal').on('show.bs.modal', function () {
+            $('.modal-backdrop').addClass('custom-backdrop'); // backdrop에 custom-backdrop 클래스 추가
+        });
+
+        $('#categoryModal').on('hidden.bs.modal', function () {
+            $('.modal-backdrop').removeClass('custom-backdrop'); // backdrop에서 custom-backdrop 클래스 제거
+        });
+    });
+</script>
+
+
+<script>
+    var markers = {}; // 각 일차별 마커를 저장하기 위한 객체
+    var selectedPlaces = [];
+    var selectedPlace = null; // 현재 선택된 장소
+
+    $(document).ready(function() {
+            $('#startDate').dateDropper();
+            $('#endDate').dateDropper();
+
+            $('#addTripButton').click(function() {
+                var startDate = new Date($('#startDate').val());
+                var endDate = new Date($('#endDate').val());
+
+                if (isNaN(startDate) || isNaN(endDate)) {
+                    alert('시작 날짜와 종료 날짜를 모두 선택해 주세요.');
+                    return;
+                }
+
+                if (startDate > endDate) {
+                    alert('시작 날짜는 종료 날짜보다 이전이어야 합니다.');
+                    return;
+                }
+
+                var numDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+                createDayButtons(numDays);
+                createDaySections(numDays);
+            });
+
+            function createDayButtons(numDays) {
+                var $buttonContainer = $('#dayButtons');
+                $buttonContainer.empty(); // Clear existing buttons
+
+                for (var i = 1; i <= numDays; i++) {
+                    $buttonContainer.append(`
+                        <button type="button" class="btn btn-outline-primary day-btn"
+                            style="border-color: black; color: black;" data-day="${i}">${i}일차
+                        </button>
+                    `);
+                }
+                if (numDays > 0) {
+                    $('.day-btn[data-day="1"]').click();
+                }
+            }
+
+            function createDaySections(numDays) {
+                var $sectionContainer = $('#day-sections');
+                $sectionContainer.empty(); // Clear existing sections
+
+                for (var i = 1; i <= numDays; i++) {
+                    $sectionContainer.append(`
+                        <div id="day${i}" class="day-section mt-4" style="display: none;">
+                            <h4>Day ${i}</h4>
+                            <div class="card-text" style="max-height: 250px; overflow-y: auto;">
+                                <ul id="selectedPlaces${i}" class="list-group">
+                                    <!-- 선택한 장소 목록 -->
+                                </ul>
+                            </div>
+                        </div>
+                    `);
+                }
+                if (numDays > 0) {
+                    $('#day1').show();
+                }
+            }
+
+            $(document).on('click', '.day-btn', function() {
+                var day = $(this).data('day');
+                $('.day-section').hide(); // Hide all sections
+                $('#day' + day).show(); // Show the selected section
+                $('.day-btn').removeClass('active'); // Deactivate all buttons
+                $(this).addClass('active'); // Activate the clicked button
+            });
+        });
+
+
+
+
+    // 지도를 초기화하는 함수
+    function initMap() {
+        map = new kakao.maps.Map(document.getElementById('map'), {
+            center: new kakao.maps.LatLng(37.5665, 126.978), // 기본 중심 좌표
+            level: 3 // 기본 줌 레벨
+        });
+        // 지도 타입 컨트롤 추가
+        var mapTypeControl = new kakao.maps.MapTypeControl();
+        map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+        // 확대/축소 컨트롤 추가
+        var zoomControl = new kakao.maps.ZoomControl();
+        map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+    }
+
+    // 일차 선택 버튼 클릭 이벤트
+    $(document).on('click', '.day-btn', function() {
+        var day = $(this).data('day');
+        $('.day-section').removeClass('active');
+        $('#day' + day).addClass('active');
+        $('.day-btn').removeClass('active');
+        $(this).addClass('active');
+        updateMarkers(day); // 선택된 일차의 마커만 업데이트
+    });
+
+     // 장소 항목 클릭 이벤트
+    $('.place-item').click(function() {
+        $(this).toggleClass('selected');
+        var placeId = $(this).data('place-id');
+        if ($(this).hasClass('selected')) {
+            selectedPlaces.push(placeId);
+        } else {
+            var index = selectedPlaces.indexOf(placeId);
+            if (index > -1) {
+                selectedPlaces.splice(index, 1);
+            }
+        }
+    });
+
+    function addMarker(day, placeName, lat, lng) {
+        var markerPosition = new kakao.maps.LatLng(lat, lng);
+        var marker = new kakao.maps.Marker({
+            position: markerPosition,
+            title: placeName
+        });
+
+        marker.setMap(map);
+        if (!markers[day]) {
+            markers[day] = [];
+        }
+        markers[day].push(marker);
+
+        // 마커가 추가된 후 지도의 중심을 업데이트
+        updateMapCenterAndZoom(day);
+    }
+
+    function removeMarkers(day) {
+        if (markers[day]) {
+            markers[day].forEach(function(marker) {
+                marker.setMap(null);
+            });
+            markers[day] = [];
+        }
+    }
+
+    function updateMarkers(day) {
+        // 모든 일차의 마커를 제거
+        Object.keys(markers).forEach(function(existingDay) {
+            removeMarkers(existingDay);
+        });
+
+        // 현재 선택된 일차의 마커만 업데이트
+        var selectedPlacesList = $('#selectedPlaces' + day);
+        selectedPlacesList.find('li').each(function() {
+            var placeItem = $(this).text().trim();
+            $.ajax({
+                url: '/coordinate/',
+                type: 'GET',
+                data: { 'placeName': placeItem },
+                success: function(data) {
+                    if (data.mapx !== undefined && data.mapy !== undefined) {
+                        var lng = parseFloat(data.mapx);
+                        var lat = parseFloat(data.mapy);
+                        addMarker(day, placeItem, lat, lng);
+                    } else {
+                        console.error('Coordinates not found for place:', placeItem);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching place information:', error);
+                }
+            });
+        });
+    }
+
+    function updateMapCenterAndZoom(day) {
+        if (markers[day] && markers[day].length > 0) {
+            var bounds = new kakao.maps.LatLngBounds();
+
+            markers[day].forEach(function(marker) {
+                bounds.extend(marker.getPosition());
+            });
+
+            map.setBounds(bounds);
+        }
+    }
+
+    $('#addBtn').click(function() {
+        var day = $('.day-btn.active').data('day');
+        var selectedPlacesList = $('#selectedPlaces' + day);
+
+        selectedPlaces.forEach(function(placeId) {
+            var placeItem = $('.place-item[data-place-id="' + placeId + '"]').text().trim();
+            var isAlreadyAdded = selectedPlacesList.find('li').filter(function() {
+                return $(this).data('place-id') === placeId;
+            }).length > 0;
+
+            if (!isAlreadyAdded && placeItem) {
+                // 선택된 장소를 추가하고 popout 애니메이션 효과 추가
+                selectedPlacesList.append(`
+            <li class="list-group-item selected-item popout" data-place-id="${placeId}">
+                 ${placeItem}
+            </li>
+            `);
+
+                // 마커 추가
+                $.ajax({
+                    url: '/coordinate/',
+                    type: 'GET',
+                    data: { 'placeName': placeItem },
+                    success: function(data) {
+                        if (data.mapx !== undefined && data.mapy !== undefined) {
+                            var lng = parseFloat(data.mapx);
+                            var lat = parseFloat(data.mapy);
+                            addMarker(day, placeItem, lat, lng);
+                        } else {
+                            console.error('Coordinates not found for place:', placeItem);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching place information:', error);
+                    }
+                });
+            }
+        });
+
+        selectedPlaces = [];
+        $('.place-item').removeClass('selected');
+    });
+
+    $(document).on('click', '.selected-item', function() {
+        var $item = $(this);
+
+        // 플로팅 라벨 표시
+        $('#floatingLabel').stop(true, true).fadeIn(300).delay(1500).fadeOut(300);
+
+        // 클릭 시 테두리 색상 토글
+        $item.toggleClass('active-border');
+    });
+
+    $(document).on('dblclick', '.selected-item', function() {
+        var $item = $(this);
+        var placeId = $item.data('place-id');
+        var placeName = $item.text().trim();
+
+        // 삭제 애니메이션 및 삭제
+        $item.fadeOut(300, function() {
+            $(this).remove(); // 애니메이션 후 삭제
+        });
+
+        // selectedPlaces 배열에서 항목 제거
+        selectedPlaces = selectedPlaces.filter(function(pid) { return pid !== placeId; });
+
+        // 마커 삭제
+        var day = $('.day-btn.active').data('day');
+
+        // 일차별 마커를 제거하는 함수 호출
+        removeMarkerByPlaceName(day, placeName);
+        updateMapCenterAndZoom(day);
+    });
+
+    function removeMarkerByPlaceName(day, placeName) {
+        if (markers[day]) {
+            for (var i = markers[day].length - 1; i >= 0; i--) {
+                try {
+                    var marker = markers[day][i];
+                    var markerTitle = marker.getTitle().trim();
+                    console.log('Comparing:', markerTitle, 'with', placeName);
+                    if (markerTitle === placeName) {
+                        marker.setMap(null); // 지도에서 마커 제거
+                        markers[day].splice(i, 1); // 배열에서 마커 제거
+                        console.log(placeName, 'deleted from map and array', markers);
+                    }
+                } catch (e) {
+                    console.error('Error removing marker:', e);
+                }
+            }
+        }
+    }
+
+    // 문서가 준비되었을 때 지도 초기화
+    $(document).ready(function() {
+        initMap();
+    });
+
+    // Kakao API 키
+    const kakaoApiKey = '자신의 키를 입력하세요';
+
+    // 장소 추가 버튼 클릭 이벤트 처리
+    document.getElementById('openModalButton').addEventListener('click', function() {
+        // 모달 표시
+        $('#addressModal').modal('show');
+    });
+
+    // 모달이 닫힐 때 초기화
+    $('#addressModal').on('hidden.bs.modal', function () {
+        $('#addressInput').val('');
+        $('#addressResults').empty();
+    });
+
+    // 검색 버튼 클릭 이벤트 처리
+    document.getElementById('searchButton').addEventListener('click', function() {
+        const addressInput = document.getElementById('addressInput').value;
+
+        // Kakao API 호출 URL
+        const apiUrl = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(addressInput)}`;
+
+        // Ajax 요청
+        fetch(apiUrl, {
+            headers: {
+                'Authorization': `KakaoAK ${kakaoApiKey}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Kakao API 요청에 실패했습니다.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 검색 결과를 처리하는 로직
+            const resultsDiv = document.getElementById('addressResults');
+            resultsDiv.innerHTML = ''; // 기존 결과 초기화
+
+            if (data.documents && data.documents.length > 0) {
+                data.documents.forEach(item => {
+                    const address = item.road_address_name || item.address_name || '주소 정보 없음';
+                    const placeName = item.place_name || '장소 이름 없음';
+                    const x = item.x;
+                    const y = item.y;
+                    const resultElement = document.createElement('div');
+                    resultElement.className = 'd-flex justify-content-between align-items-center border p-2';
+                    resultElement.innerHTML = `
+                        <span class="place-info">[${placeName}] ${address}</span>
+                    `;
+                    resultElement.addEventListener('click', function() {
+                        selectPlace(placeName, address, resultElement, x, y);
+                    });
+                    resultsDiv.appendChild(resultElement);
+                });
+            } else {
+                resultsDiv.textContent = '검색 결과가 없습니다.';
+            }
+        })
+        .catch(error => {
+            console.error('주소 검색 중 오류가 발생했습니다.', error);
+            const resultsDiv = document.getElementById('addressResults');
+            resultsDiv.textContent = '주소 검색 중 오류가 발생했습니다.';
+        });
+    });
+
+    function selectPlace(placeName, address, element, x, y) {
+        const previouslySelected = document.querySelector('.selected-place');
+        if (previouslySelected) {
+            previouslySelected.classList.remove('selected-place');
+        }
+        element.classList.add('selected-place');
+        selectedPlace = { placeName, address, x, y };
+    }
+
+    document.getElementById('addSelectedPlaceButton').addEventListener('click', function() {
+        if (selectedPlace) {
+            addPlace(selectedPlace.placeName, selectedPlace.x, selectedPlace.y);
+        } else {
+            alert('장소를 선택해주세요.');
+        }
+    });
+
+    function addPlace(placeName, x, y) {
+        var day = $('.day-btn.active').data('day'); // 현재 선택된 일차를 가져옴
+        var $placeList = $('#selectedPlaces' + day); // 현재 선택된 일차의 리스트를 가져옴
+
+        // 중복 검사 및 새로운 ID 계산
+        var isDuplicate = $placeList.find('li').filter(function() {
+            return $(this).text().trim() === placeName.trim(); // 공백 제거하여 비교
+        }).length > 0;
+
+        if (isDuplicate) {
+            alert('이미 선택한 장소입니다.');
+            return;
+        }
+
+        // 현재 시간을 기반으로 고유한 placeId 생성
+        var placeId = `place-${Date.now()}`; // 현재 시간을 이용하여 고유한 ID 생성
+
+        // 새로운 아이템 생성 및 추가
+        var $li = $('<li></li>')
+            .addClass('list-group-item place-item popout')
+            .attr('data-place-id', placeId)
+            .text(placeName) // 정확한 장소 이름 설정
+            .css({
+                'color': '#000',
+                'transition': 'border 0.3s'
+            })
+            .on('click', function() {
+                var $this = $(this);
+
+                // 클릭 시 테두리 색상 토글
+                if ($this.hasClass('selected')) {
+                    $this.removeClass('selected');
+                    $this.css('border', '2px solid transparent'); // 기본 테두리
+                } else {
+                    $this.addClass('selected');
+                    $this.css('border', '2px solid red'); // 클릭 시 테두리
+                    $('#floatingLabel').stop(true, true).fadeIn(300).delay(1500).fadeOut(300);
+                }
+            })
+            .on('dblclick', function() {
+                // 두 번 클릭 시 삭제 및 애니메이션 효과 추가
+                $(this).fadeOut(300, function() {
+                    $(this).remove(); // 애니메이션 후 삭제
+                    removeMarkerByPlaceName(day, placeName);
+                    updateMapCenterAndZoom(day);
+                });
+                var id = $(this).data('place-id');
+                selectedPlaces = selectedPlaces.filter(function(pid) { return pid !== id; });
+            });
+
+        // 리스트에 추가
+        $placeList.append($li);
+
+        // 선택한 장소를 배열에 추가
+        selectedPlaces.push(placeId);
+
+        addMarker(day, placeName, parseFloat(y), parseFloat(x));
+
+        // 모달을 닫음
+        $('#addressModal').modal('hide');
+    }
+</script>
+<script>
+    var csrfToken = '{{ csrf_token }}';
+    function getPlacesData() {
+        var places = {};
+        var daySections = document.querySelectorAll('.day-section');
+
+        daySections.forEach(section => {
+            var dayId = section.id; // e.g., 'day1', 'day2'
+            var placesList = [];
+            var ul = section.querySelector('ul');
+            if (ul) {
+                ul.querySelectorAll('li').forEach(li => {
+                    placesList.push(li.textContent.trim());
+                });
+            }
+            places[dayId] = placesList;
+        });
+
+        return places;
+    }
+
+    function generateTemporaryPK() {
+        return 'PK-' + Math.random().toString(36).substr(2, 9);  // 랜덤 문자열 생성
+    }
+
+    function saveTitle() {
+        var title = document.getElementById('planTitle').value.trim();
+        if (!title) {
+            alert('제목을 입력해주세요.');
+            return;
+        }
+
+        var city = document.querySelector('#citySelect option:checked').textContent;
+        var province = document.querySelector('#provinceSelect option:checked').textContent;
+        var places = getPlacesData(); // 동적으로 places 객체를 가져옵니다
+        var email = user.email;
+        var PK = generateTemporaryPK();
+
+        var data = JSON.stringify({
+            'province': province,
+            'city': city,
+            'places': places,
+            'plan_title': title,
+            'email': email,
+            'plan_id': PK
+        });
+
+        console.log('Data to be sent:', data); // 디버깅용 로그
+
+        $.ajax({
+            url: '/save_Plan/',  // 요청을 보낼 URL
+            type: 'POST',
+            contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': getCSRFToken()  // CSRF 토큰을 HTTP 헤더에 포함
+            },
+            data: data,
+            success: function(response) {
+                console.log('Plan saved:', response.message);
+                $('#titleModal').modal('hide'); // 부트스트랩 모달을 닫습니다
+            },
+            error: function(xhr, status, error) {
+                console.error('Error saving plan:', xhr.responseText);
+            }
+        });
+    }
+
+    function getCSRFToken() {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        return csrfToken;
+    }
+</script>
+<script>
+    const user = {{ user|safe }};
+    console.log("Logged-in user information:", user);
+</script>
+<script>
+    function resizeIframe() {
+        var iframe = window.parent.document.querySelector('iframe');
+        if (iframe) {
+            iframe.style.height = document.documentElement.scrollHeight + 'px';
+        }
+    }
+    window.onload = resizeIframe;
+    window.onresize = resizeIframe;
+</script>
+</body>
+</html>

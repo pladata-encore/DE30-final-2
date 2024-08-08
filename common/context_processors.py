@@ -1,4 +1,6 @@
 from django.conf import settings
+from pymongo import MongoClient
+
 from diaryapp.views.badge_views import get_main_badge
 
 # MongoDB 클라이언트 설정
@@ -8,12 +10,11 @@ db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 user_collection = db['users']
 
 
-
 # 사용자 정보
 def get_user(request, user_email=None):
     # 사용자 정보 조회
     if user_email :
-        # 다른 사용자 예시 db
+        # 다른 사용자
         user = user_collection.find_one({'email': user_email})
     else:
         # 로그인 사용자
