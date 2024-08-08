@@ -21,7 +21,7 @@ def create_nickname(unique_diary_id, user_email, content, plan_id):
 
     print(f'--------여기는 create_nickname-- {plan_id}')
     # 별명 api 호출
-    url = 'http://localhost:5012/generate-nickname/'
+    url = 'http://localhost:5000/generate-nickname/'
     params = {
         'plan_id': plan_id,
         'content': content,
