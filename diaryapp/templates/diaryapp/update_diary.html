@@ -1,61 +1,66 @@
 {% include 'header.html' %}
-<section id="diary" class="diary detail_diary">
+
+<section id="diary" class="section diary detail_diary">
     <h2 class="screen_out">여행 다이어리 수정</h2>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <div class="write-container">
-            <h1 style="color: #636363; font-weight: bold;">다이어리 수정하기</h1>
-            <form method="post" enctype="multipart/form-data">
+
+    <div class="write-container">
+        <h1 style="color: #636363; font-weight: bold;">다이어리 수정하기</h1>
+
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <p><label for="id_diarytitle" style="color: #636363; font-size: 17px;">제목: </label>{{ form.diarytitle }}</p>
-            <div>
-                <label for="id_diaryplace" style="color: #636363; font-size: 17px;">장소:</label>{{ diary.place }}
+
+            <div class="form-group">
+                <label for="{{ form.diarytitle.id_for_label }}">제목:</label>
+                {{ form.diarytitle }}
             </div>
-            <p><label for="id_diaryfriend" style="color: #636363; font-size: 17px;">함께한 친구: </label>{{ form.withfriend }}</p>
-            <p><label for="id_diarycontent" style="color: #636363; font-size: 17px;">일기: </label>{{ form.content }}</p>
-            <br/>
-            <label for="id_new_representative_image" style="color: #636363; font-size: 17px;">수정할 대표 이미지 선택:</label>
-            <input type="file" id="id_new_representative_image" name="image_file" style="margin-bottom: 20px;">
-            <br/>
-            <label for="id_images" style="color: #636363; font-size: 17px;">이미지 추가:</label>
-            <input type="file" id="id_images" name="images" multiple style="margin-bottom: 20px;">
-            <br/>
+
+            <div class="form-group">
+                <label>장소:</label>
+                <span>{{ diary.place }}</span>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.withfriend.id_for_label }}">함께한 친구:</label>
+                {{ form.withfriend }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.content.id_for_label }}">일기:</label>
+                {{ form.content }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_image_file">수정할 대표 이미지 선택:</label>
+                <input type="file" name="image_file" id="id_image_file" accept="image/*">
+            </div>
+
+            {% if diary.representative_image %}
+                <div class="form-group">
+                    <label>현재 대표 이미지:</label>
+                    <img src="data:image/png;base64,{{ diary.representative_image.image_file }}" width="200" alt="Current Representative Image">
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="id_images">추가 이미지:</label>
+                <input type="file" name="images" id="id_images" multiple accept="image/*">
+            </div>
+
             <h3 style="color: #636363; font-size: 17px;">기존 이미지 삭제하기:</h3>
-            <div class="form-check">
-                <ul style="list-style: none; padding: 0;">
-                    {% for image in existing_images %}
-                        <li style="display: flex; align-items: center; margin-bottom: 10px;">
-                            <img src="data:image/png;base64,{{ image.image_file }}" alt="Existing Image" width="100" style="margin-right: 10px;">
-                            <input class="form-check-input" type="checkbox" id="delete_image_{{ image.id }}" name="delete_images" value="{{ image.id }}" style="margin-right: 10px;">
-                            <label class="form-check-label" for="delete_image_{{ image.id }}" style="margin: 0;">삭제하기</label>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
 
+            {% for image in existing_images %}
+                <div class="form-check">
+                    <input type="checkbox" name="delete_images" value="{{ image.id }}" id="delete_image_{{ image.id }}">
+                    <label for="delete_image_{{ image.id }}">
+                        <img src="data:image/png;base64,{{ image.image_file }}" width="100" style="margin-right: 10px;" alt="Existing Image">
+                        삭제하기
+                    </label>
+                </div>
+            {% endfor %}
 
-            <button type="submit"style="margin-bottom: 40px;">다이어리 수정하기</button>
-            </form>
-            <script>
-             $(document).ready(function() {
-                $('#generate-button').click(function(event) {
-                    event.preventDefault();
-                    var formData = new FormData($('#diary-form')[0]);
-                    $.ajax({
-                        url: "{% url 'generate_diary' %}",
-                        type: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(response) {
-                            $('#id_content').val(response.generated_content);
-                        },
-                        error: function(response) {
-                            alert("Error generating content");
-                        }
-                    });
-                });
-            });
-         </script>
+            <button type="submit" class="btn-diary-action">다이어리 수정하기</button>
+        </form>
     </div>
 </section>
+
 {% include 'footer.html' %}

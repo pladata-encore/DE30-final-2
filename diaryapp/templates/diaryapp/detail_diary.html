@@ -258,12 +258,14 @@
 
         // 찜하기 버튼 클릭 이벤트
         $('#wishlistBtn').on('click', function() {
+            var plan_id = $(this).data('plan_id');
             var place = $(this).data('place');
             var province = $(this).data('province');
             var city = $(this).data('city');
             var travel_dates = $(this).data('travel-dates');
 
             console.log("Sending data to server:", {
+                'plan_id': planId,
                 'place': place,
                 'province': province,
                 'city': city,
@@ -274,6 +276,7 @@
                 url: "{% url 'add_wish' %}",
                 type: 'POST',
                 data: {
+                    'plan_id': planId,
                     'place': place,
                     'province': province,
                     'city': city,
