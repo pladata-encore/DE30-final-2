@@ -31,8 +31,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         self.stdout.write(self.style.SUCCESS('Connecting to MongoDB...'))
-        client = MongoClient(
-            'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority')
+        client = MongoClient('mongodb://127.0.0.1:27017/')
         db = client['MyDiary']
 
         collections = [

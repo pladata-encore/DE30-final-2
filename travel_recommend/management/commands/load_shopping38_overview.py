@@ -9,8 +9,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # MongoDB 연결 설정
-        mongo_uri = "mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority"
-        client = MongoClient(mongo_uri)
+        client = MongoClient('mongodb://127.0.0.1:27017/')
         db = client['MyDiary']
         collection = db['areaBaseList38']
 
