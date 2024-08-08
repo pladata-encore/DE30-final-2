@@ -156,7 +156,7 @@
         <div class="progress">
             <div class="progress-bar" role="progressbar" style="width: 14%" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100">1 / 7</div>
         </div>
-        <form id="recommendation-form" method="post" action="{% url 'recommend' %}" class="form-group">
+        <form id="recommendation-form" method="post" action="{% url 'travel:recommend' %}" class="form-group">
             {% csrf_token %}
             <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="false">
                 <div class="carousel-inner">
