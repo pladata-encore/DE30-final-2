@@ -7,9 +7,11 @@
             <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <p><label for="id_diarytitle" style="color: #636363; font-size: 17px;">제목: </label>{{ form.diarytitle }}</p>
-            <p><label for="id_diarytitle" style="color: #636363; font-size: 17px;">장소: </label>{{ form.place }}</p>
-            <p><label for="id_diarytitle" style="color: #636363; font-size: 17px;">함께한 친구: </label>{{ form.withfriend }}</p>
-            <p><label for="id_diarytitle" style="color: #636363; font-size: 17px;">일기: </label>{{ form.content }}</p>
+            <div>
+                <label for="id_diaryplace" style="color: #636363; font-size: 17px;">장소:</label>{{ diary.place }}
+            </div>
+            <p><label for="id_diaryfriend" style="color: #636363; font-size: 17px;">함께한 친구: </label>{{ form.withfriend }}</p>
+            <p><label for="id_diarycontent" style="color: #636363; font-size: 17px;">일기: </label>{{ form.content }}</p>
             <br/>
             <label for="id_new_representative_image" style="color: #636363; font-size: 17px;">수정할 대표 이미지 선택:</label>
             <input type="file" id="id_new_representative_image" name="image_file" style="margin-bottom: 20px;">

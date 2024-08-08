@@ -9,15 +9,14 @@
             <p>
                 <label for="id_diarytitle" style="color: #636363; font-size: 22px;">일기 제목:</label>
                 {{ form.diarytitle }}
+                <span id="title-error" style="color: red; display: none;">제목에 "/"를 사용할 수 없습니다.</span>
             </p>
-            <div id="place-display"></div>
             <p>
                 <label for="id_plan" style="color: #636363; font-size: 22px;">장소:</label>
                 <select name="plan_id" id="id_plan">
                     <option value="">장소를 선택하세요</option>
                 </select>
             </p>
-            <div id="place-display"></div>
             <p>
                 <label for="id_withfriend" style="color: #636363; font-size: 22px;">함께한 친구:</label>
                 {{ form.withfriend }}
@@ -62,6 +61,8 @@
         const emotionField = document.getElementById('emotion-field');
         const diaryForm = document.getElementById('diary-form');
         const hiddenPlanId = diaryForm.querySelector('[name="plan_id"]').value;
+        const titleInput = diaryForm.querySelector('[name="diarytitle"]');
+        const titleError = document.getElementById('title-error');
 
         // available plans 로드
         loadAvailablePlans();
@@ -69,30 +70,33 @@
         // 드롭다운 변경 이벤트 리스너
         planSelect.addEventListener('change', function() {
             const selectedValue = this.value;
-
-            // 선택된 값이 비어 있을 경우 숨겨진 입력 필드의 값 사용
-            currentPlanId = selectedValue.trim() === '' ? hiddenPlanId.value : selectedValue;
-
-            // 해당 ID로 장소 정보 로드
+            currentPlanId = selectedValue.trim() === '' ? hiddenPlanId : selectedValue;
             loadPlaceInfo(currentPlanId);
-
-            // 콘솔에 현재 Plan ID 출력
             console.log(currentPlanId);
         });
 
         // AI 버튼 클릭 이벤트 리스너
         aiButton.addEventListener('click', function() {
-            // 폼의 현재 display 속성을 확인하고, 이를 기반으로 토글합니다.
-            if (emotionField.style.display === 'none') {
-                emotionField.style.display = 'block'; // 폼을 보이게 함
+            emotionField.style.display = emotionField.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // 제목 입력 필드 이벤트 리스너
+        titleInput.addEventListener('input', function() {
+            if (this.value.endsWith('/')) {
+                titleError.style.display = 'block';
             } else {
-                emotionField.style.display = 'none'; // 폼을 숨김
+                titleError.style.display = 'none';
             }
         });
 
         // 폼 제출 이벤트 리스너
         diaryForm.addEventListener('submit', function(event) {
             event.preventDefault();
+
+            if (titleInput.value.endsWith('/')) {
+                titleError.style.display = 'block';
+                return;
+            }
 
             if (currentPlanId === null || currentPlanId === undefined) {
                 currentPlanId = diaryForm.querySelector('[name="plan_id"]').value;
@@ -144,7 +148,6 @@
                         option.textContent = `${plan.province} ${plan.city} - ${plan.plan_title}`;
                         planSelect.appendChild(option);
                     });
-                    // URL에서 온 plan_id가 있으면 해당 옵션 선택
                     if (currentPlanId) {
                         planSelect.value = currentPlanId;
                     }

@@ -15,34 +15,45 @@ logger = logging.getLogger(__name__)
 @require_POST
 def add_wish(request):
     try:
-        place = request.POST.get('place')
-        province = request.POST.get('province')
-        city = request.POST.get('city')
-        travel_dates = request.POST.get('travel_dates')
-        user_email = 'dobi3@nate.com'
-        # user_email = request.user.email  # 로그인된 사용자의 이메일 가져오기
+        plan_id = request.POST.get('plan_id')
+        # user_email = request.user.email
+        user_email = 'dobi3@nate.com'  # 실제 환경에서는 로그인한 사용자의 이메일을 사용해야 합니다.
 
-        if not user_email:
-            return JsonResponse({'status': 'error', 'message': '로그인 필요'}, status=403)
+        logger.info(f"Attempting to add wish for plan_id: {plan_id}, user_email: {user_email}")
 
-        logger.debug(f"Place: {place}, Province: {province}, City: {city}, Travel Dates: {travel_dates}")
+        # 중복 체크
+        existing_wish = Wishlist.objects.filter(user_email=user_email, plan_id=plan_id).first()
+        if existing_wish:
+            logger.info(f"Wish already exists for plan_id: {plan_id}, user_email: {user_email}")
+            return JsonResponse({'status': 'success', 'created': False, 'message': '이미 찜한 계획입니다.'})
 
-        exists = Wishlist.objects.filter(user_email=user_email, place=place, province=province, city=city).exists()
-        if exists:
-            return JsonResponse({'status': 'success', 'created': False})
+        # 새로운 위시리스트 항목 생성
+        new_wish = Wishlist(
+            user_email=user_email,
+            plan_id=plan_id,
+            place=request.POST.get('place'),
+            province=request.POST.get('province'),
+            city=request.POST.get('city'),
+            travel_dates=json.loads(request.POST.get('travel_dates', '[]'))
+        )
+        new_wish.save()
 
-        Wishlist.objects.create(user_email=user_email, place=place, province=province, city=city,
-                                travel_dates=json.loads(travel_dates))
-        return JsonResponse({'status': 'success', 'created': True})
+        logger.info(f"Successfully added new wish for plan_id: {plan_id}, user_email: {user_email}")
+        return JsonResponse({'status': 'success', 'created': True, 'message': '성공적으로 찜 목록에 추가되었습니다.'})
+
+    except json.JSONDecodeError:
+        logger.error("Invalid JSON format for travel_dates")
+        return JsonResponse({'status': 'error', 'message': '유효하지 않은 travel_dates 형식'}, status=400)
 
     except Exception as e:
-        logger.error(f"Error in add_wish: {e}")
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
+        logger.exception(f"Error in add_wish: {str(e)}")
+        logger.error(f"Request data: {request.POST}")
+        return JsonResponse({'status': 'error', 'message': '서버 오류가 발생했습니다.'}, status=500)
 
 
 '''일정 찜 리스트'''
 def wishlist_view(request):
+    # user_email = request.user.email
     user_email = 'dobi3@nate.com'
     wishlist_items = Wishlist.objects.filter(user_email=user_email).order_by('added_at')
 
@@ -64,9 +75,7 @@ def wishlist_view(request):
 
 '''일정 삭제'''
 def remove_wish(request, place):
-    # if not request.user.is_authenticated:
-    #     return redirect('login')  # 로그인 필요시
-
+    # user_email = request.user.email
     user_email = 'dobi3@nate.com'  # 로그인된 사용자의 이메일 가져오기
     try:
         wishlist_item = Wishlist.objects.get(user_email=user_email, place=place)

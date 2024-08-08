@@ -27,8 +27,8 @@ from django.contrib.auth.models import User
 from .nickname_views import *
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from ..mongo_queries import filter_diaries, get_plan_by_id, get_available_plans as mongo_get_available_plans
-
+from ..mongo_queries import filter_diaries, get_plan_by_id, get_available_plans as mongo_get_available_plans, \
+    get_mongodb_connection
 
 # MongoDB 클라이언트 설정
 db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
@@ -101,7 +101,13 @@ def generate_diary(request, plan_id=None):
             withfriend = form.cleaned_data['withfriend']
             representative_image = request.FILES.get('image_file')
 
-            # user_email = settings.DEFAULT_FROM_EMAIL
+            if diarytitle.endswith('/'):
+                return JsonResponse({
+                    'success': False,
+                    'errors': {'diarytitle': ['제목의 마지막 문자로 "/"를 사용할 수 없습니다.']}
+                })
+
+            # user_email = request.user.email
             user_email = 'neweeee@gmail.com'
 
             image = Image.open(representative_image)
@@ -250,6 +256,12 @@ def write_diary(request, plan_id=None):
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
+            if diarytitle.endswith('/'):
+                return JsonResponse({
+                    'success': False,
+                    'errors': {'diarytitle': ['제목의 마지막 문자로 "/"를 사용할 수 없습니다.']}
+                })
+
             # user_email = request.user.email  # 사용자 이메일을 현재 로그인한 사용자의 이메일로 가져옵니다.
             user_email = 'neweeee@gmail.com'
 
@@ -313,6 +325,7 @@ def write_diary(request, plan_id=None):
 
 '''전체 일기 리스트'''
 def list_diary(request):
+    start_all_list_diary = time.time()
     form = DateFilterForm(request.GET or None)
     year = None
     month = None
@@ -368,14 +381,17 @@ def list_diary(request):
         'diary_list': enriched_diary_list,
         'page_obj': page_obj,  # 템플릿에서 사용하는 이름으로 변경
     }
+    end_all_list_diary = time.time()
 
+    print(f"리스트 전체 호출하고 출력{end_all_list_diary-start_all_list_diary}")
     return render(request, 'diaryapp/list_diary.html', context)
+
 
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
 # @login_required
 def list_user_diary(request):
-    # user = request.user
+    # user_email = request.user.email
     user_email = settings.DEFAULT_FROM_EMAIL
     form = DateFilterForm(request.GET or None)
     year = None
@@ -564,10 +580,10 @@ def update_diary(request, unique_diary_id):
     if request.method == 'POST':
 
         # emotion 번역
+        # 수정할 필드만 업데이트
         diary.diarytitle = request.POST['diarytitle']
-        diary.place = request.POST['place']
-        diary.withfriend = request.POST['withfriend']
         diary.content = request.POST['content']
+        diary.withfriend = request.POST['withfriend']
 
         # user_email = request.user.email
         # from django.contrib.auth import authenticate, login
@@ -623,6 +639,18 @@ def delete_diary(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 
     if request.method == 'POST':
+        get_mongodb_connection()
+
+        # 연관된 일반 이미지 삭제
+        images = ImageModel.objects.filter(diary=diary)
+        for image in images:
+            db.diaryapp_imagemodel.delete_one({"image_id": image.image_id})
+
+        # 대표 이미지 삭제
+        if diary.representative_image_id:
+            db.diaryapp_imagemodel.delete_one({"id": diary.representative_image_id})
+
+        # 다이어리 삭제
         diary.delete()
         nickname_collection.delete_one({"nickname_id": diary.nickname_id})
         return redirect('list_diary')
