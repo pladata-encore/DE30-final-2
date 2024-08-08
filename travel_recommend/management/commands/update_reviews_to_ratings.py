@@ -48,8 +48,7 @@ class Command(BaseCommand):
 
     def update_reviews_with_sentiment_scores(self, knusl):
         logging.info('Connecting to MongoDB...')
-        client = MongoClient(
-            'mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority')
+        client = MongoClient('mongodb://127.0.0.1:27017/')
         db = client['MyDiary']
 
         # 카테고리와 컬렉션 매핑

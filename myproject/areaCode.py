@@ -8,7 +8,7 @@ url = "http://apis.data.go.kr/B551011/KorService1/areaCode1"
 key = "자신의 키를 입력하세요"
 
 # MongoDB 연결 설정
-client = MongoClient('mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority', 27017)
+client = MongoClient('mongodb://127.0.0.1:27017/')
 db = client.MyDiary
 
 # 페이지 단위로 데이터 가져오기

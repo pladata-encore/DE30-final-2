@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <link rel="stylesheet" href="{% static 'users/assets/css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("{% static 'users/assets/img/background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: flex-start; /* 왼쪽 정렬 */
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding-left: 20px; /* 왼쪽 여백 추가 */
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9); /* 배경을 반투명하게 설정 */
+            padding: 1.5rem; /* 여백 줄이기 */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px; /* 가로 크기 조정 */
+            max-height: 600px; /* 세로 크기 조정 */
+            margin-left: 0; /* 왼쪽 정렬 */
+            overflow-y: auto; /* 세로로 넘치는 내용 스크롤 가능 */
+        }
+        h2 {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group input[type="submit"] {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .form-group input[type="submit"]:hover {
+            background: #0056b3;
+        }
+        .form-group .error {
+            color: red;
+            font-size: 0.875rem;
+        }
+        .links {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .links a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>회원가입</h2>
+        <form method="post" action="{% url 'users:register' %}">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="form-group error">
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="username">사용자 이름</label>
+                <input type="text" id="username" name="username" value="{{ form.username.value }}" required>
+            </div>
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="email" id="email" name="email" value="{{ form.email.value }}" required>
+            </div>
+            <div class="form-group">
+                <label for="password1">비밀번호</label>
+                <input type="password" id="password1" name="password1" required>
+            </div>
+            <div class="form-group">
+                <label for="password2">비밀번호 확인</label>
+                <input type="password" id="password2" name="password2" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">성별</label>
+                <select id="gender" name="gender" required>
+                    <option value="" disabled selected>선택하세요</option>
+                    <option value="male">남성</option>
+                    <option value="female">여성</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nickname">닉네임</label>
+                <input type="text" id="nickname" name="nickname" value="{{ form.nickname.value }}" required>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="회원가입">
+            </div>
+        </form>
+        <div class="links">
+            <a href="{% url 'users:login' %}">로그인 페이지로 가기</a>
+        </div>
+    </div>
+</body>
+</html>

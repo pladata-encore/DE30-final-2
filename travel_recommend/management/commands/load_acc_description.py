@@ -11,8 +11,7 @@ class Command(BaseCommand):
         SERVICE_KEY = "+kSWY4C1LN3XmpqW6LZw0z16ojUYmI3etiqX/R9CpsEFwxASUxdZsoXfuGoDU0BVAmdMznsWODlPn3v6bQ335Q=="
 
         # MongoDB Atlas 연결 URI
-        mongo_uri = "mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority"
-        client = MongoClient(mongo_uri)
+        client = MongoClient('mongodb://127.0.0.1:27017/')
         db = client['MyDiary']
         collection = db['accommodations']
 

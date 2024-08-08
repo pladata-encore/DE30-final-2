@@ -46,7 +46,10 @@
             padding: 20px;
         }
         .form-navigation {
-            display: flex;
+            display: flex;Docker Desktop - WSL distro terminated abruptly
+A WSL distro that Docker Desktop relies on has exited unexpectedly. This usually happens as a result of an external entity terminating WSL (e.g. running wsl --shutdown). Restart Docker Desktop. If the issue persists, collect diagnostics and submit an issue⁠.
+
+running wsl-bootstrap: exit status 1
             justify-content: space-between;
             margin-top: 20px;
         }
@@ -156,7 +159,7 @@
         <div class="progress">
             <div class="progress-bar" role="progressbar" style="width: 14%" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100">1 / 7</div>
         </div>
-        <form id="recommendation-form" method="post" action="{% url 'recommend' %}" class="form-group">
+        <form id="recommendation-form" method="post" action="{% url 'travel:recommend' %}" class="form-group">
             {% csrf_token %}
             <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="false">
                 <div class="carousel-inner">
@@ -995,7 +998,7 @@
                         console.log('***Response***', response); // 응답 데이터 확인
 
                         if (response.plan_id) {
-                            window.location.href = '/results/' + response.plan_id;
+                            window.location.href = '/travel/results/' + response.plan_id;
                         } else {
                             alert('추천 및 저장 중 오류가 발생했습니다');
                         }
@@ -1011,7 +1014,7 @@
                 var regionCode = this.value;
                 console.log('Region selected:', regionCode);
                 if (regionCode) {
-                    fetch(`/ajax/load-subregions/?region=${regionCode}`)
+                    fetch(`/travel/ajax/load-subregions/?region=${regionCode}`)
                     .then(response => {
                         console.log('AJAX request sent');
                         return response.json();

@@ -52,21 +52,12 @@ function initializeSlider() {
         const sliderWidth = slider.offsetWidth;
 
         if (cards.length === 0 || sliderWidth <= sliderContainerWidth) {
-<<<<<<< HEAD
-
-         if (slides.length === 0 || sliderWidth <= sliderContainerWidth) {
-=======
->>>>>>> 8718befd92fb8d19c10e55ea27e956adb04fd59d
             nextButton.style.display = 'none';
             prevButton.style.display = 'none';
             currentIndex = 0;
             updateSliderPosition();
         } else {
             nextButton.style.display = currentIndex === cards.length - 1 ? 'none' : 'flex';
-<<<<<<< HEAD
-            nextButton.style.display = currentIndex === slides.length - 1 ? 'none' : 'flex';
-=======
->>>>>>> 8718befd92fb8d19c10e55ea27e956adb04fd59d
             prevButton.style.display = currentIndex === 0 ? 'none' : 'flex';
         }
     }

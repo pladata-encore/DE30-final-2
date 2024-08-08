@@ -62,10 +62,8 @@ class Command(BaseCommand):
                     all_cat3.append(cat3)
 
         # MongoDB Atlas 연결 URI
-        mongo_uri = "mongodb+srv://Seora:youlove4154@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority"
-
         # MongoDB 클라이언트 생성
-        client = MongoClient(mongo_uri)
+        client = MongoClient('mongodb://127.0.0.1:27017/')
 
         # 데이터베이스와 컬렉션 선택
         db = client['MyDiary']
