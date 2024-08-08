@@ -9,8 +9,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # MongoDB 연결 설정
-        client = MongoClient('mongodb://127.0.0.1:27017/')
-        db = client['MyDiary']
+        # client = MongoClient('mongodb://127.0.0.1:27017/')
+        # db = client['MyDiary']
+        from django.conf import settings
+        db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
         collection = db['areaBaseList12']
 
         # API 설정

@@ -2,8 +2,10 @@ from pymongo import MongoClient
 
 # MongoDB 연결 설정
 
-client = MongoClient('mongodb://127.0.0.1:27017/')
-db = client.MyDiary
+# client = MongoClient('mongodb://127.0.0.1:27017/')
+# db = client.MyDiary
+from django.conf import settings
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 삽입할 데이터 문서 생성
 data = [
