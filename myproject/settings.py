@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import pymongo
-from decouple import config
 import os
 from dotenv import load_dotenv
 
@@ -45,7 +44,6 @@ INSTALLED_APPS = [
     "travel_recommend",
     "diaryapp",
     'Jpage',
-    "diaryapp",
     "taggit.apps.TaggitAppConfig",
     'django.contrib.humanize',
 ]
@@ -185,12 +183,12 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'INFO',
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     },
