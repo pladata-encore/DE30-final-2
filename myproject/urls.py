@@ -14,7 +14,7 @@ from drf_yasg.generators import OpenAPISchemaGenerator
 
 urlpatterns= [
     path('admin/', admin.site.urls),
-    path('travel/', include('travel_recommend.urls')),
+    path('travel/', include('travel_recommend.urls', namespace='travel')),
     path('jpages/', include('Jpage.urls', namespace='Jpage')),
     path('diary/', include('diaryapp.urls')),
     path('oauth/', include('oauth.urls')),  # oauth 애플리케이션의 URL 패턴을 포함

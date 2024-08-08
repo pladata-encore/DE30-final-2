@@ -34,17 +34,12 @@ password = 'playdata6292'
 encoded_username = urllib.parse.quote_plus(username)
 encoded_password = urllib.parse.quote_plus(password)
 
-# MongoDB URI 생성
-mongo_uri = f"mongodb+srv://{encoded_username}:{encoded_password}@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority"
+# # MongoDB URI 생성
+# mongo_uri = f"mongodb+srv://{encoded_username}:{encoded_password}@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority"
 
-#설아 도커 연결
-# client = MongoClient('mongodb://192.168.0.25:27017/', tls=True, tlsAllowInvalidCertificates=True)
+# 설아 도커 연결
+client = MongoClient('mongodb://127.0.0.1:27017/', tls=True, tlsAllowInvalidCertificates=True)
 
-database_name='MyDiary'
-collection_name='users'
-
-# MongoDB 클라이언트 생성
-client = MongoClient(mongo_uri, tls=True, tlsAllowInvalidCertificates=True)
 db = client['MyDiary']
 collection = db['users']
 
@@ -63,9 +58,8 @@ class User:
 def get_user_from_db(email):
     try:
         # Connect to MongoDB
-        client = MongoClient(mongo_uri)
-        db = client[database_name]
-        collection = db[collection_name]
+        db = client['MyDiary']
+        collection = db['users']
 
         # Find user by username
         user_data = collection.find_one({"email": email})
@@ -140,7 +134,7 @@ def register(request):
                     'register_id': user.register_id
                 }
                 print(f"Data to insert: {data}")
-
+                result = None
                 try:
                     user.register_id = str(result.inserted_id)
                     result = collection.insert_one(data)

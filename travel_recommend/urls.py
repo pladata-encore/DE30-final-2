@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name= 'travel'
+
 urlpatterns = [
     path('', views.index, name='service_main'), # 서비스 메인 페이지
     path('recommend/', views.recommend, name='recommend'),    # 사용자 입력을 받는 페이지 URL
