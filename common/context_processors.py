@@ -7,7 +7,7 @@ from diaryapp.views.badge_views import get_main_badge
 db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
-user_collection = db['users']
+user_collection = db['users_usermodel']
 
 
 # 사용자 정보

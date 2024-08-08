@@ -1011,7 +1011,7 @@
                 var regionCode = this.value;
                 console.log('Region selected:', regionCode);
                 if (regionCode) {
-                    fetch(`/ajax/load-subregions/?region=${regionCode}`)
+                    fetch(`/travel/ajax/load-subregions/?region=${regionCode}`)
                     .then(response => {
                         console.log('AJAX request sent');
                         return response.json();

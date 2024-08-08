@@ -20,7 +20,7 @@ db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
 collection = db['areaBaseList']
-user_collection = db['users']
+user_collection = db['users_usermodel']
 diary_collection = db['diaryapp_aiwritemodel']
 image_collection = db['diaryapp_imagemodel']
 plan_collection = db['plan']

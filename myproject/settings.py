@@ -216,6 +216,31 @@ mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
 # mongo_client를 settings에 추가
 MONGO_CLIENT = mongo_client
 
+
+
+# # # MongoDB atlas
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+#         'ENFORCE_SCHEMA': False,
+#         'CLIENT': {
+#             'host': MONGO_URI,  # 또는 호스트 머신의 IP
+#             'username': MONGO_USERNAME,
+#             'password': MONGO_PASSWORD,
+#         }
+#     }
+# }
+# MongoDB 클라이언트 설정
+# mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
+#                                    username=DATABASES['default']['CLIENT']['username'],
+#                                    password=DATABASES['default']['CLIENT']['password']
+#                                    )
+# # mongo_client를 settings에 추가
+# MONGO_CLIENT = mongo_client
+
+
+
 # 미디어 파일 저장 경로
 MEDIA_URL = '/media/'
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

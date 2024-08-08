@@ -26,7 +26,7 @@ mongo_uri = f"mongodb+srv://{encoded_username}:{encoded_password}@mydiary.727yxh
 # MongoDB 클라이언트 생성
 client = pymongo.MongoClient(mongo_uri)
 db = client['MyDiary']
-collection = db['users']
+collection = db['users_usermodel']
 
 # 네이버 로그인 및 프로필 URL
 naver_login_url = "https://nid.naver.com/oauth2.0/authorize"
