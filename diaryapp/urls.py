@@ -35,7 +35,7 @@ urlpatterns = [
     # 일정 찜기능 - 찜 리스트
     path('add_wish/', wishlist_views.add_wish, name='add_wish'),
     path('wishlist_view/', wishlist_views.wishlist_view, name='wishlist_view'),
-    path('remove_wish/<str:place>/', wishlist_views.remove_wish, name='remove_wish'),
+    path('remove_wish/<str:plan_id>/', wishlist_views.remove_wish, name='remove_wish'),
 
     #### comment_views.py ####
     # 댓글 달기

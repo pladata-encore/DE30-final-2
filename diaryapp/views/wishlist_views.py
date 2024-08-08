@@ -75,11 +75,11 @@ def wishlist_view(request):
 
 
 '''일정 삭제'''
-def remove_wish(request, place):
+def remove_wish(request, plan_id):
     # user_email = request.user.email
     user_email = 'dobi3@nate.com'  # 로그인된 사용자의 이메일 가져오기
     try:
-        wishlist_item = Wishlist.objects.get(user_email=user_email, place=place)
+        wishlist_item = Wishlist.objects.get(user_email=user_email, plan_id=plan_id)
         wishlist_item.delete()
         return redirect('wishlist_view')
     except Wishlist.DoesNotExist:

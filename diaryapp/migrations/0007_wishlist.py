@@ -23,8 +23,8 @@ class Migration(migrations.Migration):
                 ("place", models.CharField(max_length=2000)),
                 ("added_at", models.DateTimeField(auto_now_add=True)),
             ],
-            options={
-                "unique_together": {("user_email", "place")},
-            },
+            # options={
+            #     "unique_together": {("user_email", "place")},
+            # },
         ),
     ]

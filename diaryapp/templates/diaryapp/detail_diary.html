@@ -199,6 +199,7 @@
     {% endif %}
 
     <script>
+    $(document).ready(function() {
         // 장소 모달
         $('.open-modal').on('click', function(e) {
             e.preventDefault();
@@ -236,36 +237,16 @@
             });
         });
 
-        // 모달 닫기
-        $(document).on('click', '[data-dismiss="modal"], [data-bs-dismiss="modal"]', function() {
-          $(this).closest('.modal').modal('hide');
-        });
-
-        // 모달이 닫혔을 때 내용 비우기
-        $('#planModal').on('hidden.bs.modal', function() {
-            $(this).find('.modal-body').empty();
-        });
-
-        // 모달 높이 조정
-        $('#planModal').on('shown.bs.modal', function() {
-            var modalBody = $(this).find('.modal-body');
-            var bodyHeight = $(window).height() * 0.5;
-            modalBody.css({
-                'max-height': bodyHeight + 'px',
-                'overflow-y': 'auto'
-            });
-        });
-
         // 찜하기 버튼 클릭 이벤트
         $('#wishlistBtn').on('click', function() {
-            var plan_id = $(this).data('plan_id');
+            var plan_id = $(this).data('plan-id');  // 수정: plan_id로 변경
             var place = $(this).data('place');
             var province = $(this).data('province');
             var city = $(this).data('city');
             var travel_dates = $(this).data('travel-dates');
 
             console.log("Sending data to server:", {
-                'plan_id': planId,
+                'plan_id': plan_id,  // 수정: plan_id로 변경
                 'place': place,
                 'province': province,
                 'city': city,
@@ -276,7 +257,7 @@
                 url: "{% url 'add_wish' %}",
                 type: 'POST',
                 data: {
-                    'plan_id': planId,
+                    'plan_id': plan_id,  // 수정: plan_id로 변경
                     'place': place,
                     'province': province,
                     'city': city,
@@ -305,6 +286,27 @@
             e.preventDefault();
             window.location.href = "{% url 'list_diary' %}";
         });
+
+        // 모달 닫기
+        $(document).on('click', '[data-dismiss="modal"], [data-bs-dismiss="modal"]', function() {
+            $(this).closest('.modal').modal('hide');
+        });
+
+        // 모달이 닫혔을 때 내용 비우기
+        $('#planModal').on('hidden.bs.modal', function() {
+            $(this).find('.modal-body').empty();
+        });
+
+        // 모달 높이 조정
+        $('#planModal').on('shown.bs.modal', function() {
+            var modalBody = $(this).find('.modal-body');
+            var bodyHeight = $(window).height() * 0.5;
+            modalBody.css({
+                'max-height': bodyHeight + 'px',
+                'overflow-y': 'auto'
+            });
+        });
+    });
     </script>
 </section>
 {% include 'footer.html' %}

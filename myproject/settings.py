@@ -116,7 +116,7 @@ MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 #         }
 #     }
 # }
-# MongoDB 클라이언트 설정
+# # MongoDB 클라이언트 설정
 # mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
 #                                    username=DATABASES['default']['CLIENT']['username'],
 #                                    password=DATABASES['default']['CLIENT']['password']
@@ -124,8 +124,7 @@ MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 # # mongo_client를 settings에 추가
 # MONGO_CLIENT = mongo_client
 
-
-
+#
 # MongoDB 도커
 DATABASES = {
     'default': {
@@ -141,6 +140,8 @@ DATABASES = {
 # MongoDB 클라이언트 설정
 mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
                                    )
+
+
 # mongo_client를 settings에 추가
 MONGO_CLIENT = mongo_client
 

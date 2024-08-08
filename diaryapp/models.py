@@ -133,7 +133,8 @@ class Wishlist(models.Model):
     travel_dates = models.JSONField()
     added_at = models.DateTimeField(auto_now_add=True)
     class Meta:
-        unique_together = ('user_email', 'plan_id')
+        # unique_together = ('user_email', 'plan_id')
+        pass
     def __str__(self):
         return f"{self.place} - {self.user_email}"
     # user모델 연결 후 변경
