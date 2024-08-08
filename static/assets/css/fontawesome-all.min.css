@@ -1,4 +1,63 @@
+
+/*!# OS generated files #
+######################
+.DS_Store
+Thumbs.db
+
+# Log files #
+############
+*.log
+
+# Python #
+##########
+__pycache__/
+*.py[cod]
+
+# User directories #
+###################
+/AppData/
+/Contacts/
+/Desktop/
+/Documents/
+/Downloads/
+/Favorites/
+/Links/
+/Music/
+/NTUSER.*
+/OneDrive/
+/Pictures/
+/Saved Games/
+/Searches/
+/Videos/
+/eclipse-workspace/
+/miniconda3/
+/node_modules/
+/root@192.168.111.100
+
+# Ignore other directories and files at root level
+../.*
+../AppData/
+../Contacts/
+../Desktop/
+../Documents/
+../Downloads/
+../Favorites/
+../Links/
+../Music/
+../NTUSER.*
+../OneDrive/
+../Pictures/
+../Saved Games/
+../Searches/
+../Videos/
+../eclipse-workspace/
+../miniconda3/
+../node_modules/
+../root@192.168.111.100
+
+
 /*!
+
  * Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>저장된 일정 확인</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { margin-top: 50px; }
+        .schedule-list { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">저장된 일정 확인</h1>
+        {% for schedule in schedules %}
+        <div class="schedule-list">
+            <h3>일정 {{ forloop.counter }}</h3>
+            {% for day in schedule.itinerary %}
+            <div class="day-recommendations">
+                <h4>{{ day.date }}</h4>
+                <ul>
+                    {% for rec in day.recommendations %}
+                    <li>{{ rec.title }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
