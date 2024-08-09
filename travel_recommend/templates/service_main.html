@@ -1,28 +1,30 @@
 {% include 'header.html' %}
 <section id="home" class="main main_home">
     <h2 class="screen_out">메인</h2>
-    <div class="container">
-        <div class="jumbotron text-center">
-            <h1 class="display-4 main-title">나만의 여행 아카이브를 시작해보세요!</h1>
-            <p class="lead subtitle">여행 일정을 어떻게 만들어 볼까요?</p>
-        </div>
-
-        <div class="d-flex justify-content-center">
-            <div class="card-deck">
-                <div class="card option-card text-center mx-5" onclick="location.href='{% url 'travel:recommend' %}'">
-                    <div class="card-body d-flex flex-column justify-content-center auto-card">
-                        <h5 class="card-title">자동 생성</h5>
-                        <p class="card-text">당신만을 위한 맞춤형 추천</p>
-                    </div>
-                </div>
-                <div class="card option-card text-center mx-5" onclick="location.href='{% url 'Jpage:jpagerender' %}'">
-                    <div class="card-body d-flex flex-column justify-content-center manual-card">
-                        <h5 class="card-title">직접 생성</h5>
-                        <p class="card-text">A-Z 내 손으로 만드는 일정</p>
-                    </div>
-                </div>
+    <div class="jumbotron text-center">
+        <h3 class="display-4 main-title">나만의 여행 아카이브를 시작해보세요!</h3>
+        <p class="lead subtitle">여행 일정을 어떻게 만들어 볼까요?</p>
+    </div>
+    <div class="card-deck">
+    <div class="card option-card text-center mx-5" onclick="location.href='{% url 'travel:recommend' %}'">
+        <div class="card-body d-flex flex-column justify-content-center auto-card">
+            {% load static %}
+            <div class="scope_info">
+                <h5 class="card-title">자동 생성</h5>
+                <p class="card-text">당신만을 위한 맞춤형 추천</p>
             </div>
+            <img src="{% static 'images/P_plan.jpg' %}">
         </div>
+    </div>
+    <div class="card option-card text-center mx-5" onclick="location.href='{% url 'Jpage:jpagerender' %}'">
+        <div class="card-body d-flex flex-column justify-content-center manual-card">
+            <div class="scope_info">
+                <h5 class="card-title">직접 생성</h5>
+                <p class="card-text">A-Z 내 손으로 만드는 일정</p>
+            </div>
+            <img src="{% static 'images/J_plan.jpg' %}">
+        </div>
+    </div>
     </div>
 </section>
 {% include 'footer.html' %}
@@ -32,42 +34,61 @@
         cursor: pointer;
         transition: transform 0.2s, box-shadow 0.2s;
         border: none;
-        width: 300px;
-        height: 400px;
+        width:50%;
+        max-width:none;
+        min-height:auto;
+        overflow:hidden;
+        height: 250px;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        margin-left:1.5rem !important;
+        margin-right:1.5rem !important;
     }
+    .option-card:after{position:absolute;left:0;right:0;bottom:0;top:0;background-color:rgba(0,0,0,0.2);content:''}
     .option-card:hover {
         transform: scale(1.05);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     .auto-card {
-        background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+        position : relative;
         color: white;
+        padding:0;
     }
+    .auto-card img, .manual-card img{
+        position:absolute;
+        width:100%;
+        height:100%;
+        object-fit:cover
+    }
+
     .manual-card {
-        background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+        position: relative;
         color: white;
+        padding:0;
+    }
+    .card-body{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
+    .option-card .scope_info{
+        z-index:1;
     }
     .card-title {
-        font-size: 2em;
+        font-size: 1.8em;
         font-weight: bold;
-        margin-bottom: 10px;
+        color:#fff !important;
     }
     .card-text {
-        font-size: 1.2em;
+        font-size: 1em;
     }
-    .jumbotron {
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        padding: 30px;
-    }
+
     .main_home {
         padding: 60px 0;
     }
     .main-title {
-        font-size: 2.7em;
+        font-size: 2.5rem;
         color: #333;
         font-weight: 700;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
