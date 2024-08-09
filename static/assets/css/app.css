@@ -563,11 +563,6 @@ main {
     border-radius: 8px;
     overflow: hidden;
 }
-#list_diary .card-img img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-}
 #list_diary .card-body {
     padding: 1rem;
 }
