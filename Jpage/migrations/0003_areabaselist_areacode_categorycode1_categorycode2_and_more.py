@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("Jpage", "02_initial"),
+        ("Jpage", "0001_initial"),
     ]
 
     operations = [
