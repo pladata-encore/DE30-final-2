@@ -105,8 +105,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                    <button type="button" class="btn btn-primary">찜하기</button>
-                    <a href="#" id="travelPlanBtn" class="btn btn-third">여행 계획으로 이동</a>
+                    <button type="button" class="btn btn-primary" id="wishlistBtn">찜하기</button>
+<!--                    <a href="#" id="travelPlanBtn" class="btn btn-third">여행 계획으로 이동</a>-->
                 </div>
             </div>
         </div>
@@ -244,34 +244,39 @@
             });
         });
 
-        // 찜하기 버튼 클릭 이벤트
         $(document).on('click', '#wishlistBtn', function() {
             console.log("Wishlist button clicked");
             var planType = $('#planContent').data('plan-type');
             var planId = $('#planContent').data('plan-id');
-            var planTitle = $('#planContent').find('h6:first').text().replace('제목: ', '');
-            var city = planType === 'Pplan' ? $('#planContent').find('p:first').text().replace('도시: ', '') : '';
-            var province = planType === 'Jplan' ? $('#planContent').find('p:first').text().split(' ')[1] : '';
-            var place = city || province;
+            var city, province, place;
+
+            if (planType === 'Pplan') {
+                city = $('#planContent').find('p:first').text().replace('도시: ', '');
+                province = '';
+                place = city;
+            } else if (planType === 'Jplan') {
+                var locationText = $('#planContent').find('p:first').text().replace('지역: ', '');
+                var locationParts = locationText.split(' ');
+                province = locationParts[0];
+                city = locationParts[1];
+                place = city;
+            }
 
             var travelDates = [];
-            if (planType === 'Pplan') {
-                $('#planContent').find('p:not(:first)').each(function() {
-                    travelDates.push($(this).text().replace(':', '').trim());
-                });
-            } else if (planType === 'Jplan') {
-                $('#planContent').find('p:not(:first)').each(function() {
-                    var dayParts = $(this).text().split(':');
-                    travelDates.push(dayParts[0].trim());
-                });
-            }
+            $('#planContent').find('p:not(:first)').each(function() {
+                var dateText = $(this).text().split(':')[0].trim();
+                if (dateText) {
+                    travelDates.push(dateText);
+                }
+            });
 
             console.log("Sending data to server:", {
                 'plan_id': planId,
                 'place': place,
                 'province': province,
                 'city': city,
-                'travel_dates': JSON.stringify(travelDates)
+                'travel_dates': JSON.stringify(travelDates),
+                'plan_type': planType
             });
 
             $.ajax({
@@ -294,12 +299,13 @@
                             alert('이미 찜 목록에 있습니다.');
                         }
                     } else {
-                        alert('처리 중 오류가 발생했습니다.');
+                        alert('처리 중 오류가 발생했습니다: ' + data.message);
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('Error adding to wishlist:', error);
-                    alert('처리 중 오류가 발생했습니다.');
+                    console.error('Server response:', xhr.responseText);
+                    alert('처리 중 오류가 발생했습니다. 자세한 내용은 콘솔을 확인해주세요.');
                 }
             });
         });
