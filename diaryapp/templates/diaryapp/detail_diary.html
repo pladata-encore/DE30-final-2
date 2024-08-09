@@ -94,19 +94,19 @@
     </div>
 
     <!-- 모달 창 : 장소 정보 -->
-    <div class="modal fade" id="planModal" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
+    <div id="planModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="planModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="planModalLabel">여행 장소 정보</h5>
                 </div>
                 <div class="modal-body">
-                    <!-- JavaScript로 동적으로 내용이 삽입됩니다. -->
+                    <div id="planContent"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                    <button id="wishlistBtn" data-place="{{ diary.place }}" data-plan-id="{{ diary.plan_id }}" class="btn btn-secondary">찜하기</button>
-                    <a id="travelPlanBtn" class="btn btn-third" href="#">여행 계획으로 이동</a>
+                    <button type="button" class="btn btn-primary">찜하기</button>
+                    <a href="#" id="travelPlanBtn" class="btn btn-third">여행 계획으로 이동</a>
                 </div>
             </div>
         </div>
@@ -197,48 +197,122 @@
         });
     </script>
     {% endif %}
-
     <script>
-        // 장소 모달
-        $('.open-modal').on('click', function(e) {
-            e.preventDefault();
+    $(document).ready(function() {
+        $('.open-modal').click(function() {
+            console.log("Modal open button clicked");
             var uniqueDiaryId = $(this).data('unique-diary-id');
             $.ajax({
-                url: `/diary/plan_modal/${uniqueDiaryId}/`,
+                url: '/diary/plan_modal/' + uniqueDiaryId + '/',
                 type: 'GET',
                 success: function(data) {
-                    if (data.error) {
-                        console.error('Error fetching plan modal content:', data.error);
-                        return;
+                    console.log("AJAX request successful. Data:", data);
+                    var content = '';
+                    if (data.plan_type === 'Jplan') {
+                        content += '<h6>제목: ' + data.plan_title + '</h6>';
+                        content += '<p>지역: ' + data.province + ' ' + data.city + '</p>';
+                        content += '<h6>일정:</h6>';
+                        for (var day in data.days) {
+                            content += '<p>' + day + ': ' + data.days[day].join(', ') + '</p>';
+                        }
+                    } else if (data.plan_type === 'Pplan') {
+                        content += '<h6>제목: ' + data.plan_title + '</h6>';
+                        content += '<p>도시: ' + data.city + '</p>';
+                        content += '<h6>일정:</h6>';
+                        data.days.forEach(function(day) {
+                            content += '<p>' + day.date + ':</p>';
+                            content += '<ul>';
+                            day.titles.forEach(function(title) {
+                                content += '<li>' + title + '</li>';
+                            });
+                            content += '</ul>';
+                        });
+                    } else {
+                        content = '<p>여행 계획 정보가 없습니다.</p>';
                     }
-                    var modalContent = `
-                        <section id="diary" class="planmodal plan_modal">
-                            <h2 class="screen_out">여행 다이어리 장소 모달</h2>
-                            <p><strong>여행 제목:</strong> ${data.plan_title}</p>
-                            <p><strong>장소:</strong> ${data.province} ${data.city}</p>
-                            <p><strong>여행 날짜:</strong></p>
-                            <ul>
-                                ${Object.entries(data.days).map(([day, places]) => `
-                                    <li>${day}: ${places.length > 0 ? places.join(', ') : '일정 없음'}</li>
-                                `).join('')}
-                            </ul>
-                        </section>
-                    `;
-                    $('#planModal .modal-body').html(modalContent);
-                    $('#wishlistBtn').data('province', data.province);
-                    $('#wishlistBtn').data('city', data.city);
-                    $('#wishlistBtn').data('travel-dates', JSON.stringify(data.days));
+                    $('#planContent').html(content);
+
+                    // 여기에 데이터 속성 추가
+                    $('#planContent').data('plan-type', data.plan_type);
+                    $('#planContent').data('plan-id', data.plan_id);
+
                     $('#planModal').modal('show');
                 },
-                error: function(error) {
-                    console.error('Error fetching plan modal content:', error);
+                error: function(xhr, status, error) {
+                    console.error('Error fetching plan data:', error);
                 }
             });
         });
 
+        // 찜하기 버튼 클릭 이벤트
+        $(document).on('click', '#wishlistBtn', function() {
+            console.log("Wishlist button clicked");
+            var planType = $('#planContent').data('plan-type');
+            var planId = $('#planContent').data('plan-id');
+            var planTitle = $('#planContent').find('h6:first').text().replace('제목: ', '');
+            var city = planType === 'Pplan' ? $('#planContent').find('p:first').text().replace('도시: ', '') : '';
+            var province = planType === 'Jplan' ? $('#planContent').find('p:first').text().split(' ')[1] : '';
+            var place = city || province;
+
+            var travelDates = [];
+            if (planType === 'Pplan') {
+                $('#planContent').find('p:not(:first)').each(function() {
+                    travelDates.push($(this).text().replace(':', '').trim());
+                });
+            } else if (planType === 'Jplan') {
+                $('#planContent').find('p:not(:first)').each(function() {
+                    var dayParts = $(this).text().split(':');
+                    travelDates.push(dayParts[0].trim());
+                });
+            }
+
+            console.log("Sending data to server:", {
+                'plan_id': planId,
+                'place': place,
+                'province': province,
+                'city': city,
+                'travel_dates': JSON.stringify(travelDates)
+            });
+
+            $.ajax({
+                url: "{% url 'add_wish' %}",
+                type: 'POST',
+                data: {
+                    'plan_id': planId,
+                    'place': place,
+                    'province': province,
+                    'city': city,
+                    'travel_dates': JSON.stringify(travelDates),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    console.log("Server response:", data);
+                    if (data.status === 'success') {
+                        if (data.created) {
+                            alert('찜 목록에 추가되었습니다!');
+                        } else {
+                            alert('이미 찜 목록에 있습니다.');
+                        }
+                    } else {
+                        alert('처리 중 오류가 발생했습니다.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error adding to wishlist:', error);
+                    alert('처리 중 오류가 발생했습니다.');
+                }
+            });
+        });
+
+        // 여행 계획으로 이동 버튼 클릭 이벤트
+        $('#travelPlanBtn').on('click', function(e) {
+            e.preventDefault();
+            window.location.href = "{% url 'list_diary' %}";
+        });
+
         // 모달 닫기
         $(document).on('click', '[data-dismiss="modal"], [data-bs-dismiss="modal"]', function() {
-          $(this).closest('.modal').modal('hide');
+            $(this).closest('.modal').modal('hide');
         });
 
         // 모달이 닫혔을 때 내용 비우기
@@ -255,53 +329,8 @@
                 'overflow-y': 'auto'
             });
         });
-
-        // 찜하기 버튼 클릭 이벤트
-        $('#wishlistBtn').on('click', function() {
-            var place = $(this).data('place');
-            var province = $(this).data('province');
-            var city = $(this).data('city');
-            var travel_dates = $(this).data('travel-dates');
-
-            console.log("Sending data to server:", {
-                'place': place,
-                'province': province,
-                'city': city,
-                'travel_dates': travel_dates
-            });
-
-            $.ajax({
-                url: "{% url 'add_wish' %}",
-                type: 'POST',
-                data: {
-                    'place': place,
-                    'province': province,
-                    'city': city,
-                    'travel_dates': travel_dates,
-                    'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function(data) {
-                    if (data.status === 'success') {
-                        if (data.created) {
-                            alert('찜 목록에 추가되었습니다!');
-                        } else {
-                            alert('이미 찜 목록에 있습니다.');
-                        }
-                    } else {
-                        alert('처리 중 오류가 발생했습니다.');
-                    }
-                },
-                error: function() {
-                    alert('처리 중 오류가 발생했습니다.');
-                }
-            });
-        });
-
-        // 여행 계획으로 이동 버튼 클릭 이벤트
-        $('#travelPlanBtn').on('click', function(e) {
-            e.preventDefault();
-            window.location.href = "{% url 'list_diary' %}";
-        });
+    });
     </script>
+
 </section>
 {% include 'footer.html' %}

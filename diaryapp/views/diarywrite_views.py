@@ -3,6 +3,7 @@ import os
 import traceback
 
 import openai
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from dotenv import load_dotenv
 import gridfs
@@ -94,6 +95,11 @@ def generate_diary(request, plan_id=None):
                 plan_id = request.session.pop('plan_id', None)
                 print(f'-------------여기가 generate post session-------------{plan_id}')
 
+            # J / P plan_id 구별
+
+            # P plan 가지고 오는 것 추가
+
+            # J plan 가지고 오기
             plan = get_plan_by_id(plan_id)
             if not plan:
                 return JsonResponse({'success': False, 'errors': 'Invalid plan_id'}, status=400)
@@ -262,6 +268,11 @@ def write_diary(request, plan_id=None):
                 plan_id = request.session.pop('plan_id', None)
                 print(f'-------------여기가 write post session-------------{plan_id}')
 
+            # J / P plan_id 구별
+
+            # P plan 가지고 오는 것 추가
+
+            # J plan 가지고 오기
             plan = get_plan_by_id(plan_id)
             if not plan:
                 return JsonResponse({'success': False, 'errors': 'Invalid plan_id'}, status=400)
@@ -566,28 +577,65 @@ def detail_diary_by_id(request, unique_diary_id):
     return render(request, 'diaryapp/detail_diary.html', context)
 
 '''다이어리 여행일정 모달 창'''
+# def plan_modal(request, unique_diary_id):
+#     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+#     plan_id = diary.plan_id
+#
+#     # plan_id J랑 P구분 추가 - P는 아이디가 PK로 시작, 그외는 J로
+#     # P - plan 정보 가지고 오는 것 추가
+#     # P - plan 정보 처리
+#     plan = get_plan_by_id(plan_id) if plan_id else None
+#
+#     if plan:
+#         province = plan.get('province', '')
+#         city = plan.get('city', '')
+#         plan_title = plan.get('plan_title', '')
+#         days = plan.get('days', {})
+#     else:
+#         province = city = plan_title = ''
+#         days = {}
+#
+#     context = {
+#         'province': province,
+#         'city': city,
+#         'plan_title': plan_title,
+#         'days': days,
+#     }
+#
+#     return JsonResponse(context)
+
 def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     plan_id = diary.plan_id
 
-    # plan 정보 가져오기
     plan = get_plan_by_id(plan_id) if plan_id else None
 
     if plan:
-        province = plan.get('province', '')
-        city = plan.get('city', '')
-        plan_title = plan.get('plan_title', '')
-        days = plan.get('days', {})
+        if plan_id.startswith("PK"):  # Jplan
+            context = {
+                'plan_type': 'Jplan',
+                'plan_id': plan_id,
+                'province': plan.get('province', ''),
+                'city': plan.get('city', ''),
+                'plan_title': plan.get('plan_title', ''),
+                'days': plan.get('days', {})
+            }
+        else:  # Pplan
+            context = {
+                'plan_type': 'Pplan',
+                'plan_id': plan_id,
+                'plan_title': plan.get('plan_title', ''),
+                'city': plan.get('city', ''),
+                'days': [
+                    {
+                        'date': day.get('date', ''),
+                        'titles': [rec.get('title', '') for rec in day.get('recommendations', [])]
+                    } for day in plan.get('days', [])
+                ]
+            }
     else:
-        province = city = plan_title = ''
-        days = {}
+        context =  {'plan_type': 'none', 'plan_id': None}
 
-    context = {
-        'province': province,
-        'city': city,
-        'plan_title': plan_title,
-        'days': days,
-    }
     return JsonResponse(context)
 
 '''
@@ -636,58 +684,73 @@ def update_diary(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 
     if request.method == 'POST':
+        form = DiaryForm(request.POST, instance=diary)
+        image_form = ImageUploadForm(request.POST, request.FILES)
 
-        # emotion 번역
-        # 수정할 필드만 업데이트
-        diary.diarytitle = request.POST['diarytitle']
-        diary.content = request.POST['content']
-        diary.withfriend = request.POST['withfriend']
+        if form.is_valid() and image_form.is_valid():
+            try:
+                updated_diary = form.save(commit=False)
 
-        # user_email = request.user.email
-        # from django.contrib.auth import authenticate, login
-        # user = authenticate(request, username=username)
-        user_email = settings.DEFAULT_FROM_EMAIL
-        diary.save()
+                # 대표 이미지 처리
+                representative_image = request.FILES.get('image_file')
+                if representative_image:
+                    if diary.representative_image:
+                        diary.representative_image.delete()  # 기존 대표 이미지 삭제
+                    image_model = ImageModel(is_representative=True)
+                    image_model.save_image(Image.open(representative_image))
+                    image_model.save()
+                    updated_diary.representative_image = image_model
 
-        # 대표 이미지 처리 (대표 이미지 변경)
-        representative_image = request.FILES.get('image_file')
-        if representative_image:
-            if diary.representative_image:
-                diary.representative_image.delete()  # 기존 대표 이미지 삭제
-            image_model = ImageModel(is_representative=True)
-            image_model.save_image(Image.open(representative_image))
-            image_model.save()
-            diary.representative_image = image_model
-            diary.save()
+                    # 이미지 인코딩 및 MongoDB 업데이트
+                    buffered = BytesIO()
+                    Image.open(representative_image).save(buffered, format="PNG")
+                    encoded_image = base64.b64encode(buffered.getvalue()).decode()
 
-        # 추가 이미지 처리
-        images = request.FILES.getlist('images')
-        for img in images:
-            additional_image_model = ImageModel(is_representative=False)
-            additional_image_model.save_image(Image.open(img))
-            additional_image_model.save()
-            diary.images.add(additional_image_model)  # ManyToMany 관계 설정
+                    db = get_mongodb_connection()
+                    aiwritemodel_collection = db['diaryapp_aiwritemodel']
+                    aiwritemodel_collection.update_one(
+                        {"unique_diary_id": unique_diary_id},
+                        {"$set": {"encoded_representative_image": encoded_image}}
+                    )
 
-        # 기존 이미지 삭제 처리
-        delete_image_ids = request.POST.getlist('delete_images')
-        for image_id in delete_image_ids:
-            image_to_delete = ImageModel.objects.get(id=image_id)
-            diary.images.remove(image_to_delete)
-            image_to_delete.delete()
+                updated_diary.save()
 
-        return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
+                # 추가 이미지 처리
+                for img in request.FILES.getlist('images'):
+                    additional_image_model = ImageModel(is_representative=False)
+                    additional_image_model.save_image(Image.open(img))
+                    additional_image_model.save()
+                    updated_diary.images.add(additional_image_model)
+
+                # 이미지 삭제 처리
+                for image_id in request.POST.getlist('delete_images'):
+                    image_to_delete = ImageModel.objects.get(id=image_id)
+                    updated_diary.images.remove(image_to_delete)
+                    image_to_delete.delete()
+
+                messages.success(request, '다이어리가 성공적으로 수정되었습니다.')
+                return redirect(reverse('detail_diary_by_id', kwargs={'unique_diary_id': unique_diary_id}))
+            except Exception as e:
+                logger.error(f"Error updating diary: {str(e)}")
+                messages.error(request, '다이어리 수정 중 오류가 발생했습니다.')
+        else:
+            logger.error(f"Form errors: {form.errors}")
+            logger.error(f"Image form errors: {image_form.errors}")
+            messages.error(request, '입력한 정보가 올바르지 않습니다. 다시 확인해주세요.')
     else:
         form = DiaryForm(instance=diary)
         image_form = ImageUploadForm()
 
     existing_images = diary.images.all()
 
-    return render(request, 'diaryapp/update_diary.html', {
-        'diary': diary,
-        'existing_images': existing_images,
+    context = {
         'form': form,
         'image_form': image_form,
-    })
+        'diary': diary,
+        'existing_images': existing_images,
+    }
+
+    return render(request, 'diaryapp/update_diary.html', context)
 
 '''일기 내용 삭제'''
 # @login_required   # html에서 할 수 있으면 삭제
