@@ -45,7 +45,8 @@
                 {% if is_own_page %}
                 {% for link in schedule_links_and_diary_links %}
                 <div class="card add">
-                    <strong class="card-title"><a href="{{ link.schedule_url }}" class="link_title">{{ link.plan_title }}</a><span class="badge text-bg-dark">new</span></strong>
+                    <strong class="card-title"><a href="#" class="link_title">{{ link.plan_title }}</a><span class="badge text-bg-dark">new</span></strong>
+                    <!--중괄호*2 link.schedule_url 중괄호*2-->
                     <a href="{{ link.create_diary_url }}" class="link_card">
                         <div class="card-img">
                             {% if link.bg %}

@@ -43,7 +43,7 @@ plan_collection = db['plan']
 # komoran 초기화 / fasttext model 로드
 komoran = Komoran()
 model_path = os.path.join(settings.BASE_DIR, 'diaryapp/models', 'fasttext_model.model')
-model = FastText.load(model_path)
+model = FastText.load(model_path, mmap='r')
 
 
 # 다이어리 형용사 추출 함수
@@ -260,4 +260,4 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
 
 import uvicorn
 if __name__ == "__main__":
-    uvicorn.run("nickname_app:app", host='0.0.0.0', port=5000, reload=True)
+    uvicorn.run("nickname_app:app", host='0.0.0.0', port=5001, reload=True)

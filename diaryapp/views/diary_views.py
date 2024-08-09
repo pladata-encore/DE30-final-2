@@ -124,20 +124,30 @@ def viewDiary(request, user_email=None):
             for plan in target_plans:
                 plan_id = plan.get('plan_id', '')
                 plan_title = plan.get('plan_title', '')
-                days = plan.get('days', {})
-                print(f'---------------plan_title-----------{plan_title}')
 
-                # 랜덤으로 타이틀 추출
-                all_titles = []
+                # 일정에서 title 추출
                 valid_titles = []
 
-                for day, titles in days.items():
-                    all_titles.extend(titles)
+                if plan_id.startswith('PK'):
+                    # 계획_직접 생성
+                    days = plan.get('days', {})
+                    print(f'---------------J_plan_title-----------{plan_title}')
 
-                for title in all_titles:
-                    doc = collection.find_one({'title': title})
-                    if doc and doc['firstimage'].strip() != '':
-                        valid_titles.append(title)
+                    valid_titles.extend(
+                        title for titles in days.values() for title in titles
+                        if (doc := collection.find_one({'title': title})) and doc['firstimage'].strip() !=""
+                    )
+                else :
+                    # 계획_자동 생성
+                    days = plan.get('days', [])
+                    print(f'---------------P_plan_title-----------{plan_title}')
+
+                    for day in days:
+                        for recommendation in day.get('recommendations', []):
+                            title = recommendation.get('title')
+                            doc = collection.find_one({'title': title})
+                            if doc and doc['firstimage'].strip() != '':
+                                valid_titles.append(title)
 
                 if valid_titles:
                     random_title = random.choice(valid_titles)
@@ -150,7 +160,7 @@ def viewDiary(request, user_email=None):
                 # url 생성
                 schedule_url = reverse('list_badge',kwargs={
                     #'plan_id': plan_id,
-                    # 각 일정의 url을 추가, 예시로 list_badge로 간다
+                    # 각 일정의 url을 추가, 예시로 list_badge, html에는 #
                 })
                 create_diary_url = reverse('write_diary_plan_id', kwargs={
                     'plan_id': plan_id
