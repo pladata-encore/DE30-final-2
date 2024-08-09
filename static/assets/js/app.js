@@ -26,11 +26,12 @@ function initializeSlider() {
     const slider = sliderContainer.querySelector('.slider');
     const nextButton = sliderContainer.querySelector('#next');
     const prevButton = sliderContainer.querySelector('#prev');
+    const slide = sliderContainer.querySelector('.card');
+    const cards = sliderContainer.querySelectorAll('.card');
     let currentIndex = 0;
     let accumulatedDistance = 0;
 
     function getSlideDetails() {
-        const slide = sliderContainer.querySelector('.card');
         const slideWidth = slide ? slide.offsetWidth : 0; // 카드가 없을 경우를 대비하여 0으로 설정
         const marginLeft = slide ? parseFloat(getComputedStyle(slide).marginLeft) : 0; // 카드가 없을 경우를 대비하여 0으로 설정
         return { slideWidth, marginLeft };
@@ -49,8 +50,7 @@ function initializeSlider() {
     function updateSliderButtons() {
         const sliderContainerWidth = sliderContainer.offsetWidth;
         const sliderWidth = slider.offsetWidth;
-        const cards = sliderContainer.querySelectorAll('.card');
-``
+
         if (cards.length === 0 || sliderWidth <= sliderContainerWidth) {
             nextButton.style.display = 'none';
             prevButton.style.display = 'none';
@@ -103,9 +103,6 @@ function initializeSlider() {
 
     // card 넓이
     function adjustCardWidth() {
-        const sliderContainer = document.querySelector('.slider-container');
-        const cards = sliderContainer.querySelectorAll('.card');
-
         const containerWidth = sliderContainer.offsetWidth; // .slider-container의 너비 가져오기
 
         let cardWidth;
@@ -126,6 +123,7 @@ function initializeSlider() {
         cards.forEach(card => {
             card.style.width = cardWidth;
         });
+        updateSliderButtons();
     }
 
     // 페이지 로드 시 및 리사이즈 이벤트 시 호출
@@ -137,6 +135,7 @@ function initializeSlider() {
 
 }
 initializeSlider();
+
 
 
 // 슬라이드

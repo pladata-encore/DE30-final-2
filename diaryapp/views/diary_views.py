@@ -20,7 +20,7 @@ db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
 collection = db['areaBaseList']
-user_collection = db['users']
+user_collection = db['users_usermodel']
 diary_collection = db['diaryapp_aiwritemodel']
 image_collection = db['diaryapp_imagemodel']
 plan_collection = db['plan']
@@ -61,32 +61,29 @@ def viewDiary(request, user_email=None):
     enriched_diary_list = []
 
     # 사용자 다이어리 정보 가져오기
-    user_diaries = AiwriteModel.objects.filter(user_email=user['email'])
-    #user_diaries = diary_collection.find({'user_email': user['email']})
+    # user_diaries = AiwriteModel.objects.filter(user_email=user['email'])
+    user_diaries = diary_collection.find({'user_email': user['email']})
 
     try:
-        diaries = user_diaries.order_by('-created_at')[:5]
-        #diaries = user_diaries.sort('created_at', 1).limit(5)
+        #diaries = user_diaries.order_by('-created_at')[:5]
+        diaries = user_diaries.sort('created_at', -1).limit(5)
 
         for diary in diaries:
 
             try:
 
-                if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
-                #if diary.get('nickname_id') == '<JsonResponse status_code=500, "application/json">':
+                #if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
+                if diary.get('nickname_id') == '<JsonResponse status_code=500, "application/json">':
                     nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
                 else:
-                    nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
-                    #nickname_id, nickname, badge_name, badge_image = get_nickname(diary.get('nickname_id'))
+                    #nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+                    nickname_id, nickname, badge_name, badge_image = get_nickname(diary.get('nickname_id'))
 
-                # representative_image = ImageModel.objects.filter(id=diary.representative_image_id)
-                # representative_image = diary.diary_images.filter(is_representative=True).first()
-                # representative_image = image_collection.find_one({'id': diary.representative_image_id})
-
+                representative_image = diary.get('encoded_representative_image')
 
                 enriched_diary = {
                     'diary': diary,
-                    #'representative_image': representative_image,
+                    'representative_image': representative_image,
                     'nickname': nickname,
                     'badge_name': badge_name,
                     'badge_image': badge_image
@@ -97,7 +94,7 @@ def viewDiary(request, user_email=None):
                 logger.error(traceback.format_exc())
                 enriched_diary_list.append({
                     'diary': diary,
-                    #'representative_image': None,
+                    'representative_image': None,
                     'nickname': 'Unknown',
                     'badge_name': 'Unknown',
                     'badge_image': 'Unknown',
@@ -113,6 +110,7 @@ def viewDiary(request, user_email=None):
     schedule_links_and_diary_links = []
     try:
         # 다이어리에서 plan_id 추출
+        user_diaries = AiwriteModel.objects.filter(user_email=user['email'])
         plan_id_diaries = [diary.plan_id for diary in user_diaries if diary.plan_id]
         print(f'---------------plan_id_diaries-----------{plan_id_diaries}')
 
@@ -122,24 +120,37 @@ def viewDiary(request, user_email=None):
             'plan_id': {'$nin': plan_id_diaries}
         })
 
-        if target_plans:
-            for plan in target_plans:
+        target_plans_list = list(target_plans)
+        target_plans_list.reverse()
+
+        if target_plans_list:
+            for plan in target_plans_list:
                 plan_id = plan.get('plan_id', '')
                 plan_title = plan.get('plan_title', '')
-                days = plan.get('days', {})
-                print(f'---------------plan_title-----------{plan_title}')
 
-                # 랜덤으로 타이틀 추출
-                all_titles = []
+                # 일정에서 title 추출
                 valid_titles = []
 
-                for day, titles in days.items():
-                    all_titles.extend(titles)
+                if plan_id.startswith('PK'):
+                    # 계획_직접 생성
+                    days = plan.get('days', {})
+                    print(f'---------------J_plan_title-----------{plan_title}')
 
-                for title in all_titles:
-                    doc = collection.find_one({'title': title})
-                    if doc and doc['firstimage'].strip() != '':
-                        valid_titles.append(title)
+                    valid_titles.extend(
+                        title for titles in days.values() for title in titles
+                        if (doc := collection.find_one({'title': title})) and doc['firstimage'].strip() !=""
+                    )
+                else :
+                    # 계획_자동 생성
+                    days = plan.get('days', [])
+                    print(f'---------------P_plan_title-----------{plan_title}')
+
+                    for day in days:
+                        for recommendation in day.get('recommendations', []):
+                            title = recommendation.get('title')
+                            doc = collection.find_one({'title': title})
+                            if doc and doc['firstimage'].strip() != '':
+                                valid_titles.append(title)
 
                 if valid_titles:
                     random_title = random.choice(valid_titles)
@@ -152,7 +163,7 @@ def viewDiary(request, user_email=None):
                 # url 생성
                 schedule_url = reverse('list_badge',kwargs={
                     #'plan_id': plan_id,
-                    # 각 일정의 url을 추가, 예시로 list_badge로 간다
+                    # 각 일정의 url을 추가, 예시로 list_badge, html에는 #
                 })
                 create_diary_url = reverse('write_diary_plan_id', kwargs={
                     'plan_id': plan_id

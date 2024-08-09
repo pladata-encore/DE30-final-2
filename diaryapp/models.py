@@ -126,13 +126,14 @@ class CommentModel(models.Model):
 '''찜모델'''
 class Wishlist(models.Model):
     user_email = models.EmailField()
+    plan_id = models.CharField(max_length=100, default='', blank=True)
     place = models.CharField(max_length=255)
     province = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     travel_dates = models.JSONField()
     added_at = models.DateTimeField(auto_now_add=True)
     class Meta:
-        unique_together = ('user_email', 'place')
+        unique_together = ('user_email', 'plan_id')
     def __str__(self):
         return f"{self.place} - {self.user_email}"
     # user모델 연결 후 변경

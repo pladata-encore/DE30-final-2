@@ -13,8 +13,10 @@ class Command(BaseCommand):
         df = pd.read_csv(csv_file_path)
 
         # MongoDB 연결 설정
-        client = MongoClient('mongodb://127.0.0.1:27017/')
-        db = client['MyDiary']
+        # client = MongoClient('mongodb://127.0.0.1:27017/')
+        # db = client['MyDiary']
+        from django.conf import settings
+        db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
         collection = db['accommodations_ratings']
 
         # 기존 컬렉션 삭제 (있을 경우)

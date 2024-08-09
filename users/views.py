@@ -41,7 +41,7 @@ encoded_password = urllib.parse.quote_plus(password)
 client = MongoClient('mongodb://127.0.0.1:27017/', tls=True, tlsAllowInvalidCertificates=True)
 
 db = client['MyDiary']
-collection = db['users']
+collection = db['users_usermodel']
 
 # start-------------
 class User:
@@ -59,7 +59,7 @@ def get_user_from_db(email):
     try:
         # Connect to MongoDB
         db = client['MyDiary']
-        collection = db['users']
+        collection = db['users_usermodel']
 
         # Find user by username
         user_data = collection.find_one({"email": email})

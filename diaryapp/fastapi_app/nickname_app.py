@@ -10,7 +10,7 @@ from konlpy.tag import Komoran
 from django.http import JsonResponse
 
 
-app = FastAPI()
+#app = FastAPI()
 
 
 from pathlib import Path
@@ -18,8 +18,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 import sys
 # Django 프로젝트 루트 디렉토리를 sys.path에 추가
 sys.path.append(str(BASE_DIR))
-# sys.path.append(r'C:/projects/Encore_Final_Project')
-# sys.path.append(r'/Users/ychun/projects/Encore_Final_Project')
 
 # 프로젝트의 루트 디렉토리 경로 설정
 PROJECT_ROOT = 'myproject.settings'
@@ -43,7 +41,7 @@ plan_collection = db['plan']
 # komoran 초기화 / fasttext model 로드
 komoran = Komoran()
 model_path = os.path.join(settings.BASE_DIR, 'diaryapp/models', 'fasttext_model.model')
-model = FastText.load(model_path)
+model = FastText.load(model_path, mmap='r')
 
 
 # 다이어리 형용사 추출 함수
@@ -210,7 +208,7 @@ def extract_words(plan_data, content):
     return selected_noun[0], selected_adjective + ' ' + selected_noun[1].replace(" ", "")
 
 
-@app.get("/generate-nickname/")
+#@app.get("/generate-nickname/")
 async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)):
 
     # 일정 여행지 plan_id
@@ -221,11 +219,26 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
     # 일정 여행지 list 가져 오기
     if plan_id :
         plan = plan_collection.find_one({'plan_id': plan_id})
-        days = plan.get('days', {})
 
+        # 일정에서 title 추출
         all_titles = []
-        for day, titles in days.items():
-            all_titles.extend(titles)
+
+        if plan_id.startswith('PK'):
+            # 계획_직접 생성
+            days = plan.get('days', {})
+
+            all_titles.extend(
+                title for titles in days.values() for title in titles
+            )
+        else:
+            # 계획_자동 생성
+            days = plan.get('days', [])
+
+            for day in days:
+                for recommendation in day.get('recommendations', []):
+                    title = recommendation.get('title')
+                    all_titles.append(title)
+
 
         query = {"title": {"$in": all_titles}}
         projection = {"title": 1, "cat1": 1, "cat2": 1, "cat3": 1, "_id": 0}
@@ -258,6 +271,6 @@ async def generate_nickname(plan_id: str = Query(...), content: str = Query(...)
     return title, nickname
 
 
-import uvicorn
-if __name__ == "__main__":
-    uvicorn.run("nickname_app:app", host='0.0.0.0', port=5012, reload=True)
+# import uvicorn
+# if __name__ == "__main__":
+#     uvicorn.run("nickname_app:app", host='0.0.0.0', port=5000, reload=True)

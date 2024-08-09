@@ -1,4 +1,7 @@
+import logging
 import os
+import traceback
+
 import openai
 from django.contrib.auth.decorators import login_required
 from dotenv import load_dotenv
@@ -6,10 +9,11 @@ import gridfs
 import torch
 import open_clip
 from PIL import Image
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseServerError
 from django.utils import timezone
 from pymongo import MongoClient
 from torchvision import transforms
+from torchvision.io import decode_image
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from django.shortcuts import render, get_object_or_404, redirect
 from myproject import settings
@@ -27,12 +31,11 @@ from django.contrib.auth.models import User
 from .nickname_views import *
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from ..mongo_queries import filter_diaries, get_plan_by_id, get_available_plans as mongo_get_available_plans
-
+from ..mongo_queries import filter_diaries, get_plan_by_id, get_available_plans as mongo_get_available_plans, \
+    get_mongodb_connection
 
 # MongoDB 클라이언트 설정
 db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
-
 # 컬렉션
 collection = db['diaryapp_nickname']
 
@@ -101,7 +104,13 @@ def generate_diary(request, plan_id=None):
             withfriend = form.cleaned_data['withfriend']
             representative_image = request.FILES.get('image_file')
 
-            # user_email = settings.DEFAULT_FROM_EMAIL
+            if diarytitle.endswith('/'):
+                return JsonResponse({
+                    'success': False,
+                    'errors': {'diarytitle': ['제목의 마지막 문자로 "/"를 사용할 수 없습니다.']}
+                })
+
+            # user_email = request.user.email
             user_email = 'neweeee@gmail.com'
 
             image = Image.open(representative_image)
@@ -167,19 +176,37 @@ def generate_diary(request, plan_id=None):
 
             image_start_time = time.time()
 
-            images = request.FILES.getlist('images')
-            for img in images:
-                additional_image_model = ImageModel(is_representative=False)
-                additional_image_model.save_image(Image.open(img))
-                additional_image_model.save()
-                diary_entry.images.add(additional_image_model)
+            # MongoDB 연결
+            db = get_mongodb_connection()
+            aiwritemodel_collection = db['diaryapp_aiwritemodel']
 
+            representative_image = request.FILES.get('image_file')
             if representative_image:
                 image_model = ImageModel(is_representative=True)
                 image_model.save_image(Image.open(representative_image))
                 image_model.save()
                 diary_entry.representative_image = image_model
                 diary_entry.save()
+
+                # 이미지 처리 및 인코딩
+                image = Image.open(representative_image)
+                image.thumbnail((800, 800))  # 이미지 크기 조정
+                buffered = BytesIO()
+                image.save(buffered, format="PNG")
+                img_str = base64.b64encode(buffered.getvalue()).decode()
+
+                # 인코딩된 이미지를 MongoDB에 직접 저장
+                aiwritemodel_collection.update_one(
+                    {"unique_diary_id": unique_diary_id},
+                    {"$set": {"encoded_representative_image": img_str}}
+                )
+
+            images = request.FILES.getlist('images')
+            for img in images:
+                additional_image_model = ImageModel(is_representative=False)
+                additional_image_model.save_image(Image.open(img))
+                additional_image_model.save()
+                diary_entry.images.add(additional_image_model)
 
             image_end_time = time.time()
             print('------------- get image --------', image_end_time - image_start_time)
@@ -219,23 +246,18 @@ def write_diary(request, plan_id=None):
         form = DiaryForm(request.POST, request.FILES)
         image_form = ImageUploadForm(request.POST, request.FILES)
 
-        # currentPlanId 또는 plan_id 가져오기
         currentPlanId = request.POST.get('plan_id', None)
 
         if currentPlanId:
-            # currentPlanId가 있으면 세션에 저장
             request.session['plan_id'] = currentPlanId
             print(f'-------------여기가  폼 currentPlanId session-------------{currentPlanId}')
         elif plan_id:
-            # plan_id가 있으면 세션에 저장
             request.session['plan_id'] = plan_id
             print(f'-------------여기가 주소 plan_id session-------------{plan_id}')
-
 
         if form.is_valid() and image_form.is_valid():
             plan_id = currentPlanId or plan_id
             if not plan_id:
-                # return JsonResponse({'success': False, 'errors': 'No plan_id provided'}, status=400)
                 print(f'-------------여기가 다이어리 01번-------------{plan_id}')
                 plan_id = request.session.pop('plan_id', None)
                 print(f'-------------여기가 write post session-------------{plan_id}')
@@ -250,10 +272,17 @@ def write_diary(request, plan_id=None):
             withfriend = form.cleaned_data['withfriend']
             content = form.cleaned_data['content']
 
-            # user_email = request.user.email  # 사용자 이메일을 현재 로그인한 사용자의 이메일로 가져옵니다.
+            if diarytitle.endswith('/'):
+                return JsonResponse({
+                    'success': False,
+                    'errors': {'diarytitle': ['제목의 마지막 문자로 "/"를 사용할 수 없습니다.']}
+                })
+
             user_email = 'neweeee@gmail.com'
 
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
+
+            # AiwriteModel 객체 생성 및 저장
             diary_entry = AiwriteModel.objects.create(
                 unique_diary_id=unique_diary_id,
                 user_email=user_email,
@@ -271,6 +300,10 @@ def write_diary(request, plan_id=None):
             diary_entry.nickname_id = nickname_id
             diary_entry.save()
 
+            # MongoDB 연결
+            db = get_mongodb_connection()
+            aiwritemodel_collection = db['diaryapp_aiwritemodel']
+
             representative_image = request.FILES.get('image_file')
             if representative_image:
                 image_model = ImageModel(is_representative=True)
@@ -278,6 +311,19 @@ def write_diary(request, plan_id=None):
                 image_model.save()
                 diary_entry.representative_image = image_model
                 diary_entry.save()
+
+                # 이미지 처리 및 인코딩
+                image = Image.open(representative_image)
+                image.thumbnail((800, 800))  # 이미지 크기 조정
+                buffered = BytesIO()
+                image.save(buffered, format="PNG")
+                img_str = base64.b64encode(buffered.getvalue()).decode()
+
+                # 인코딩된 이미지를 MongoDB에 직접 저장
+                aiwritemodel_collection.update_one(
+                    {"unique_diary_id": unique_diary_id},
+                    {"$set": {"encoded_representative_image": img_str}}
+                )
 
             images = request.FILES.getlist('images')
             for img in images:
@@ -296,6 +342,7 @@ def write_diary(request, plan_id=None):
                 'errors': form.errors
             })
     else:
+        # GET 요청 처리 (기존 코드와 동일)
         form = DiaryForm()
         image_form = ImageUploadForm()
 
@@ -310,15 +357,28 @@ def write_diary(request, plan_id=None):
         }
         return render(request, 'diaryapp/write_diary.html', context)
 
+'''인코딩된 대표 이미지 가져오기'''
+def get_encoded_image(unique_diary_id):
+    diary_data = db.aiwritemodel.find_one({"unique_diary_id": unique_diary_id})
+    if diary_data and 'encoded_representative_image' in diary_data:
+        return diary_data['encoded_representative_image']
+    return None
+
+
+logger = logging.getLogger(__name__)
 
 '''전체 일기 리스트'''
 def list_diary(request):
+    start=time.time()
     form = DateFilterForm(request.GET or None)
     year = None
     month = None
     if form.is_valid():
         year = form.cleaned_data['year']
         month = form.cleaned_data['month']
+
+    db = get_mongodb_connection()
+    aiwritemodel_collection = db['diaryapp_aiwritemodel']
 
     diary_list = filter_diaries(year, month)
     print(f"Diaries returned to view: {len(diary_list)}")
@@ -337,46 +397,57 @@ def list_diary(request):
     enriched_diary_list = []
 
     for diary in page_obj:
-        print(f"Processing diary with unique_diary_id: {diary.get('unique_diary_id')}")
+        unique_diary_id = diary.get('unique_diary_id')
+        print(f"Processing diary with unique_diary_id: {unique_diary_id}")
         try:
-            # diary_model = AiwriteModel.objects.get(unique_diary_id=diary.get('unique_diary_id'))
-            # nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
-            diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.get('unique_diary_id'))
+            diary_model = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
             if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
                 nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
             else:
                 nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+
+            mongo_diary = aiwritemodel_collection.find_one({"unique_diary_id": unique_diary_id})
+
             enriched_diary = {
                 'diary': diary,
                 'nickname': nickname,
                 'badge_name': badge_name,
-                'badge_image': badge_image
+                'badge_image': badge_image,
+                'representative_image': mongo_diary.get('encoded_representative_image') if mongo_diary else None,
             }
             enriched_diary_list.append(enriched_diary)
-        except AiwriteModel.DoesNotExist:
-            print(f"AiwriteModel not found for unique_diary_id: {diary.get('unique_diary_id')}")
-            # 여기서 오류를 무시하고 계속 진행하거나,
-            # 필요에 따라 기본값을 설정할 수 있습니다.
-            continue
 
-        print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
-              f"Created: {diary.get('created_at', 'No date')}, "
-              f"Has Image: {'Yes' if diary.get('representative_image') else 'No'}")
+            print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
+                  f"Created: {diary.get('created_at', 'No date')}, "
+                  f"Has Image: {'Yes' if enriched_diary['representative_image'] else 'No'}")
+
+        except AiwriteModel.DoesNotExist:
+            print(f"AiwriteModel not found for unique_diary_id: {unique_diary_id}")
+            continue
 
     context = {
         'form': form,
         'diary_list': enriched_diary_list,
-        'page_obj': page_obj,  # 템플릿에서 사용하는 이름으로 변경
+        'page_obj': page_obj,
     }
-
+    end = time.time()
+    print(f"{end-start}")
     return render(request, 'diaryapp/list_diary.html', context)
 
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
-# @login_required
+def filter_user_diaries(diary_list, year=None, month=None):
+    filtered_list = diary_list
+    if year:
+        filtered_list = [d for d in filtered_list if d['created_at'].year == year]
+    if month:
+        filtered_list = [d for d in filtered_list if d['created_at'].month == month]
+    return filtered_list
+
+
 def list_user_diary(request):
-    # user = request.user
-    user_email = settings.DEFAULT_FROM_EMAIL
+    user_email = settings.DEFAULT_FROM_EMAIL  # 테스트용 이메일. 실제 환경에서는 request.user.email 사용
+
     form = DateFilterForm(request.GET or None)
     year = None
     month = None
@@ -384,12 +455,19 @@ def list_user_diary(request):
         year = form.cleaned_data['year']
         month = form.cleaned_data['month']
 
-    # 로그인한 사용자의 다이어리만 필터링
-    diary_list = filter_user_diaries(user_email, year, month)
-    print(f"Diaries returned to view: {len(diary_list)}")
+    db = get_mongodb_connection()
+    aiwritemodel_collection = db['diaryapp_aiwritemodel']
+
+    # 사용자별 일기 가져오기
+    user_diaries = list(aiwritemodel_collection.find({"user_email": user_email}).sort("created_at", -1))
+
+    # 년도와 월로 필터링
+    filtered_diaries = filter_user_diaries(user_diaries, year, month)
+
+    print(f"Diaries returned to view: {len(filtered_diaries)}")
 
     # 페이징 설정
-    paginator = Paginator(diary_list, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
+    paginator = Paginator(filtered_diaries, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
     page_number = request.GET.get('page')
 
     try:
@@ -402,42 +480,38 @@ def list_user_diary(request):
     enriched_diary_list = []
 
     for diary in page_obj:
-        print(f"Processing diary with unique_diary_id: {diary.unique_diary_id}")
+        unique_diary_id = diary.get('unique_diary_id')
+        print(f"Processing diary with unique_diary_id: {unique_diary_id}")
         try:
-            diary_model = get_object_or_404(AiwriteModel, unique_diary_id=diary.unique_diary_id, user_email=user_email)
-            if diary_model.nickname_id == '<JsonResponse status_code=500, "application/json">':
-                nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+            if diary.get('nickname_id') == '<JsonResponse status_code=500, "application/json">':
+                nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
             else:
-                nickname_id, nickname, badge_name, badge_image = get_nickname(diary_model.nickname_id)
+                nickname_id, nickname, badge_name, badge_image = get_nickname(diary.get('nickname_id', ''))
+
             enriched_diary = {
                 'diary': diary,
                 'nickname': nickname,
                 'badge_name': badge_name,
-                'badge_image': badge_image
+                'badge_image': badge_image,
+                'representative_image': diary.get('encoded_representative_image'),
             }
             enriched_diary_list.append(enriched_diary)
-        except AiwriteModel.DoesNotExist:
-            print(f"AiwriteModel not found for unique_diary_id: {diary.unique_diary_id}")
-            continue
 
-        print(f"Diary in view: {diary.diarytitle}, Created: {diary.created_at}, Has Image: {'Yes' if diary.representative_image else 'No'}")
+            print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
+                  f"Created: {diary.get('created_at', 'No date')}, "
+                  f"Has Image: {'Yes' if enriched_diary['representative_image'] else 'No'}")
+
+        except Exception as e:
+            print(f"Error processing diary {unique_diary_id}: {str(e)}")
+            continue
 
     context = {
         'form': form,
         'diary_list': enriched_diary_list,
         'page_obj': page_obj,
     }
+
     return render(request, 'diaryapp/user_list_diary.html', context)
-
-def filter_user_diaries(user_email, year=None, month=None):
-    diaries = AiwriteModel.objects.filter(user_email=user_email).order_by('-created_at')
-
-    if year:
-        diaries = diaries.filter(created_at__year=year)
-    if month:
-        diaries = diaries.filter(created_at__month=month)
-
-    return diaries
 
 '''일기 내용 확인'''
 def detail_diary_by_id(request, unique_diary_id):
@@ -564,10 +638,10 @@ def update_diary(request, unique_diary_id):
     if request.method == 'POST':
 
         # emotion 번역
+        # 수정할 필드만 업데이트
         diary.diarytitle = request.POST['diarytitle']
-        diary.place = request.POST['place']
-        diary.withfriend = request.POST['withfriend']
         diary.content = request.POST['content']
+        diary.withfriend = request.POST['withfriend']
 
         # user_email = request.user.email
         # from django.contrib.auth import authenticate, login
@@ -623,6 +697,18 @@ def delete_diary(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 
     if request.method == 'POST':
+        get_mongodb_connection()
+
+        # 연관된 일반 이미지 삭제
+        images = ImageModel.objects.filter(diary=diary)
+        for image in images:
+            db.diaryapp_imagemodel.delete_one({"image_id": image.image_id})
+
+        # 대표 이미지 삭제
+        if diary.representative_image_id:
+            db.diaryapp_imagemodel.delete_one({"id": diary.representative_image_id})
+
+        # 다이어리 삭제
         diary.delete()
         nickname_collection.delete_one({"nickname_id": diary.nickname_id})
         return redirect('list_diary')
