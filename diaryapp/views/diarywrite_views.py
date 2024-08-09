@@ -116,7 +116,7 @@ def generate_diary(request, plan_id=None):
                     'errors': {'diarytitle': ['제목의 마지막 문자로 "/"를 사용할 수 없습니다.']}
                 })
 
-            # user_email = request.user.email
+            #user_email = request.user.email
             user_email = 'neweeee@gmail.com'
 
             image = Image.open(representative_image)
@@ -289,6 +289,7 @@ def write_diary(request, plan_id=None):
                     'errors': {'diarytitle': ['제목의 마지막 문자로 "/"를 사용할 수 없습니다.']}
                 })
 
+            #user_email = request.user.email
             user_email = 'neweeee@gmail.com'
 
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"

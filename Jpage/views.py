@@ -14,7 +14,7 @@ from django.http import HttpRequest
 # db = client.MyDiary
 client = MongoClient('mongodb://localhost:27017/',
                      27017)
-db = client.diaryData
+db = client.MyDiary
 
 def jpagerender(request):
     return render(request, 'Jpage/Jpage.html')

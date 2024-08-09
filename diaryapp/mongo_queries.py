@@ -66,6 +66,7 @@ def get_plan_by_id(plan_id):
 
 def get_available_plans(request):
     try:
+        #user_email = request.user.email
         user_email = 'neweeee@gmail.com'  # 실제 환경에서는 로그인한 사용자의 이메일을 사용해야 합니다
         db = get_mongodb_connection()
         plan_collection = db['plan']

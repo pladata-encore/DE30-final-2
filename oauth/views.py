@@ -16,17 +16,19 @@ import urllib.parse
 
 logger = logging.getLogger(__name__)
 
-# MongoDB URI 생성
-username = 'Seora'
-password = 'playdata6292'
-encoded_username = urllib.parse.quote_plus(username)
-encoded_password = urllib.parse.quote_plus(password)
-mongo_uri = f"mongodb+srv://{encoded_username}:{encoded_password}@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority"
+# # MongoDB URI 생성
+# username = 'Seora'
+# password = 'playdata6292'
+# encoded_username = urllib.parse.quote_plus(username)
+# encoded_password = urllib.parse.quote_plus(password)
 
-# MongoDB 클라이언트 생성
-client = pymongo.MongoClient(mongo_uri)
-db = client['MyDiary']
-collection = db['users_usermodel']
+#MongoDB 클라이언트 설정
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+
+#컬렉션
+user_collection = db['users']
+user_model_collection = db['users_model']
+
 
 # 네이버 로그인 및 프로필 URL
 naver_login_url = "https://nid.naver.com/oauth2.0/authorize"
@@ -90,6 +92,7 @@ class NaverCallbackView(APIView):
         # 사용자 프로필 정보 요청
         headers = {"Authorization": f"Bearer {access_token}"}
         profile_response = requests.get(naver_profile_url, headers=headers)
+        print('//////', profile_response)
 
         if profile_response.status_code != 200:
             return Response({'error': 'Failed to get user profile'}, status=status.HTTP_400_BAD_REQUEST)
@@ -97,17 +100,19 @@ class NaverCallbackView(APIView):
         profile_data = profile_response.json()
         user_info = profile_data.get('response', {})
         email = user_info.get('email')
+        print('/./././../../', profile_data, user_info, email)
 
         if not email:
             return Response({'error': 'Email not found'}, status=status.HTTP_400_BAD_REQUEST)
 
         # MongoDB에서 사용자 정보 조회
-        existing_user = collection.find_one({'email': email})
+        existing_user = user_collection.find_one({'email': email})
+        existing_user_model = user_model_collection.find_one({'email': email})
 
         User = get_user_model()
 
         try:
-            if existing_user:
+            if existing_user and existing_user_model and existing_user == existing_user:
                 # MongoDB에서 사용자 데이터 가져오기
                 mongo_user_data = {
                     'username': existing_user.get('username'),
@@ -137,7 +142,7 @@ class NaverCallbackView(APIView):
                 user.isSocial = 1
                 user.save()
 
-                collection.insert_one({
+                user_collection.insert_one({
                     'email': email,
                     'username': user_info.get('name'),
                     'gender': user_info.get('gender'),
@@ -151,7 +156,6 @@ class NaverCallbackView(APIView):
             #로그 추가
             print(f"User {user.email} logged in successfully with session key: {request.session.session_key}")
             print(f"Session data: {request.session.items()}")
-
             return HttpResponseRedirect(reverse('travel:service_main'))
 
         except Exception as e:
