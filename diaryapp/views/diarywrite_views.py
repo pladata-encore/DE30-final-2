@@ -643,8 +643,6 @@ def plan_modal(request, unique_diary_id):
 '''
 user가 생기면 변경 - 로그인한 사용자를 기준으로 자신이 작성한 일기와 다른 사용자가 작성한 일기를 볼 때 화면이 다름
 '''
-
-
 def detail_diary_by_id(request, unique_diary_id):
     # user_email = request.user.email
     user_email = 'neweeee@gmail.com'
