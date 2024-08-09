@@ -19,6 +19,7 @@ from datetime import timedelta
 import sys
 import urllib.parse
 
+from pymongo import MongoClient
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_BASE_DIR = Path(__file__).resolve().parent
@@ -205,13 +206,20 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 #         'ENFORCE_SCHEMA': False,
 #         'CLIENT': {
 #             #'host': 'mongodb://127.0.0.1:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-#             'host': 'mongodb://192.168.0.25:27017/',
+#             'host': 'mongodb://adminUser:adminPassword@192.168.0.25:27017/?authSource=admin',
+#             'adminUser': os.getenv('ADMINUSER'),
+#             'adminPassword': os.getenv('ADMINPASSWORD'),
 #         }
 #     }
 # }
 # # MongoDB 클라이언트 설정
+# #mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
+# #                                    )
 # mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
-#                                    )
+#                                     username=DATABASES['default']['CLIENT']['adminUser'],
+#                                     password=DATABASES['default']['CLIENT']['adminPassword']
+#                                     )
+#
 # # mongo_client를 settings에 추가
 # MONGO_CLIENT = mongo_client
 
