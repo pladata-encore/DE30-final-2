@@ -1,5 +1,6 @@
 import os
 import openai
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from dotenv import load_dotenv
@@ -58,10 +59,21 @@ def list_comment(request, unique_diary_id):
 ''' 댓글 삭제하기
     # 로그인된 사용자와 해당 댓글 작성자가 일치할 경우에만 삭제버튼 활성화 '''
 # @login_required
+# def delete_comment(request, diary_id, comment_id):
+#     comment = get_object_or_404(CommentModel, comment_id=comment_id)
+#     # if comment.user_email != request.user.email:
+#     if comment.user_email != 'neweeee@gmail.com':
+#         raise PermissionDenied("You do not have permission to delete this comment.")
+#     comment.delete()
+#     return redirect('detail_diary_by_id', unique_diary_id=diary_id)
+
 def delete_comment(request, diary_id, comment_id):
     comment = get_object_or_404(CommentModel, comment_id=comment_id)
-    # if comment.user_email != request.user.email:
-    if comment.user_email != settings.DEFAULT_FROM_EMAIL:
-        raise PermissionDenied("You do not have permission to delete this comment.")
-    comment.delete()
+    # user_email = request.user.email
+    user_email = 'neweeee@gmail.com'
+    if comment.user_email != user_email:
+        messages.error(request, '댓글 작성자만 삭제할 수 있습니다!')
+    else:
+        comment.delete()
+        messages.success(request, '댓글이 삭제되었습니다.')
     return redirect('detail_diary_by_id', unique_diary_id=diary_id)
