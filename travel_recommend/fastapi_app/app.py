@@ -26,6 +26,7 @@ from pydantic import ValidationError
 import json
 from requests import request
 import uuid
+import django
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -45,9 +46,24 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+import sys
+# Django 프로젝트 루트 디렉토리를 sys.path에 추가
+sys.path.append(str(BASE_DIR))
+
+# 프로젝트의 루트 디렉토리 경로 설정
+PROJECT_ROOT = 'myproject.settings'
+
+# Django 설정 로드
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', PROJECT_ROOT)
+django.setup()
+
 # MongoDB 클라이언트 설정
-client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
-db = client['MyDiary']
+# client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
+# db = client['MyDiary']
+from django.conf import settings
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 
 # Komoran 및 Word2Vec 모델 로드
@@ -639,7 +655,7 @@ async def recommend_schedule(user_input: UserInput):
             'province': user_input.region,
             'city': user_input.subregion,
             'plan_title': f"{user_input.region}의 여행 일정",
-            'email': 'example@example.com',  # 이 부분은 실제 이메일로 교체해야 합니다.
+            'email': 'neweeee@gmail.com',  # 이 부분은 실제 이메일로 교체해야 합니다.
             'days': itinerary
         }
         db.plan.insert_one(plan_data)
@@ -692,4 +708,4 @@ async def startup_event():
 
 if __name__=="__main__":
     # uvicorn.run("fastapi_app.app:app", host="0.0.0.0", port=5000, reload=True)
-    uvicorn.run("app:app", host="127.0.0.1", port=5000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)

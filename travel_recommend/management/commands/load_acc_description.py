@@ -11,8 +11,11 @@ class Command(BaseCommand):
         SERVICE_KEY = "+kSWY4C1LN3XmpqW6LZw0z16ojUYmI3etiqX/R9CpsEFwxASUxdZsoXfuGoDU0BVAmdMznsWODlPn3v6bQ335Q=="
 
         # MongoDB Atlas 연결 URI
-        client = MongoClient('mongodb://127.0.0.1:27017/')
-        db = client['MyDiary']
+        # client = MongoClient('mongodb://127.0.0.1:27017/')
+        # db = client['MyDiary']
+        from django.conf import settings
+        db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+
         collection = db['accommodations']
 
         # MongoDB에서 모든 contentid 가져오기

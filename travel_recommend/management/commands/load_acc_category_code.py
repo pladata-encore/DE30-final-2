@@ -63,10 +63,12 @@ class Command(BaseCommand):
 
         # MongoDB Atlas 연결 URI
         # MongoDB 클라이언트 생성
-        client = MongoClient('mongodb://127.0.0.1:27017/')
-
+        #client = MongoClient('mongodb://127.0.0.1:27017/')
         # 데이터베이스와 컬렉션 선택
-        db = client['MyDiary']
+        #db = client['MyDiary']
+        from django.conf import settings
+        db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+
         cat1_collection = db['acc_cat1_codes']
         cat2_collection = db['acc_cat2_codes']
         cat3_collection = db['acc_cat3_codes']
