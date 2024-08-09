@@ -26,21 +26,8 @@ logger = logging.getLogger(__name__)
 import urllib.parse
 from pymongo import MongoClient
 
-# URL 인코딩할 사용자 이름과 비밀번호
-username = 'Seora'
-password = 'playdata6292'
-
-# URL 인코딩
-encoded_username = urllib.parse.quote_plus(username)
-encoded_password = urllib.parse.quote_plus(password)
-
-# # MongoDB URI 생성
-# mongo_uri = f"mongodb+srv://{encoded_username}:{encoded_password}@mydiary.727yxhm.mongodb.net/MyDiary?retryWrites=true&w=majority"
-
-# 설아 도커 연결
-client = MongoClient('mongodb://127.0.0.1:27017/', tls=True, tlsAllowInvalidCertificates=True)
-
-db = client['MyDiary']
+from django.conf import settings
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 collection = db['users_usermodel']
 
 # start-------------
@@ -57,10 +44,6 @@ class User:
 
 def get_user_from_db(email):
     try:
-        # Connect to MongoDB
-        db = client['MyDiary']
-        collection = db['users_usermodel']
-
         # Find user by username
         user_data = collection.find_one({"email": email})
         if user_data:

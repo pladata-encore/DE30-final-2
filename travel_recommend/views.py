@@ -44,7 +44,7 @@ def recommend(request):
 
             form = UserPreferencesForm(data)
             if form.is_valid():
-                response = requests.post('http://localhost:5000/recommend', json=data)
+                response = requests.post('http://127.0.0.1:5000/recommend', json=data)
                 response_data = response.json()
                 logger.info(f"Response from FastAPI: {response_data}")
 
@@ -89,9 +89,16 @@ def results(request, plan_id):
     try:
         logger.info(f"Fetching plan with plan_id: {plan_id}")
         # FastAPI 서버에서 일정 정보 가져옴
-        response = requests.get(f'http://localhost:5000/plan/{plan_id}')
+        response = requests.get(f'http://127.0.0.1:5000/plan/{plan_id}')
+        logger.info(f"^^^^^^^^^Response from FastAPI for plan_id: {response}")
         response_data = response.json()
         logger.info(f"Response from FastAPI for plan_id {plan_id}: {response_data}")
+
+        # Itinerary 데이터에서 mapx, mapy 필드가 포함되어 있는지 확인
+        for day in response_data.get('itinerary', []):
+            for recommendation in day.get('recommendations', []):
+                logger.info(f"Title: {recommendation['title']}, MapX: {recommendation.get('mapx')}, MapY: {recommendation.get('mapy')}")
+
 
 
         if response.status_code == 200:
@@ -110,18 +117,39 @@ def results(request, plan_id):
         return render(request, 'recommendations/error.html', {'message': "An error occurred while fetching itinerary"})
 
 # 추천 결과 페이지에서 보여주는 여행 장소 정보 (모달을 통해 보여주는 정보)
-def get_place_info(request):
-    contentid = request.GET.get('contentid')
-    category = request.GET.get('category')
 
-    if contentid and category:
-        place_info = db[category].find_onde({'contentid': contentid})
-        if place_info:
-            return JsonResponse(place_info, safe=False)
-        else:
-            return JsonResponse({'error': 'Place not found'}, status=404)
-    else:
-        return JsonResponse({'error': 'Invalid parameters'}, status=400)
+def get_place_details(request, contentid):
+    # MongoDB 연결 설정
+    client = MongoClient('mongodb://127.0.0.1:27017/')
+    db = client['MyDiary']
+
+    collections = [
+        db.accommodations,
+        db.areaBaseList12,
+        db.areaBaseList14,
+        db.areaBaseList28,
+        db.areaBaseList38,
+        db.areaBaseList39
+    ]
+
+    place_details = None
+    for collection in collections:
+        place_details = collection.find_one({"contentid": contentid})
+        if place_details:
+            break
+
+    if not place_details:
+        return JsonResponse({'error': 'Place not found'}, status=404)
+
+    response_data = {
+        "title": place_details.get("title"),
+        "addr1": place_details.get("addr1"),
+        "addr2": place_details.get("addr2"),
+        "firstimage": place_details.get("firstimage"),
+        "overview": place_details.get("overview")
+    }
+
+    return JsonResponse(response_data)
 
 
 

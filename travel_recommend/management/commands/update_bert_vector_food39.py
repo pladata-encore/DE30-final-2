@@ -5,8 +5,8 @@ from tqdm import tqdm
 import ast
 
 # MongoDB 연결 설정 (로컬 MongoDB 사용)
-client = MongoClient('mongodb://localhost:27017/')
-db = client['MyDiary']
+# client = MongoClient('mongodb://localhost:27017/')
+# db = client['MyDiary']
 
 # CSV 파일 읽기
 df = pd.read_csv('bert_embeddings_food.csv')

@@ -64,10 +64,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', PROJECT_ROOT)
 django.setup()
 
 # MongoDB 클라이언트 설정
-# client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
-# db = client['MyDiary']
-from django.conf import settings
-db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
+db = client['MyDiary']
+# from django.conf import settings
+# db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 
 # Komoran 및 Word2Vec 모델 로드
@@ -99,6 +99,9 @@ class UserInput(BaseModel):
 
 class Recommendation(BaseModel):
     title: str
+    mapx: float
+    mapy: float
+    contentid: str
 
 class DayPlan(BaseModel):
     date: str
@@ -651,6 +654,7 @@ async def recommend_schedule(user_input: UserInput):
                 'date': (start_date + timedelta(days=day)).strftime('%Y-%m-%d'),
                 'recommendations': transform_object_id(daily_recommendations)
             })
+            logger.info(f"***************Daily Recommendations: {daily_recommendations}")
 
         # MongoDB에 일정 저장
         plan_id = str(uuid.uuid4())
@@ -689,7 +693,12 @@ async def get_plan(plan_id: str):
         for day in plan_data["days"]:
             day_plan = DayPlan(
                 date=day["date"],
-                recommendations=[Recommendation(title=rec["title"]) for rec in day["recommendations"]]
+                recommendations=[Recommendation(
+                    title=rec["title"],
+                    mapx=rec.get("mapx"),
+                    mapy=rec.get("mapy"),
+                    contentid=rec.get("contentid")
+                ) for rec in day["recommendations"]]
             )
             itinerary.append(day_plan)
 

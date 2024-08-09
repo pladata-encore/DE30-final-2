@@ -9,8 +9,10 @@ base_url = "http://apis.data.go.kr/B551011/KorService1/"
 key = "자신의 키를 입력하세요"
 
 # MongoDB 연결 설정
-client = MongoClient('mongodb://127.0.0.1:27017/')
-db = client.MyDiary
+# client = MongoClient('mongodb://127.0.0.1:27017/')
+# db = client.MyDiary
+from django.conf import settings
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 
 # 공통 함수: API 요청 보내기
