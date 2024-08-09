@@ -48,8 +48,10 @@ class Command(BaseCommand):
 
     def update_reviews_with_sentiment_scores(self, knusl):
         logging.info('Connecting to MongoDB...')
-        client = MongoClient('mongodb://127.0.0.1:27017/')
-        db = client['MyDiary']
+        # client = MongoClient('mongodb://127.0.0.1:27017/')
+        # db = client['MyDiary']
+        from django.conf import settings
+        db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
         # 카테고리와 컬렉션 매핑
         categories = ['accommodations', 'areaBaseList14', 'areaBaseList39']
