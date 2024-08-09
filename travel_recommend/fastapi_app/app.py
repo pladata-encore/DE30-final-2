@@ -707,45 +707,6 @@ async def get_plan(plan_id: str):
         logger.error(f"Error fetching plan: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/place/{contentid}", response_model=Dict[str, Any])
-async def get_place_details(contentid: str):
-    try:
-        logger.info(f"Fetching place details for contentid: {contentid}")
-
-        collections = [
-            db.accommodations,
-            db.areaBaseList12,
-            db.areaBaseList14,
-            db.areaBaseList28,
-            db.areaBaseList38,
-            db.areaBaseList39
-        ]
-        # 각 컬렉션에서 contentid 조회
-        place_details = None
-        for collection in collections:
-            logger.info(f"Searching in collection: {collection.name}")
-            place_details = collection.find_one({"contentid": contentid})
-            if place_details:
-                logger.info(f"Found place details in collection: {collection.name}")
-                break # 해당 contentid를 찾으면 더 이상 조회하지 않음
-        if not place_details:
-            logger.warning(f"Place not found for contentid: {contentid}")
-            raise HTTPException(status_code=404, detail="Place Not Found")
-
-        logger.info(f"Returning place details for contentid: {contentid}")
-
-        # 필요한 필드만 반환하기
-        return {
-            "title": place_details.get("title"),
-            "addr1": place_details.get("addr1"),
-            "addr2": place_details.get("addr2"),
-            "firstimage": place_details.get("firstimage"),
-            "overview": place_details.get("overview")
-        }
-    except Exception as e:
-        logger.error(f"Error fetching place details: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Travel Recommendation API!"}

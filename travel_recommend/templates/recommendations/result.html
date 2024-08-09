@@ -188,7 +188,7 @@
 
                 function loadPlaceDetails(contentid) {
                     // FastAPI 서버에서 장소 정보 가져오기
-                    fetch(`/place/${contentid}`)
+                    fetch(`/get_place_details/${contentid}/`)
                         .then(response => response.json())
                         .then(data => {
                             // 모달에 띄울 데이터 설정

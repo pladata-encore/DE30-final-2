@@ -204,7 +204,7 @@ DATABASES = {
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
             #'host': 'mongodb://127.0.0.1:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-            'host': 'mongodb://192.168.0.25:27017/',
+            'host': 'mongodb://127.0.0.1:27017/',
         }
     }
 }

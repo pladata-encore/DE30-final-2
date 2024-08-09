@@ -117,18 +117,39 @@ def results(request, plan_id):
         return render(request, 'recommendations/error.html', {'message': "An error occurred while fetching itinerary"})
 
 # 추천 결과 페이지에서 보여주는 여행 장소 정보 (모달을 통해 보여주는 정보)
-def get_place_info(request):
-    contentid = request.GET.get('contentid')
-    category = request.GET.get('category')
 
-    if contentid and category:
-        place_info = db[category].find_onde({'contentid': contentid})
-        if place_info:
-            return JsonResponse(place_info, safe=False)
-        else:
-            return JsonResponse({'error': 'Place not found'}, status=404)
-    else:
-        return JsonResponse({'error': 'Invalid parameters'}, status=400)
+def get_place_details(request, contentid):
+    # MongoDB 연결 설정
+    client = MongoClient('mongodb://127.0.0.1:27017/')
+    db = client['MyDiary']
+
+    collections = [
+        db.accommodations,
+        db.areaBaseList12,
+        db.areaBaseList14,
+        db.areaBaseList28,
+        db.areaBaseList38,
+        db.areaBaseList39
+    ]
+
+    place_details = None
+    for collection in collections:
+        place_details = collection.find_one({"contentid": contentid})
+        if place_details:
+            break
+
+    if not place_details:
+        return JsonResponse({'error': 'Place not found'}, status=404)
+
+    response_data = {
+        "title": place_details.get("title"),
+        "addr1": place_details.get("addr1"),
+        "addr2": place_details.get("addr2"),
+        "firstimage": place_details.get("firstimage"),
+        "overview": place_details.get("overview")
+    }
+
+    return JsonResponse(response_data)
 
 
 
