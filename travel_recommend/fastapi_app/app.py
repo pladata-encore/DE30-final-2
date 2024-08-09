@@ -3,7 +3,7 @@ import ast
 import bson
 import pymongo
 import uvicorn
-from fastapi import FastAPI, HTTPException, Request, Form, Depends, Response
+from fastapi import FastAPI, HTTPException, Request, Form, Depends, Response, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
@@ -28,6 +28,7 @@ from requests import request
 import uuid
 import django
 
+
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -51,6 +52,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 import sys
 # Django 프로젝트 루트 디렉토리를 sys.path에 추가
 sys.path.append(str(BASE_DIR))
+
+# nickname api
+from diaryapp.fastapi_app.nickname_app import generate_nickname
 
 # 프로젝트의 루트 디렉토리 경로 설정
 PROJECT_ROOT = 'myproject.settings'
@@ -705,6 +709,10 @@ def test():
 @app.on_event("startup")
 async def startup_event():
     logger.info("FastAPI 서버가 시작되었습니다")
+
+@app.get("/generate-nickname/")
+async def nickname_app(plan_id: str = Query(...), content: str = Query(...)):
+    return await generate_nickname(plan_id=plan_id, content=content)
 
 if __name__=="__main__":
     # uvicorn.run("fastapi_app.app:app", host="0.0.0.0", port=5000, reload=True)
