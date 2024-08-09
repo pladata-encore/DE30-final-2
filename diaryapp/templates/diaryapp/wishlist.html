@@ -14,7 +14,7 @@
                         {% endfor %}
                     </ul>
                     <small>추가된 날짜: {{ item.added_at|date:"Y년 n월 j일 H:i" }}&nbsp;&nbsp;</small>
-                    <a href="{% url 'remove_wish' place=item.place %}" class="btn-sdiary-action">삭제</a>
+                    <a href="{% url 'remove_wish' plan_id=item.plan_id %}" class="btn-sdiary-action">삭제</a>
                 </li>
             {% empty %}
                 <li>찜 목록이 비어 있습니다.</li>

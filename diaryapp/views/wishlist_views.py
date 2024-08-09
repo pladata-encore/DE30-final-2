@@ -16,10 +16,16 @@ logger = logging.getLogger(__name__)
 def add_wish(request):
     try:
         plan_id = request.POST.get('plan_id')
-        # user_email = request.user.email
         user_email = 'dobi3@nate.com'  # 실제 환경에서는 로그인한 사용자의 이메일을 사용해야 합니다.
 
         logger.info(f"Attempting to add wish for plan_id: {plan_id}, user_email: {user_email}")
+
+        if not plan_id:
+            return JsonResponse({'status': 'error', 'message': 'plan_id is required'}, status=400)
+
+        # plan_id J랑 P구분 추가 - P는 아이디가 PK로 시작, 그외는 J로
+        # P - plan 정보 가지고 오는 것 추가
+        # J - plan 정보 가져오기
 
         # 중복 체크
         existing_wish = Wishlist.objects.filter(user_email=user_email, plan_id=plan_id).first()
@@ -50,7 +56,6 @@ def add_wish(request):
         logger.error(f"Request data: {request.POST}")
         return JsonResponse({'status': 'error', 'message': '서버 오류가 발생했습니다.'}, status=500)
 
-
 '''일정 찜 리스트'''
 def wishlist_view(request):
     # user_email = request.user.email
@@ -74,11 +79,11 @@ def wishlist_view(request):
 
 
 '''일정 삭제'''
-def remove_wish(request, place):
+def remove_wish(request, plan_id):
     # user_email = request.user.email
     user_email = 'dobi3@nate.com'  # 로그인된 사용자의 이메일 가져오기
     try:
-        wishlist_item = Wishlist.objects.get(user_email=user_email, place=place)
+        wishlist_item = Wishlist.objects.get(user_email=user_email, plan_id=plan_id)
         wishlist_item.delete()
         return redirect('wishlist_view')
     except Wishlist.DoesNotExist:
