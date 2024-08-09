@@ -200,7 +200,6 @@
 
     <script>
     $(document).ready(function() {
-        // 장소 모달
         $('.open-modal').on('click', function(e) {
             e.preventDefault();
             var uniqueDiaryId = $(this).data('unique-diary-id');
@@ -212,19 +211,42 @@
                         console.error('Error fetching plan modal content:', data.error);
                         return;
                     }
-                    var modalContent = `
-                        <section id="diary" class="planmodal plan_modal">
-                            <h2 class="screen_out">여행 다이어리 장소 모달</h2>
-                            <p><strong>여행 제목:</strong> ${data.plan_title}</p>
-                            <p><strong>장소:</strong> ${data.province} ${data.city}</p>
-                            <p><strong>여행 날짜:</strong></p>
-                            <ul>
-                                ${Object.entries(data.days).map(([day, places]) => `
-                                    <li>${day}: ${places.length > 0 ? places.join(', ') : '일정 없음'}</li>
-                                `).join('')}
-                            </ul>
-                        </section>
-                    `;
+
+                    var modalContent = '';
+                    if (data.plan_id.startsWith('PK-')) {
+                        // Jplan 형식
+                        modalContent = `
+                            <section id="diary" class="planmodal plan_modal">
+                                <h2 class="screen_out">여행 다이어리 장소 모달</h2>
+                                <p><strong>여행 제목:</strong> ${data.plan_title}</p>
+                                <p><strong>장소:</strong> ${data.province} ${data.city}</p>
+                                <p><strong>여행 날짜:</strong></p>
+                                <ul>
+                                    ${Object.entries(data.days).map(([day, places]) => `
+                                        <li>${day}: ${places.length > 0 ? places.join(', ') : '일정 없음'}</li>
+                                    `).join('')}
+                                </ul>
+                            </section>
+                        `;
+                    } else {
+                        // Pplan 형식
+                        modalContent = `
+                            <section id="diary" class="planmodal plan_modal">
+                                <h2 class="screen_out">여행 다이어리 장소 모달</h2>
+                                <p><strong>여행 제목:</strong> ${data.plan_title}</p>
+                                <p><strong>장소:</strong> ${data.province} ${data.city}</p>
+                                <p><strong>여행 날짜:</strong></p>
+                                <ul>
+                                    ${data.days.map(day => `
+                                        <li>${day.date}:
+                                            ${day.recommendations.map(rec => rec.title).join(', ')}
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </section>
+                        `;
+                    }
+
                     $('#planModal .modal-body').html(modalContent);
                     $('#wishlistBtn').data('province', data.province);
                     $('#wishlistBtn').data('city', data.city);
@@ -236,6 +258,9 @@
                 }
             });
         });
+
+        // ... (나머지 코드는 그대로 유지)
+    });
 
         // 찜하기 버튼 클릭 이벤트
         $('#wishlistBtn').on('click', function() {
