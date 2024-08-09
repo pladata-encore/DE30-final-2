@@ -65,7 +65,7 @@ running wsl-bootstrap: exit status 1
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100px;
+            height: 50px;
             background: #fff;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -93,6 +93,7 @@ running wsl-bootstrap: exit status 1
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 20px;
+            color: #e997a1;
         }
         .progress-bar {
             height: 100%;
@@ -205,6 +206,7 @@ running wsl-bootstrap: exit status 1
                         <div class="form-group">
                             <h2>3. 선호하는 음식 선택</h2>
                             <label>선호하는 음식을 모두 선택하세요</label>
+                            <button type="button" class="btn btn-secondary select-all-btn">전체 선택</button>
                             <div class="food-category">
                                 <h3>한식</h3>
                                 <div class="card-deck">
@@ -430,6 +432,7 @@ running wsl-bootstrap: exit status 1
                         <div class="form-group">
                             <h2>4. 선호하는 활동 선택</h2>
                             <label>여행 시 선호 하는 활동을 모두 선택하세요</label>
+                            <button type="button" class="btn btn-secondary select-all-btn">전체 선택</button>
                             <div class="card-deck">
                                 <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자연 명소')">
                                     <div class="card-body">
@@ -737,6 +740,7 @@ running wsl-bootstrap: exit status 1
                         <div class="form-group">
                             <h2>5. 선호하는 숙박 형태 선택</h2>
                             <label>선호하는 숙박 형태를 선택하세요</label>
+                            <button type="button" class="btn btn-secondary select-all-btn">전체 선택</button>
                             <div>
                                 <div class="card-deck">
                                     <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '호텔')">
@@ -834,187 +838,186 @@ running wsl-bootstrap: exit status 1
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
     <script>
-        $(function() {
-            // Datepicker 초기화 및 이벤트 설정
-            function setupDatepickers() {
-                $('#start_date, #end_date').datepicker({
-                    format: "yyyy-mm-dd",
-                    startDate: '-10d',
-                    endDate: '+10d',
-                    autoclose: true,
-                    calendarWeeks: false,
-                    clearBtn: true,
-                    daysOfWeekDisabled: [0],
-                    daysOfWeekHighlighted: [3],
-                    disableTouchKeyboard: false,
-                    immediateUpdates: false,
-                    multidate: false,
-                    templates: {
-                        leftArrow: "&laquo;",
-                        rightArrow: "&raquo;"
-                    },
-                    showWeekDays: true,
-                    title: "여행 일정 선택 캘린더",
-                    todayHighlight: true,
-                    toggleActive: true,
-                    weekStart: 0,
-                    language: "ko"
-                }).on('changeDate', function(e) {
-                    if (this.id === 'start_date') {
-                        var minDate = new Date(e.date.valueOf());
-                        $('#end_date').datepicker('setStartDate', minDate);
-                    } else if (this.id === 'end_date') {
-                        var maxDate = new Date(e.date.valueOf());
-                        $('#start_date').datepicker('setEndDate', maxDate);
-                    }
-                    checkDates();
-                });
-            }
-
-            setupDatepickers();
-
-            function checkDates() {
-                var startDate = $('#start_date').val();
-                var endDate = $('#end_date').val();
-                if (startDate && endDate) {
-                    var start = new Date(startDate);
-                    var end = new Date(endDate);
-                    var days = (end - start) / (1000*60*60*24);
-                    $('#confirmation-text').text(`${startDate} ~ ${endDate}, ${days}박 ${days + 1}일간의 여행 일정 생성이 맞나요?`);
-                    $('#date-confirmation').show();
+    $(function() {
+        // Datepicker 초기화 및 이벤트 설정
+        function setupDatepickers() {
+            $('#start_date, #end_date').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: '-10d',
+                endDate: '+10d',
+                autoclose: true,
+                calendarWeeks: false,
+                clearBtn: true,
+                daysOfWeekDisabled: [0],
+                daysOfWeekHighlighted: [3],
+                disableTouchKeyboard: false,
+                immediateUpdates: false,
+                multidate: false,
+                templates: {
+                    leftArrow: "&laquo;",
+                    rightArrow: "&raquo;"
+                },
+                showWeekDays: true,
+                title: "여행 일정 선택 캘린더",
+                todayHighlight: true,
+                toggleActive: true,
+                weekStart: 0,
+                language: "ko"
+            }).on('changeDate', function(e) {
+                if (this.id === 'start_date') {
+                    var minDate = new Date(e.date.valueOf());
+                    $('#end_date').datepicker('setStartDate', minDate);
+                } else if (this.id === 'end_date') {
+                    var maxDate = new Date(e.date.valueOf());
+                    $('#start_date').datepicker('setEndDate', maxDate);
                 }
-            }
-
-            var dateConfirmed = false;
-
-            $('#confirm-dates').click(function () {
-                dateConfirmed = true;
-                $('#date-confirmation').hide();
-                $('#nextBtn').prop('disabled', false);
+                checkDates();
             });
+        }
 
-            $('#reject-dates').click(function () {
-                dateConfirmed = false;
-                $('#date-confirmation').hide();
-                $('#nextBtn').prop('disabled', true);
-            });
+        setupDatepickers();
 
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
+        function checkDates() {
+            var startDate = $('#start_date').val();
+            var endDate = $('#end_date').val();
+            if (startDate && endDate) {
+                var start = new Date(startDate);
+                var end = new Date(endDate);
+                var days = (end - start) / (1000 * 60 * 60 * 24);
+                $('#confirmation-text').text(`${startDate} ~ ${endDate}, ${days}박 ${days + 1}일간의 여행 일정 생성이 맞나요?`);
+                $('#date-confirmation').show();
             }
+        }
 
-            var csrftoken = getCookie('csrftoken');
+        var dateConfirmed = false;
 
-            function csrfSafeMethod(method) {
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-            }
+        $('#confirm-dates').click(function() {
+            dateConfirmed = true;
+            $('#date-confirmation').hide();
+            $('#nextBtn').prop('disabled', false);
+        });
 
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        $('#reject-dates').click(function() {
+            dateConfirmed = false;
+            $('#date-confirmation').hide();
+            $('#nextBtn').prop('disabled', true);
+        });
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
                 }
-            });
+            }
+            return cookieValue;
+        }
 
-            $('#carouselExampleControls').on('slid.bs.carousel', function () {
-                var totalItems = $('.carousel-item').length;
-                var currentIndex = $('div.active').index() + 1;
-                var progress = (currentIndex / totalItems) * 100;
-                $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).text(currentIndex + ' / ' + totalItems);
-                if (currentIndex === totalItems) {
-                    $('#recommend-btn').show();
-                } else {
-                    $('#recommend-btn').hide();
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
                 }
-                // 첫 번째 슬라이드에서는 이전 버튼을 숨기고, 나머지 슬라이드에서는 이전 버튼을 표시
-                if (currentIndex === 1) {
-                    $('#prevBtn').hide();
-                } else {
-                    $('#prevBtn').show();
-                }
-                $('#food-detail-input').toggle(currentIndex === 2);
-                $('#activity-detail-input').toggle(currentIndex === 3);
-                $('#accommodation-detail-input').toggle(currentIndex === 4);
-                $('#nextBtn').toggle(currentIndex !== totalItems);
-            });
+            }
+        });
 
-            $('.close').on('click', function() {
-                $('#validationModal').hide();
-            });
+        $('#carouselExampleControls').on('slid.bs.carousel', function() {
+            var totalItems = $('.carousel-item').length;
+            var currentIndex = $('div.active').index() + 1;
+            var progress = (currentIndex / totalItems) * 100;
+            $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).text(currentIndex + ' / ' + totalItems);
+            if (currentIndex === totalItems) {
+                $('#recommend-btn').show();
+            } else {
+                $('#recommend-btn').hide();
+            }
+            // 첫 번째 슬라이드에서는 이전 버튼을 숨기고, 나머지 슬라이드에서는 이전 버튼을 표시
+            if (currentIndex === 1) {
+                $('#prevBtn').hide();
+            } else {
+                $('#prevBtn').show();
+            }
+            $('#food-detail-input').toggle(currentIndex === 3);
+            $('#activity-detail-input').toggle(currentIndex === 4);
+            $('#accommodation-detail-input').toggle(currentIndex === 5);
+            $('#nextBtn').toggle(currentIndex !== totalItems);
+        });
 
-            $('#nextBtn').on('click', function () {
-                var currentSlideIndex = $('.carousel-item.active').index();
-                var canProceed = validateSlide(currentSlideIndex);
-                if (!canProceed) {
-                    $('#validationModal').show();
-                } else {
-                    $('#carouselExampleControls').carousel('next');
-                }
-            });
+        $('.close').on('click', function() {
+            $('#validationModal').hide();
+        });
 
-            $('#prevBtn').on('click', function () {
-                $('#carouselExampleControls').carousel('prev');
-            });
+        $('#nextBtn').on('click', function() {
+            var currentSlideIndex = $('.carousel-item.active').index();
+            var canProceed = validateSlide(currentSlideIndex);
+            if (!canProceed) {
+                $('#validationModal').show();
+            } else {
+                $('#carouselExampleControls').carousel('next');
+            }
+        });
 
-            $('#recommend-btn').on('click', function () {
-                var formData = $('#recommendation-form').serializeArray();
-                var formObj = {};
+        $('#prevBtn').on('click', function() {
+            $('#carouselExampleControls').carousel('prev');
+        });
 
-                formData.forEach(function (item) {
-                    if (formObj[item.name]) {
-                        if (Array.isArray(formObj[item.name])) {
-                            formObj[item.name].push(item.value);
-                        } else {
-                            formObj[item.name] = [formObj[item.name], item.value];
-                        }
+        $('#recommend-btn').on('click', function() {
+            var formData = $('#recommendation-form').serializeArray();
+            var formObj = {};
+
+            formData.forEach(function(item) {
+                if (formObj[item.name]) {
+                    if (Array.isArray(formObj[item.name])) {
+                        formObj[item.name].push(item.value);
                     } else {
-                        formObj[item.name] = item.value;
+                        formObj[item.name] = [formObj[item.name], item.value];
                     }
-                });
-
-                formObj['start_date'] = $('#start_date').val();
-                formObj['end_date'] = $('#end_date').val();
-
-                console.log('Form Data:', formObj); // 입력 폼 데이터 확인용 로그
-
-                $.ajax({
-                    url: $('#recommendation-form').attr('action'),
-                    method: 'POST',
-                    data: JSON.stringify(formObj),
-                    contentType: 'application/json',
-                    success: function (response) {
-                        console.log('***Response***', response); // 응답 데이터 확인
-
-                        if (response.plan_id) {
-                            window.location.href = '/travel/results/' + response.plan_id;
-                        } else {
-                            alert('추천 및 저장 중 오류가 발생했습니다');
-                        }
-                    },
-                    error: function(error) {
-                        console.error('Error:', error);
-                        alert('추천을 가져오는 중 오류가 발생했습니다');
-                    }
-                });
+                } else {
+                    formObj[item.name] = item.value;
+                }
             });
 
-            document.getElementById('region').addEventListener('change', function() {
-                var regionCode = this.value;
-                console.log('Region selected:', regionCode);
-                if (regionCode) {
-                    fetch(`/travel/ajax/load-subregions/?region=${regionCode}`)
+            formObj['start_date'] = $('#start_date').val();
+            formObj['end_date'] = $('#end_date').val();
+
+            console.log('Form Data:', formObj); // 입력 폼 데이터 확인용 로그
+
+            $.ajax({
+                url: $('#recommendation-form').attr('action'),
+                method: 'POST',
+                data: JSON.stringify(formObj),
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log('***Response***', response); // 응답 데이터 확인
+                    if (response.plan_id) {
+                        window.location.href = '/travel/results/' + response.plan_id;
+                    } else {
+                        alert('추천 및 저장 중 오류가 발생했습니다');
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    alert('추천을 가져오는 중 오류가 발생했습니다');
+                }
+            });
+        });
+
+        document.getElementById('region').addEventListener('change', function() {
+            var regionCode = this.value;
+            console.log('Region selected:', regionCode);
+            if (regionCode) {
+                fetch(`/travel/ajax/load-subregions/?region=${regionCode}`)
                     .then(response => {
                         console.log('AJAX request sent');
                         return response.json();
@@ -1032,73 +1035,93 @@ running wsl-bootstrap: exit status 1
                         console.log('Subregions loaded:', data);
                     })
                     .catch(error => console.error('Error:', error));
-                } else {
-                    console.log('No region selected');
-                }
-            });
-
-            // 슬라이드 유효성 검사 함수
-            function validateSlide(index) {
-                var isValid = true; // 초기 유효성 검사값 설정
-
-                switch (index) {
-
-                    case 0: // 여행 지역 선택 슬라이드
-                        var region = $('#region').val();
-                        var subregion = $('#subregion').val();
-                        if (region === "" || subregion === "") {
-                            isValid = false;  // 지역이나 세부지역이 선택되지 않았다면 유효하지 않음
-                        }
-                        break;
-
-                    case 1: // 날짜 선택 슬라이드
-                        if (!dateConfirmed) {
-                            isValid = false;
-                        }
-                        break;
-
-                    case 2: // 음식 취향 선택
-                    case 3: // 선호 활동 선택
-                    case 4: // 여행 취향 선택
-                        if (!checkCardSelection(index)) {
-                            isValid = false;
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-
-                return isValid;
-            }
-            // 카드 선택 검증 함수
-            function checkCardSelection(slideIndex) {
-                var selectedCards = $('.carousel-item').eq(slideIndex).find('.option-card.selected');
-                return selectedCards.length > 0; // 선택된 카드가 1개 이상인지 확인
+            } else {
+                console.log('No region selected');
             }
         });
 
-        function toggleSelection(element, field, value) {
-            $(element).toggleClass('selected');
-            if ($(element).hasClass('selected')) {
-                $('<input>')
-                    .attr('type', 'hidden')
-                    .attr('name', field)
-                    .attr('value', value)
-                    .appendTo('#recommendation-form');
-            } else {
-                $('#recommendation-form').find('input[name="' + field + '"][value="' + value + '"]').remove();
+        // 슬라이드 유효성 검사 함수
+        function validateSlide(index) {
+            var isValid = true; // 초기 유효성 검사값 설정
+            switch (index) {
+                case 0: // 여행 지역 선택 슬라이드
+                    var region = $('#region').val();
+                    var subregion = $('#subregion').val();
+                    if (region === "" || subregion === "") {
+                        isValid = false; // 지역이나 세부지역이 선택되지 않았다면 유효하지 않음
+                    }
+                    break;
+                case 1: // 날짜 선택 슬라이드
+                    if (!dateConfirmed) {
+                        isValid = false;
+                    }
+                    break;
+                case 2: // 음식 취향 선택
+                case 3: // 선호 활동 선택
+                case 4: // 여행 취향 선택
+                    if (!checkCardSelection(index)) {
+                        isValid = false;
+                    }
+                    break;
+                default:
+                    break;
             }
+            return isValid;
         }
 
-        function toggleSubCategories(categoryId) {
-            var category = document.getElementById(categoryId);
-            if (category.style.display === 'none') {
-                category.style.display = 'block';
-            } else {
-                category.style.display = 'none';
-            }
+        // 카드 선택 검증 함수
+        function checkCardSelection(slideIndex) {
+            var selectedCards = $('.carousel-item').eq(slideIndex).find('.option-card.selected');
+            return selectedCards.length > 0; // 선택된 카드가 1개 이상인지 확인
         }
-    </script>
+
+        // 전체 선택 버튼 클릭 이벤트
+        $('.select-all-btn').on('click', function() {
+            var cards = $(this).closest('.carousel-item').find('.option-card');
+            var allSelected = cards.length === cards.filter('.selected').length;
+            cards.each(function() {
+                var field = $(this).attr('onclick').match(/'([^']+)'/)[1];
+                var value = $(this).attr('onclick').match(/'([^']+)'/g)[1].replace(/'/g, '');
+                if (allSelected) {
+                    // 이미 모두 선택된 상태면 선택 취소
+                    $(this).removeClass('selected');
+                    $('#recommendation-form').find('input[name="' + field + '"][value="' + value + '"]').remove();
+                } else {
+                    // 선택되지 않은 상태면 선택
+                    if (!$(this).hasClass('selected')) {
+                        $(this).addClass('selected');
+                        $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', field)
+                            .attr('value', value)
+                            .appendTo('#recommendation-form');
+                    }
+                }
+            });
+        });
+    });
+
+    function toggleSelection(element, field, value) {
+        $(element).toggleClass('selected');
+        if ($(element).hasClass('selected')) {
+            $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', field)
+                .attr('value', value)
+                .appendTo('#recommendation-form');
+        } else {
+            $('#recommendation-form').find('input[name="' + field + '"][value="' + value + '"]').remove();
+        }
+    }
+
+    function toggleSubCategories(categoryId) {
+        var category = document.getElementById(categoryId);
+        if (category.style.display === 'none') {
+            category.style.display = 'block';
+        } else {
+            category.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>

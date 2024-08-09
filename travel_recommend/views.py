@@ -90,8 +90,15 @@ def results(request, plan_id):
         logger.info(f"Fetching plan with plan_id: {plan_id}")
         # FastAPI 서버에서 일정 정보 가져옴
         response = requests.get(f'http://127.0.0.1:5000/plan/{plan_id}')
+        logger.info(f"^^^^^^^^^Response from FastAPI for plan_id: {response}")
         response_data = response.json()
         logger.info(f"Response from FastAPI for plan_id {plan_id}: {response_data}")
+
+        # Itinerary 데이터에서 mapx, mapy 필드가 포함되어 있는지 확인
+        for day in response_data.get('itinerary', []):
+            for recommendation in day.get('recommendations', []):
+                logger.info(f"Title: {recommendation['title']}, MapX: {recommendation.get('mapx')}, MapY: {recommendation.get('mapy')}")
+
 
 
         if response.status_code == 200:

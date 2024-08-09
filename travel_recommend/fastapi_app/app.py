@@ -79,6 +79,9 @@ class UserInput(BaseModel):
 
 class Recommendation(BaseModel):
     title: str
+    mapx: float
+    mapy: float
+    contentid: str
 
 class DayPlan(BaseModel):
     date: str
@@ -631,6 +634,7 @@ async def recommend_schedule(user_input: UserInput):
                 'date': (start_date + timedelta(days=day)).strftime('%Y-%m-%d'),
                 'recommendations': transform_object_id(daily_recommendations)
             })
+            logger.info(f"***************Daily Recommendations: {daily_recommendations}")
 
         # MongoDB에 일정 저장
         plan_id = str(uuid.uuid4())
@@ -639,7 +643,7 @@ async def recommend_schedule(user_input: UserInput):
             'province': user_input.region,
             'city': user_input.subregion,
             'plan_title': f"{user_input.region}의 여행 일정",
-            'email': 'example@example.com',  # 이 부분은 실제 이메일로 교체해야 합니다.
+            'email': 'neweeee@gmail.com',  # 이 부분은 실제 이메일로 교체해야 합니다.
             'days': itinerary
         }
         db.plan.insert_one(plan_data)
@@ -669,13 +673,57 @@ async def get_plan(plan_id: str):
         for day in plan_data["days"]:
             day_plan = DayPlan(
                 date=day["date"],
-                recommendations=[Recommendation(title=rec["title"]) for rec in day["recommendations"]]
+                recommendations=[Recommendation(
+                    title=rec["title"],
+                    mapx=rec.get("mapx"),
+                    mapy=rec.get("mapy"),
+                    contentid=rec.get("contentid")
+                ) for rec in day["recommendations"]]
             )
             itinerary.append(day_plan)
 
         return {"itinerary": itinerary}
     except Exception as e:
         logger.error(f"Error fetching plan: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/place/{contentid}", response_model=Dict[str, Any])
+async def get_place_details(contentid: str):
+    try:
+        logger.info(f"Fetching place details for contentid: {contentid}")
+
+        collections = [
+            db.accommodations,
+            db.areaBaseList12,
+            db.areaBaseList14,
+            db.areaBaseList28,
+            db.areaBaseList38,
+            db.areaBaseList39
+        ]
+        # 각 컬렉션에서 contentid 조회
+        place_details = None
+        for collection in collections:
+            logger.info(f"Searching in collection: {collection.name}")
+            place_details = collection.find_one({"contentid": contentid})
+            if place_details:
+                logger.info(f"Found place details in collection: {collection.name}")
+                break # 해당 contentid를 찾으면 더 이상 조회하지 않음
+        if not place_details:
+            logger.warning(f"Place not found for contentid: {contentid}")
+            raise HTTPException(status_code=404, detail="Place Not Found")
+
+        logger.info(f"Returning place details for contentid: {contentid}")
+
+        # 필요한 필드만 반환하기
+        return {
+            "title": place_details.get("title"),
+            "addr1": place_details.get("addr1"),
+            "addr2": place_details.get("addr2"),
+            "firstimage": place_details.get("firstimage"),
+            "overview": place_details.get("overview")
+        }
+    except Exception as e:
+        logger.error(f"Error fetching place details: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
