@@ -375,6 +375,14 @@ def get_encoded_image(unique_diary_id):
 logger = logging.getLogger(__name__)
 
 '''전체 일기 리스트'''
+def filter_user_diaries(diary_list, year=None, month=None):
+    filtered_list = diary_list
+    if year:
+        filtered_list = [d for d in filtered_list if d['created_at'].year == year]
+    if month:
+        filtered_list = [d for d in filtered_list if d['created_at'].month == month]
+    return filtered_list
+
 def list_diary(request):
     start=time.time()
     form = DateFilterForm(request.GET or None)
@@ -443,18 +451,18 @@ def list_diary(request):
 
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
-def filter_user_diaries(diary_list, year=None, month=None):
-    filtered_list = diary_list
+def filter_diaries(year=None, month=None, user_email=None):
+    query = {}
+    if user_email:
+        query["user_email"] = user_email
     if year:
-        filtered_list = [d for d in filtered_list if d['created_at'].year == year]
+        query["created_at__year"] = year
     if month:
-        filtered_list = [d for d in filtered_list if d['created_at'].month == month]
-    return filtered_list
+        query["created_at__month"] = month
 
-
+    return AiwriteModel.objects.filter(**query).order_by('-created_at')
 def list_user_diary(request):
-    user_email = settings.DEFAULT_FROM_EMAIL  # 테스트용 이메일. 실제 환경에서는 request.user.email 사용
-
+    start = time.time()
     form = DateFilterForm(request.GET or None)
     year = None
     month = None
@@ -465,16 +473,16 @@ def list_user_diary(request):
     db = get_mongodb_connection()
     aiwritemodel_collection = db['diaryapp_aiwritemodel']
 
-    # 사용자별 일기 가져오기
-    user_diaries = list(aiwritemodel_collection.find({"user_email": user_email}).sort("created_at", -1))
+    # 사용자의 이메일을 가져옵니다.
+    # user_email = request.user.email
+    user_email = 'neweeee@gmail.com'
 
-    # 년도와 월로 필터링
-    filtered_diaries = filter_user_diaries(user_diaries, year, month)
-
-    print(f"Diaries returned to view: {len(filtered_diaries)}")
+    # 사용자의 이메일로 다이어리를 필터링합니다.
+    diary_list = filter_diaries(year, month, user_email)
+    print(f"Diaries returned to view: {len(diary_list)}")
 
     # 페이징 설정
-    paginator = Paginator(filtered_diaries, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
+    paginator = Paginator(diary_list, 9)
     page_number = request.GET.get('page')
 
     try:
@@ -487,29 +495,32 @@ def list_user_diary(request):
     enriched_diary_list = []
 
     for diary in page_obj:
-        unique_diary_id = diary.get('unique_diary_id')
+        unique_diary_id = diary.unique_diary_id  # 여기를 수정했습니다
         print(f"Processing diary with unique_diary_id: {unique_diary_id}")
         try:
-            if diary.get('nickname_id') == '<JsonResponse status_code=500, "application/json">':
+            if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
                 nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
             else:
-                nickname_id, nickname, badge_name, badge_image = get_nickname(diary.get('nickname_id', ''))
+                nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+
+            mongo_diary = aiwritemodel_collection.find_one(
+                {"unique_diary_id": unique_diary_id, "user_email": user_email})
 
             enriched_diary = {
                 'diary': diary,
                 'nickname': nickname,
                 'badge_name': badge_name,
                 'badge_image': badge_image,
-                'representative_image': diary.get('encoded_representative_image'),
+                'representative_image': mongo_diary.get('encoded_representative_image') if mongo_diary else None,
             }
             enriched_diary_list.append(enriched_diary)
 
-            print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
-                  f"Created: {diary.get('created_at', 'No date')}, "
+            print(f"Diary in view: {diary.diarytitle}, "  # 여기도 수정했습니다
+                  f"Created: {diary.created_at}, "  # 여기도 수정했습니다
                   f"Has Image: {'Yes' if enriched_diary['representative_image'] else 'No'}")
 
-        except Exception as e:
-            print(f"Error processing diary {unique_diary_id}: {str(e)}")
+        except AiwriteModel.DoesNotExist:
+            print(f"AiwriteModel not found for unique_diary_id: {unique_diary_id}")
             continue
 
     context = {
@@ -517,8 +528,9 @@ def list_user_diary(request):
         'diary_list': enriched_diary_list,
         'page_obj': page_obj,
     }
-
-    return render(request, 'diaryapp/user_list_diary.html', context)
+    end = time.time()
+    print(f"{end - start}")
+    return render(request, 'diaryapp/list_diary.html', context)
 
 '''일기 내용 확인'''
 def detail_diary_by_id(request, unique_diary_id):

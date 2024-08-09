@@ -193,13 +193,12 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # CSRF 토큰을 포함할 헤더 이름
 
 WSGI_APPLICATION = "myproject.wsgi.application"
 
-# MongoDB 설정
-# MONGO_URI = 'mongodb://192.168.0.25:27017/'
+
+# # MongoDB atlas
 MONGO_URI = os.getenv('MONGO_URI')
 MONGO_USERNAME = os.getenv('MONGO_USERNAME')
 MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 
-# # MongoDB atlas
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
@@ -220,6 +219,7 @@ mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
 # mongo_client를 settings에 추가
 MONGO_CLIENT = mongo_client
 
+
 # # MongoDB 도커
 # DATABASES = {
 #     'default': {
@@ -228,12 +228,12 @@ MONGO_CLIENT = mongo_client
 #         'ENFORCE_SCHEMA': False,
 #         'CLIENT': {
 #             #'host': 'mongodb://127.0.0.1:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-#             'host': 'mongodb://192.168.0.25:27017/',
+#             'host': os.getenv('MONGO_URI'),
 #         }
 #     }
 # }
 # # MongoDB 클라이언트 설정
-# client = MongoClient('mongodb://adminUser:adminPassword@localhost:27017/?authSource=admin')
+# client = MongoClient('mongodb://adminUser:adminPassword@192.168.0.25:27017/?authSource=admin')
 # adminUser = "playdata"
 # adminPassword = "playdata!!"
 # # mongo_client를 settings에 추가
