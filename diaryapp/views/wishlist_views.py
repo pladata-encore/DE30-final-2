@@ -23,6 +23,10 @@ def add_wish(request):
         if not plan_id:
             return JsonResponse({'status': 'error', 'message': 'plan_id is required'}, status=400)
 
+        # plan_id J랑 P구분 추가 - P는 아이디가 PK로 시작, 그외는 J로
+        # P - plan 정보 가지고 오는 것 추가
+        # J - plan 정보 가져오기
+
         # 중복 체크
         existing_wish = Wishlist.objects.filter(user_email=user_email, plan_id=plan_id).first()
         if existing_wish:

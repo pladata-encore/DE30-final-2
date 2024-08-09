@@ -95,6 +95,11 @@ def generate_diary(request, plan_id=None):
                 plan_id = request.session.pop('plan_id', None)
                 print(f'-------------여기가 generate post session-------------{plan_id}')
 
+            # J / P plan_id 구별
+
+            # P plan 가지고 오는 것 추가
+
+            # J plan 가지고 오기
             plan = get_plan_by_id(plan_id)
             if not plan:
                 return JsonResponse({'success': False, 'errors': 'Invalid plan_id'}, status=400)
@@ -263,6 +268,11 @@ def write_diary(request, plan_id=None):
                 plan_id = request.session.pop('plan_id', None)
                 print(f'-------------여기가 write post session-------------{plan_id}')
 
+            # J / P plan_id 구별
+
+            # P plan 가지고 오는 것 추가
+
+            # J plan 가지고 오기
             plan = get_plan_by_id(plan_id)
             if not plan:
                 return JsonResponse({'success': False, 'errors': 'Invalid plan_id'}, status=400)
@@ -571,7 +581,9 @@ def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     plan_id = diary.plan_id
 
-    # plan 정보 가져오기
+    # plan_id J랑 P구분 추가 - P는 아이디가 PK로 시작, 그외는 J로
+    # P - plan 정보 가지고 오는 것 추가
+    # J - plan 정보 가져오기
     plan = get_plan_by_id(plan_id) if plan_id else None
 
     if plan:
@@ -589,6 +601,7 @@ def plan_modal(request, unique_diary_id):
         'plan_title': plan_title,
         'days': days,
     }
+
     return JsonResponse(context)
 
 '''
