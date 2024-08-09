@@ -95,16 +95,12 @@ def generate_diary(request, plan_id=None):
                 plan_id = request.session.pop('plan_id', None)
                 print(f'-------------여기가 generate post session-------------{plan_id}')
 
-            # J / P plan_id 구별
-
-            # P plan 가지고 오는 것 추가
-
-            # J plan 가지고 오기
             plan = get_plan_by_id(plan_id)
             if not plan:
                 return JsonResponse({'success': False, 'errors': 'Invalid plan_id'}, status=400)
 
             place = f"{plan.get('province', '')} {plan.get('city', '')}".strip() if plan else "Unknown location"
+
             diarytitle = form.cleaned_data['diarytitle']
             emotion = form.cleaned_data['emotion']
             withfriend = form.cleaned_data['withfriend']
@@ -634,7 +630,7 @@ def plan_modal(request, unique_diary_id):
                 ]
             }
     else:
-        context =  {'plan_type': 'none', 'plan_id': None}
+        context = {'plan_type': 'none', 'plan_id': None}
 
     return JsonResponse(context)
 
