@@ -19,6 +19,7 @@ from datetime import timedelta
 import sys
 import urllib.parse
 
+from pymongo import MongoClient
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_BASE_DIR = Path(__file__).resolve().parent
@@ -198,7 +199,7 @@ MONGO_URI = os.getenv('MONGO_URI')
 MONGO_USERNAME = os.getenv('MONGO_USERNAME')
 MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 
-# # MongoDB atlas
+# MongoDB atlas
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
@@ -219,8 +220,6 @@ mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
 # mongo_client를 settings에 추가
 MONGO_CLIENT = mongo_client
 
-#
-
 # # MongoDB 도커
 # DATABASES = {
 #     'default': {
@@ -234,11 +233,12 @@ MONGO_CLIENT = mongo_client
 #     }
 # }
 # # MongoDB 클라이언트 설정
-# mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
-#                                    )
+# client = MongoClient('mongodb://adminUser:adminPassword@localhost:27017/?authSource=admin')
+# adminUser = "playdata"
+# adminPassword = "playdata!!"
 # # mongo_client를 settings에 추가
-# MONGO_CLIENT = mongo_client
-#
+# MONGO_CLIENT = client
+
 
 
 # # MongoDB atlas
