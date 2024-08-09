@@ -54,6 +54,7 @@ def list_comment(request, unique_diary_id):
         comment.badge_image = badge_image
 
     return render(request, 'diaryapp/detail_diary.html', {'comment_list': comment_list})
+
 ''' 댓글 삭제하기
     # 로그인된 사용자와 해당 댓글 작성자가 일치할 경우에만 삭제버튼 활성화 '''
 # @login_required

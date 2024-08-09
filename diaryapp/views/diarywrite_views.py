@@ -577,30 +577,64 @@ def detail_diary_by_id(request, unique_diary_id):
     return render(request, 'diaryapp/detail_diary.html', context)
 
 '''다이어리 여행일정 모달 창'''
+# def plan_modal(request, unique_diary_id):
+#     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+#     plan_id = diary.plan_id
+#
+#     # plan_id J랑 P구분 추가 - P는 아이디가 PK로 시작, 그외는 J로
+#     # P - plan 정보 가지고 오는 것 추가
+#     # P - plan 정보 처리
+#     plan = get_plan_by_id(plan_id) if plan_id else None
+#
+#     if plan:
+#         province = plan.get('province', '')
+#         city = plan.get('city', '')
+#         plan_title = plan.get('plan_title', '')
+#         days = plan.get('days', {})
+#     else:
+#         province = city = plan_title = ''
+#         days = {}
+#
+#     context = {
+#         'province': province,
+#         'city': city,
+#         'plan_title': plan_title,
+#         'days': days,
+#     }
+#
+#     return JsonResponse(context)
+
 def plan_modal(request, unique_diary_id):
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     plan_id = diary.plan_id
 
-    # plan_id J랑 P구분 추가 - P는 아이디가 PK로 시작, 그외는 J로
-    # P - plan 정보 가지고 오는 것 추가
-    # J - plan 정보 가져오기
     plan = get_plan_by_id(plan_id) if plan_id else None
 
     if plan:
-        province = plan.get('province', '')
-        city = plan.get('city', '')
-        plan_title = plan.get('plan_title', '')
-        days = plan.get('days', {})
+        if plan_id.startswith("PK"):  # Jplan
+            context = {
+                'plan_type': 'Jplan',
+                'plan_id': plan_id,
+                'province': plan.get('province', ''),
+                'city': plan.get('city', ''),
+                'plan_title': plan.get('plan_title', ''),
+                'days': plan.get('days', {})
+            }
+        else:  # Pplan
+            context = {
+                'plan_type': 'Pplan',
+                'plan_id': plan_id,
+                'plan_title': plan.get('plan_title', ''),
+                'city': plan.get('city', ''),
+                'days': [
+                    {
+                        'date': day.get('date', ''),
+                        'titles': [rec.get('title', '') for rec in day.get('recommendations', [])]
+                    } for day in plan.get('days', [])
+                ]
+            }
     else:
-        province = city = plan_title = ''
-        days = {}
-
-    context = {
-        'province': province,
-        'city': city,
-        'plan_title': plan_title,
-        'days': days,
-    }
+        context =  {'plan_type': 'none', 'plan_id': None}
 
     return JsonResponse(context)
 

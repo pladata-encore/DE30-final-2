@@ -193,7 +193,7 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # CSRF 토큰을 포함할 헤더 이름
 WSGI_APPLICATION = "myproject.wsgi.application"
 
 # MongoDB 설정
-#MONGO_URI = 'mongodb://192.168.0.25:27017/'
+# MONGO_URI = 'mongodb://192.168.0.25:27017/'
 MONGO_URI = os.getenv('MONGO_URI')
 MONGO_USERNAME = os.getenv('MONGO_USERNAME')
 MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
@@ -238,7 +238,7 @@ MONGO_CLIENT = mongo_client
 #                                    )
 # # mongo_client를 settings에 추가
 # MONGO_CLIENT = mongo_client
-
+#
 
 
 # # MongoDB atlas
