@@ -66,7 +66,7 @@ def viewDiary(request, user_email=None):
 
     try:
         #diaries = user_diaries.order_by('-created_at')[:5]
-        diaries = user_diaries.sort('created_at', 1).limit(5)
+        diaries = user_diaries.sort('created_at', -1).limit(5)
 
         for diary in diaries:
 
@@ -120,8 +120,11 @@ def viewDiary(request, user_email=None):
             'plan_id': {'$nin': plan_id_diaries}
         })
 
-        if target_plans:
-            for plan in target_plans:
+        target_plans_list = list(target_plans)
+        target_plans_list.reverse()
+
+        if target_plans_list:
+            for plan in target_plans_list:
                 plan_id = plan.get('plan_id', '')
                 plan_title = plan.get('plan_title', '')
 
