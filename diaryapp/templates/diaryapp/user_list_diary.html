@@ -34,9 +34,7 @@
                     <a href="{% url 'detail_diary_by_id' unique_diary_id=item.diary.unique_diary_id %}" class="link_card">
                         <div class="card-img">
                             {% if item.representative_image %}
-                                <img src="data:image/png;base64,{{ item.representative_image }}"
-                                     width="300"
-                                     alt="Representative Image">
+                                <img src="data:image/png;base64,{{ item.representative_image }}" alt="Representative Image" width="300">
                             {% else %}
                                 <span class="txt_noimg">No image</span>
                             {% endif %}

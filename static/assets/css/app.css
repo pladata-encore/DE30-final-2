@@ -305,8 +305,6 @@ main {
     .main_badge .txt_info{display:none}
 }
 
-
-
 /* 다이어리 작성 */
 .modal-backdrop {
     z-index: 1040 !important;

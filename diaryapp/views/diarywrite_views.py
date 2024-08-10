@@ -95,16 +95,12 @@ def generate_diary(request, plan_id=None):
                 plan_id = request.session.pop('plan_id', None)
                 print(f'-------------여기가 generate post session-------------{plan_id}')
 
-            # J / P plan_id 구별
-
-            # P plan 가지고 오는 것 추가
-
-            # J plan 가지고 오기
             plan = get_plan_by_id(plan_id)
             if not plan:
                 return JsonResponse({'success': False, 'errors': 'Invalid plan_id'}, status=400)
 
             place = f"{plan.get('province', '')} {plan.get('city', '')}".strip() if plan else "Unknown location"
+
             diarytitle = form.cleaned_data['diarytitle']
             emotion = form.cleaned_data['emotion']
             withfriend = form.cleaned_data['withfriend']
@@ -448,18 +444,19 @@ def list_diary(request):
 
 
 '''로그인한 사용자 확인 가능한 본인 일기 리스트'''
-def filter_user_diaries(diary_list, year=None, month=None):
-    filtered_list = diary_list
+def filter_user_diaries(year=None, month=None, user_email=None):
+    query = {}
+    if user_email:
+        query["user_email"] = user_email
     if year:
-        filtered_list = [d for d in filtered_list if d['created_at'].year == year]
+        query["created_at__year"] = year
     if month:
-        filtered_list = [d for d in filtered_list if d['created_at'].month == month]
-    return filtered_list
+        query["created_at__month"] = month
 
+    return AiwriteModel.objects.filter(**query).order_by('-created_at')
 
 def list_user_diary(request):
-    user_email = settings.DEFAULT_FROM_EMAIL  # 테스트용 이메일. 실제 환경에서는 request.user.email 사용
-
+    start = time.time()
     form = DateFilterForm(request.GET or None)
     year = None
     month = None
@@ -470,16 +467,16 @@ def list_user_diary(request):
     db = get_mongodb_connection()
     aiwritemodel_collection = db['diaryapp_aiwritemodel']
 
-    # 사용자별 일기 가져오기
-    user_diaries = list(aiwritemodel_collection.find({"user_email": user_email}).sort("created_at", -1))
+    # 사용자의 이메일을 가져옵니다.
+    # user_email = request.user.email
+    user_email = 'neweeee@gmail.com'
 
-    # 년도와 월로 필터링
-    filtered_diaries = filter_user_diaries(user_diaries, year, month)
-
-    print(f"Diaries returned to view: {len(filtered_diaries)}")
+    # 사용자의 이메일로 다이어리를 필터링합니다.
+    diary_list = filter_user_diaries(year, month, user_email)
+    print(f"Diaries returned to view: {len(diary_list)}")
 
     # 페이징 설정
-    paginator = Paginator(filtered_diaries, 9)  # 한 페이지에 9개의 일기를 보여줍니다 (3x3 그리드)
+    paginator = Paginator(diary_list, 9)
     page_number = request.GET.get('page')
 
     try:
@@ -492,29 +489,32 @@ def list_user_diary(request):
     enriched_diary_list = []
 
     for diary in page_obj:
-        unique_diary_id = diary.get('unique_diary_id')
+        unique_diary_id = diary.unique_diary_id  # 여기를 수정
         print(f"Processing diary with unique_diary_id: {unique_diary_id}")
         try:
-            if diary.get('nickname_id') == '<JsonResponse status_code=500, "application/json">':
+            if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
                 nickname_id, nickname, badge_name, badge_image = '', '별명이 없습니다.', '', ''
             else:
-                nickname_id, nickname, badge_name, badge_image = get_nickname(diary.get('nickname_id', ''))
+                nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+
+            mongo_diary = aiwritemodel_collection.find_one(
+                {"unique_diary_id": unique_diary_id, "user_email": user_email})
 
             enriched_diary = {
                 'diary': diary,
                 'nickname': nickname,
                 'badge_name': badge_name,
                 'badge_image': badge_image,
-                'representative_image': diary.get('encoded_representative_image'),
+                'representative_image': mongo_diary.get('encoded_representative_image') if mongo_diary else None,
             }
             enriched_diary_list.append(enriched_diary)
 
-            print(f"Diary in view: {diary.get('diarytitle', 'No title')}, "
-                  f"Created: {diary.get('created_at', 'No date')}, "
+            print(f"Diary in view: {diary.diarytitle}, "  # 여기를 수정
+                  f"Created: {diary.created_at}, "  # 여기를 수정
                   f"Has Image: {'Yes' if enriched_diary['representative_image'] else 'No'}")
 
-        except Exception as e:
-            print(f"Error processing diary {unique_diary_id}: {str(e)}")
+        except AiwriteModel.DoesNotExist:
+            print(f"AiwriteModel not found for unique_diary_id: {unique_diary_id}")
             continue
 
     context = {
@@ -522,60 +522,62 @@ def list_user_diary(request):
         'diary_list': enriched_diary_list,
         'page_obj': page_obj,
     }
+    end = time.time()
+    print(f"{end - start}")
+    return render(request, 'diaryapp/list_diary.html', context)
 
-    return render(request, 'diaryapp/user_list_diary.html', context)
 
 '''일기 내용 확인'''
-def detail_diary_by_id(request, unique_diary_id):
-    # user_email = request.user.email
-    user_email = settings.DEFAULT_FROM_EMAIL
-    diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-    form = CommentForm()
-    comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
-
-    # 각 댓글에 대한 사용자 정보 추가
-    # for comment in comment_list:
-    #     user = comment.user.first()
-    #     if user:
-    #         _, nickname, badge_name, badge_image = get_main_badge(user.email)
-    #         comment.username = user.username
-    #         comment.nickname = nickname
-    #         comment.badge_name = badge_name
-    #         comment.badge_image = badge_image
-    #     else:
-    #         comment.username = "Unknown"
-    #         comment.nickname = "Unknown"
-    #         comment.badge_name = "Unknown"
-    #         comment.badge_image = ""
-
-    for comment in comment_list:
-        _, nickname, badge_name, badge_image = get_main_badge(comment.user_email)
-        comment.nickname = nickname
-        comment.badge_name = badge_name
-        comment.badge_image = badge_image
-
-    # 디버깅을 위해 댓글 수를 출력
-    print(f"Number of comments: {comment_list.count()}")
-
-    # 별명 : db에서 가져오기
-    if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
-        nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
-    else:
-        nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
-
-    # 별명 : 세션에서 데이터 가져오기
-    show_modal = request.session.pop('show_modal', False) # 테스트 : True로 해서 테스트
-
-    context = {
-        'diary': diary,
-        'comment_list': comment_list,
-        'form': CommentForm(),
-        'show_modal': show_modal,
-        'nickname': nickname,
-        'badge_name': badge_name,
-        'badge_image': badge_image,
-    }
-    return render(request, 'diaryapp/detail_diary.html', context)
+# def detail_diary_by_id(request, unique_diary_id):
+#     # user_email = request.user.email
+#     user_email = settings.DEFAULT_FROM_EMAIL
+#     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+#     form = CommentForm()
+#     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
+#
+#     # 각 댓글에 대한 사용자 정보 추가
+#     # for comment in comment_list:
+#     #     user = comment.user.first()
+#     #     if user:
+#     #         _, nickname, badge_name, badge_image = get_main_badge(user.email)
+#     #         comment.username = user.username
+#     #         comment.nickname = nickname
+#     #         comment.badge_name = badge_name
+#     #         comment.badge_image = badge_image
+#     #     else:
+#     #         comment.username = "Unknown"
+#     #         comment.nickname = "Unknown"
+#     #         comment.badge_name = "Unknown"
+#     #         comment.badge_image = ""
+#
+#     for comment in comment_list:
+#         _, nickname, badge_name, badge_image = get_main_badge(comment.user_email)
+#         comment.nickname = nickname
+#         comment.badge_name = badge_name
+#         comment.badge_image = badge_image
+#
+#     # 디버깅을 위해 댓글 수를 출력
+#     print(f"Number of comments: {comment_list.count()}")
+#
+#     # 별명 : db에서 가져오기
+#     if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
+#         nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+#     else:
+#         nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+#
+#     # 별명 : 세션에서 데이터 가져오기
+#     show_modal = request.session.pop('show_modal', False) # 테스트 : True로 해서 테스트
+#
+#     context = {
+#         'diary': diary,
+#         'comment_list': comment_list,
+#         'form': CommentForm(),
+#         'show_modal': show_modal,
+#         'nickname': nickname,
+#         'badge_name': badge_name,
+#         'badge_image': badge_image,
+#     }
+#     return render(request, 'diaryapp/detail_diary.html', context)
 
 '''다이어리 여행일정 모달 창'''
 # def plan_modal(request, unique_diary_id):
@@ -635,49 +637,69 @@ def plan_modal(request, unique_diary_id):
                 ]
             }
     else:
-        context =  {'plan_type': 'none', 'plan_id': None}
+        context = {'plan_type': 'none', 'plan_id': None}
 
     return JsonResponse(context)
 
 '''
 user가 생기면 변경 - 로그인한 사용자를 기준으로 자신이 작성한 일기와 다른 사용자가 작성한 일기를 볼 때 화면이 다름
 '''
-# @login_required
-# def detail_diary_by_id(request, unique_diary_id):
-#     user = request.user
-#     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
-#     form = CommentForm()
-#     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
-#
-#     # 디버깅을 위해 댓글 수를 출력
-#     print(f"Number of comments: {comment_list.count()}")
-#
-#     # 별명 : db에서 가져오기
-#     if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
-#         nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
-#     else:
-#         nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
-#
-#     # 별명 : 세션에서 데이터 가져오기
-#     show_modal = request.session.pop('show_modal', True)  # 테스트 : False로 변경 예정
-#
-#     context = {
-#         'diary': diary,
-#         'comment_list': comment_list,
-#         'form': form,
-#         'show_modal': show_modal,
-#         'nickname': nickname,
-#         'badge_name': badge_name,
-#         'badge_image': badge_image,
-#     }
-#
-#     # 사용자가 자신의 일기를 보는 경우와 다른 사용자의 일기를 보는 경우 템플릿 분기
-#     if diary.writer == user:
-#         template = 'diaryapp/detail_diary.html'
-#     else:
-#         template = 'diaryapp/detail_diary_otheruser.html'
-#
-#     return render(request, template, context)
+def detail_diary_by_id(request, unique_diary_id):
+    # user_email = request.user.email
+    user_email = 'neweeee@gmail.com'
+    diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
+    form = CommentForm()
+    comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
+
+    # 각 댓글에 대한 사용자 정보 추가
+    # for comment in comment_list:
+    #     user = comment.user.first()
+    #     if user:
+    #         _, nickname, badge_name, badge_image = get_main_badge(user.email)
+    #         comment.username = user.username
+    #         comment.nickname = nickname
+    #         comment.badge_name = badge_name
+    #         comment.badge_image = badge_image
+    #     else:
+    #         comment.username = "Unknown"
+    #         comment.nickname = "Unknown"
+    #         comment.badge_name = "Unknown"
+    #         comment.badge_image = ""
+
+    for comment in comment_list:
+        _, nickname, badge_name, badge_image = get_main_badge(comment.user_email)
+        comment.nickname = nickname
+        comment.badge_name = badge_name
+        comment.badge_image = badge_image
+
+    # 디버깅을 위해 댓글 수를 출력
+    print(f"Number of comments: {comment_list.count()}")
+
+    # 별명 : db에서 가져오기
+    if diary.nickname_id == '<JsonResponse status_code=500, "application/json">':
+        nickname, badge_name, badge_image = '별명이 없습니다.', '', ''
+    else:
+        nickname_id, nickname, badge_name, badge_image = get_nickname(diary.nickname_id)
+
+    # 별명 : 세션에서 데이터 가져오기
+    show_modal = request.session.pop('show_modal', False)  # 테스트 : True로 해서 테스트
+
+    context = {
+        'diary': diary,
+        'comment_list': comment_list,
+        'form': CommentForm(),
+        'show_modal': show_modal,
+        'nickname': nickname,
+        'badge_name': badge_name,
+        'badge_image': badge_image,
+    }
+
+    # 사용자에 따라 템플릿 분기
+    if diary.user_email == user_email:
+        template = 'diaryapp/detail_diary.html'
+    else:
+        template = 'diaryapp/detail_diary_otheruser.html'
+    return render(request, template, context)
 
 '''일기 내용 업데이트'''
 # @login_required # html에서 할 수 있으면 삭제

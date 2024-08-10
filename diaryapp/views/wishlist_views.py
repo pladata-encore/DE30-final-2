@@ -52,6 +52,11 @@ logger = logging.getLogger(__name__)
 #         logger.error(f"Request data: {request.POST}")
 #         return JsonResponse({'status': 'error', 'message': '서버 오류가 발생했습니다.'}, status=500)
 
+from ..mongo_queries import get_mongodb_connection
+from bson.objectid import ObjectId
+import json
+
+
 @require_POST
 def add_wish(request):
     try:
@@ -69,27 +74,49 @@ def add_wish(request):
             logger.info(f"Wish already exists for plan_id: {plan_id}, user_email: {user_email}")
             return JsonResponse({'status': 'success', 'created': False, 'message': '이미 찜한 계획입니다.'})
 
-        # travel_dates 필드의 값을 파싱
-        travel_dates_str = request.POST.get('travel_dates', '[]')
-        travel_dates = json.loads(travel_dates_str)
+        # MongoDB 연결 및 plan 데이터 가져오기
+        db = get_mongodb_connection()
+        plan_collection = db['plan']
+        plan = plan_collection.find_one({"plan_id": plan_id})
+
+        if not plan:
+            logger.error(f"Plan not found for plan_id: {plan_id}")
+            return JsonResponse({'status': 'error', 'message': '해당 계획을 찾을 수 없습니다.'}, status=404)
+
+        # Jplan과 Pplan 구분
+        if plan_id.startswith('PK'):  # Pplan
+            wish_data = {
+                'plan_id': plan_id,
+                'province': plan.get('province', ''),
+                'city': plan.get('city', ''),
+                'days': plan.get('days', {})
+            }
+        else:  # Jplan
+            wish_data = {
+                'plan_id': plan_id,
+                'province': plan.get('province', ''),
+                'city': plan.get('city', ''),
+                'days': [
+                    {
+                        'date': day.get('date', ''),
+                        'recommendations': [{'title': rec.get('title', '')} for rec in day.get('recommendations', [])]
+                    } for day in plan.get('days', [])
+                ]
+            }
 
         # 새로운 위시리스트 항목 생성
         new_wish = Wishlist(
             user_email=user_email,
             plan_id=plan_id,
-            place=request.POST.get('place'),
-            province=request.POST.get('province'),
-            city=request.POST.get('city'),
-            travel_dates=travel_dates
+            place=wish_data['city'],
+            province=wish_data['province'],
+            city=wish_data['city'],
+            travel_dates=wish_data['days']
         )
         new_wish.save()
 
         logger.info(f"Successfully added new wish for plan_id: {plan_id}, user_email: {user_email}")
         return JsonResponse({'status': 'success', 'created': True, 'message': '성공적으로 찜 목록에 추가되었습니다.'})
-
-    except json.JSONDecodeError:
-        logger.error("Invalid JSON format for travel_dates")
-        return JsonResponse({'status': 'error', 'message': '유효하지 않은 travel_dates 형식'}, status=400)
 
     except Exception as e:
         logger.exception(f"Error in add_wish: {str(e)}")
@@ -120,12 +147,9 @@ def wishlist_view(request):
     user_email = 'dobi3@nate.com'
     wishlist_items = Wishlist.objects.filter(user_email=user_email).order_by('-added_at')
 
+    # travel_dates 필드의 내용을 로그로 출력
     for item in wishlist_items:
-        # travel_dates가 이미 리스트 형태이므로 json.loads()를 사용하지 않습니다.
-        if item.plan_id.startswith('PK'):
-            item.plan_type = 'Jplan'
-        else:
-            item.plan_type = 'Pplan'
+        print(f"Plan ID: {item.plan_id}, Travel Dates: {item.travel_dates}")
 
     paginator = Paginator(wishlist_items, 10)
     page_number = request.GET.get('page')

@@ -19,6 +19,7 @@ from datetime import timedelta
 import sys
 import urllib.parse
 
+from pymongo import MongoClient
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_BASE_DIR = Path(__file__).resolve().parent
@@ -192,50 +193,53 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # CSRF 토큰을 포함할 헤더 이름
 
 WSGI_APPLICATION = "myproject.wsgi.application"
 
-# MongoDB 설정
-MONGO_URI = 'mongodb://127.0.0.1:27017/'
-#MONGO_URI = os.getenv('ATLAS_URI')
-
-# MongoDB 도커
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
-        'ENFORCE_SCHEMA': False,
-        'CLIENT': {
-            #'host': 'mongodb://127.0.0.1:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
-            'host': 'mongodb://127.0.0.1:27017/',
-        }
-    }
-}
-# MongoDB 클라이언트 설정
-mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
-                                   )
-# mongo_client를 settings에 추가
-MONGO_CLIENT = mongo_client
 
 
-
-# # MongoDB atlas
+# # MongoDB 설정
+# MONGO_URI = 'mongodb://192.168.0.25:27017/'
+#
+# # MongoDB 도커
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'djongo',
 #         'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
 #         'ENFORCE_SCHEMA': False,
 #         'CLIENT': {
-#             'host': os.getenv('ATLAS_URI'),
-#             'username': os.getenv('ATLAS_USERNAME'),
-#             'password': os.getenv('ATLAS_PASSWORD'),
+#             #'host': 'mongodb://127.0.0.1:27017/',  # MongoDB 호스트 주소 (기본적으로는 localhost)
+#             'host': 'mongodb://192.168.0.25:27017/',
 #         }
 #     }
 # }
 # # MongoDB 클라이언트 설정
 # mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
-#                                    username=DATABASES['default']['CLIENT']['username'],
-#                                    password=DATABASES['default']['CLIENT']['password']
 #                                    )
 # # mongo_client를 settings에 추가
 # MONGO_CLIENT = mongo_client
+
+
+
+# MongoDB atlas
+MONGO_URI = os.getenv('ATLAS_URI')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'MyDiary',  # 사용할 MongoDB 데이터베이스 이름
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': os.getenv('ATLAS_URI'),
+            'username': os.getenv('ATLAS_USERNAME'),
+            'password': os.getenv('ATLAS_PASSWORD'),
+        }
+    }
+}
+# MongoDB 클라이언트 설정
+mongo_client = pymongo.MongoClient(DATABASES['default']['CLIENT']['host'],
+                                   username=DATABASES['default']['CLIENT']['username'],
+                                   password=DATABASES['default']['CLIENT']['password']
+                                   )
+# mongo_client를 settings에 추가
+MONGO_CLIENT = mongo_client
 
 
 

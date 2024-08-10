@@ -82,9 +82,7 @@
                         {{ comment.created_at|date:"Y년 n월 j일" }}
                     </div>
                     <p>{{ comment.comment }}</p>
-                    {% if request.user.email == comment.user_email %}
-                        <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
-                    {% endif %}
+                    <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}" class="btn-diary-action">댓글 삭제</a>
                     <hr>
                 {% empty %}
                     <p>댓글이 없습니다.</p>

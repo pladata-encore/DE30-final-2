@@ -6,7 +6,10 @@
     <div class="write-container">
         <h1 style="color: #636363; font-weight: bold;">찜한 여행지</h1>
 
-        <hr/>
+        <hr>
+
+
+
 
         {% for item in page_obj %}
         <div class="wishlist-item">
@@ -15,11 +18,26 @@
             </h3>
 
             <p><strong>여행 일정:</strong></p>
-            <ul>
-            {% for date in item.travel_dates %}
-                <li>{{ date }}</li>
-            {% endfor %}
-            </ul>
+
+            {% if item.plan_id|slice:":2" == "PK" %}
+                {% for day, places in item.travel_dates.items %}
+                    <p>{{ day }}:</p>
+                    <ul>
+                    {% for place in places %}
+                        <li>{{ place }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endfor %}
+            {% else %}
+                {% for day in item.travel_dates %}
+                    <p>{{ day.date }}:</p>
+                    <ul>
+                    {% for rec in day.recommendations %}
+                        <li>{{ rec.title }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endfor %}
+            {% endif %}
 
             <p>추가된 날짜: {{ item.added_at|date:"Y년 n월 j일 H:i" }}</p>
 
@@ -29,6 +47,10 @@
         {% empty %}
         <p>찜 목록이 비어 있습니다.</p>
         {% endfor %}
+
+
+
+
 
         <div class="pagination">
             <span class="step-links">
