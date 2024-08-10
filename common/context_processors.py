@@ -18,7 +18,9 @@ def get_user(request, user_email=None):
         user = user_collection.find_one({'email': user_email})
     else:
         # 로그인 사용자
-        # user = user_collection.find_one({'email': request.user.email})
+        user_email = request.session.get('userSession')
+        # print(f'-----------------context_processors----{user_email}')
+        #user = user_collection.find_one({'email': user_email})
         user = {
             'email': 'neweeee@gmail.com',
             'username': '로그인 사용자'

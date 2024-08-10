@@ -41,5 +41,5 @@ class UserRegistrationForm(forms.ModelForm):
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=150, label='사용자 이름')
+    email = forms.EmailField(max_length=150, label='사용자 이메일')
     password = forms.CharField(widget=forms.PasswordInput, label='비밀번호')

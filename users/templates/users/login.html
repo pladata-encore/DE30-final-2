@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>로그인</title>
-<!--    추가-->
     <meta name="csrf-token" content="{% csrf_token %}">
     {% load static %}
     <link rel="stylesheet" href="{% static 'users/assets/css/styles.css' %}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* CSS 스타일은 동일하게 유지합니다 */
         body {
             font-family: Arial, sans-serif;
             background-image: url("{% static 'users/assets/img/background2.jpg' %}");
@@ -97,7 +97,7 @@
                 {% csrf_token %}
                 <section class="login-input-section-wrap">
                     <div class="login-input-wrap">
-                        <input id="username" name="username" placeholder="아이디" type="text">
+                        <input id="email" name="email" placeholder="아이디" type="text">
                     </div>
                     <div class="login-input-wrap password-wrap">
                         <input id="password" name="password" placeholder="비밀번호" type="password">
@@ -121,12 +121,13 @@
             event.preventDefault(); // Prevent default form submission
 
             // Get the values of the input fields
-            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             console.log('CSRF Token:', csrfToken); // 콘솔에 CSRF 토큰 출력
+
             // Validate the input fields
-            if (!username || !password) {
+            if (!email || !password) {
                 // Display popup message
                 alert('아이디와 비밀번호를 입력해 주세요!');
                 return;
@@ -139,7 +140,7 @@
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'X-CSRFToken': csrfToken
                 },
-                body: new URLSearchParams({ username, password })
+                body: new URLSearchParams({ email, password })
             })
             .then(response => response.json())
             .then(data => {
