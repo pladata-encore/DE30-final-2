@@ -31,9 +31,11 @@
             width: 80%;
             max-height: 80vh; /* 최대 높이 설정 */
             overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         .custom-container h1 {
-            font-size: 2.5em;
-            margin-bottom: 40px;
+            font-size: 2.1em;
+            margin-bottom: 30px;
             color: #333; /* 텍스트 색상 */
             font-weight: 500;
             text-align: center;
@@ -41,6 +43,9 @@
         .custom-container p, .custom-container label, .custom-container select, .custom-container button {
             font-size: 1.2em; /* 폰트 크기 */
             color: #555; /* 텍스트 색상 */
+        }
+        .custom-container::-webkit-scrollbar {
+            display: none;
         }
         .carousel-item {
             padding: 20px;
@@ -57,31 +62,32 @@ running wsl-bootstrap: exit status 1
             text-align: center;
             margin-top: 10px;
         }
-        .option-card {
+        .custom-option-card {
             cursor: pointer;
             margin: 10px;
-            flex: 1 1 calc(25% - 20px);
+            width: 100%;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 50px;
+            min-height: 100px;
+            max-height: 200px;
             background: #fff;
             border: 1px solid #ddd;
             border-radius: 8px;
             transition: all 0.3s;
         }
-        .option-card p {
+        .custom-option-card p {
             margin: 0;
             white-space: nowrap;
         }
-        .option-card.selected {
+        .custom-option-card.selected {
             background-color: #d3f9d8;
             border-color: #28a745;
         }
-        .card-deck {
+        .custom-card-deck {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 10px;
             justify-content: center;
         }
@@ -142,14 +148,29 @@ running wsl-bootstrap: exit status 1
         }
         .food-category {
             margin-bottom: 20px;
+            text-align: right;
         }
         .food-category h3 {
+            margin-top: 20px;
             margin-bottom: 10px;
+            text-align: left;
         }
         .btn-primary, .btn-success, .btn-danger {
             border-radius: 20px;
             padding: 10px 20px;
             font-size: 16px;
+        }
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        #nextBtn{
+            margin-left: auto;
+        }
+        .select-all-btn {
+            margin-right: 20px;
         }
     </style>
 </head>
@@ -208,84 +229,84 @@ running wsl-bootstrap: exit status 1
                             <label>선호하는 음식을 모두 선택하세요</label>
                             <button type="button" class="btn btn-secondary select-all-btn">전체 선택</button>
                             <div class="food-category">
-                                <h3>한식</h3>
-                                <div class="card-deck">
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '백반')">
+                                <h3 style="font-weight: 500;">한식</h3>
+                                <div class="custom-card-deck">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '백반')">
                                         <div class="card-body">
                                             <p class="card-text">백반</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '한정식')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '한정식')">
                                         <div class="card-body">
                                             <p class="card-text">한정식</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '탕/찌개/전골')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '탕/찌개/전골')">
                                         <div class="card-body">
                                             <p class="card-text">탕/찌개/전골</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '국수/면요리')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '국수/면요리')">
                                         <div class="card-body">
                                             <p class="card-text">국수/면요리</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '분식')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '분식')">
                                         <div class="card-body">
                                             <p class="card-text">분식</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '소고기 요리')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '소고기 요리')">
                                         <div class="card-body">
                                             <p class="card-text">소고기 요리</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '돼지고기 요리')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '돼지고기 요리')">
                                         <div class="card-body">
                                             <p class="card-text">돼지고기 요리</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '닭고기 요리')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '닭고기 요리')">
                                         <div class="card-body">
                                             <p class="card-text">닭고기 요리</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '오리고기 요리')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '오리고기 요리')">
                                         <div class="card-body">
                                             <p class="card-text">오리고기 요리</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '양고기 요리')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '양고기 요리')">
                                         <div class="card-body">
                                             <p class="card-text">양고기 요리</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '곱창/막창')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '곱창/막창')">
                                         <div class="card-body">
                                             <p class="card-text">곱창/막창</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '해물찜/해물탕')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '해물찜/해물탕')">
                                         <div class="card-body">
                                             <p class="card-text">해물찜/해물탕</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '생선회')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '생선회')">
                                         <div class="card-body">
                                             <p class="card-text">생선회</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '생선구이')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '생선구이')">
                                         <div class="card-body">
                                             <p class="card-text">생선구이</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '조개구이/조개찜')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '조개구이/조개찜')">
                                         <div class="card-body">
                                             <p class="card-text">조개구이/조개찜</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '간장게장')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '간장게장')">
                                         <div class="card-body">
                                             <p class="card-text">간장게장</p>
                                         </div>
@@ -293,24 +314,24 @@ running wsl-bootstrap: exit status 1
                                 </div>
                             </div>
                             <div class="food-category">
-                                <h3>양식</h3>
-                                <div class="card-deck">
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '피자/파스타')">
+                                <h3 style="font-weight: 500;">양식</h3>
+                                <div class="custom-card-deck">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '피자/파스타')">
                                         <div class="card-body">
                                             <p class="card-text">피자/파스타</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '스테이크')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '스테이크')">
                                         <div class="card-body">
                                             <p class="card-text">스테이크</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '햄버거')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '햄버거')">
                                         <div class="card-body">
                                             <p class="card-text">햄버거</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '브런치')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '브런치')">
                                         <div class="card-body">
                                             <p class="card-text">브런치</p>
                                         </div>
@@ -318,39 +339,39 @@ running wsl-bootstrap: exit status 1
                                 </div>
                             </div>
                             <div class="food-category">
-                                <h3>중식</h3>
-                                <div class="card-deck">
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '짬뽕/짜장면')">
+                                <h3 style="font-weight: 500;">중식</h3>
+                                <div class="custom-card-deck">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '짬뽕/짜장면')">
                                         <div class="card-body">
                                             <p class="card-text">짬뽕/짜장면</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '양꼬치')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '양꼬치')">
                                         <div class="card-body">
                                             <p class="card-text">양꼬치</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '딤섬/중식만두')">
-                                        <div class="card-body">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '딤섬/중식만두')">
+                                        <div class="custom-card-body">
                                             <p class="card-text">딤섬/중식만두</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="food-category">
-                                <h3>일식</h3>
-                                <div class="card-deck">
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '초밥')">
+                                <h3 style="font-weight: 500;">일식</h3>
+                                <div class="custom-card-deck">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '초밥')">
                                         <div class="card-body">
                                             <p class="card-text">초밥</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '일본식 라면')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '일본식 라면')">
                                         <div class="card-body">
                                             <p class="card-text">일본식 라면</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '우동/소바')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '우동/소바')">
                                         <div class="card-body">
                                             <p class="card-text">우동/소바</p>
                                         </div>
@@ -358,34 +379,34 @@ running wsl-bootstrap: exit status 1
                                 </div>
                             </div>
                             <div class="food-category">
-                                <h3>기타</h3>
-                                <div class="card-deck">
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '태국 음식')">
+                                <h3 style="font-weight: 500;">기타</h3>
+                                <div class="custom-card-deck">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '태국 음식')">
                                         <div class="card-body">
                                             <p class="card-text">태국 음식</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '필리핀 음식')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '필리핀 음식')">
                                         <div class="card-body">
                                             <p class="card-text">필리핀 음식</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '그리스 음식')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '그리스 음식')">
                                         <div class="card-body">
                                             <p class="card-text">그리스 음식</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '멕시코 음식')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '멕시코 음식')">
                                         <div class="card-body">
                                             <p class="card-text">멕시코 음식</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '스페인 음식')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '스페인 음식')">
                                         <div class="card-body">
                                             <p class="card-text">스페인 음식</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '인도 음식')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '인도 음식')">
                                         <div class="card-body">
                                             <p class="card-text">인도 음식</p>
                                         </div>
@@ -393,29 +414,29 @@ running wsl-bootstrap: exit status 1
                                 </div>
                             </div>
                             <div class="food-category">
-                                <h3>음료</h3>
-                                <div class="card-deck">
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '소주')">
+                                <h3 style="font-weight: 500;">음료</h3>
+                                <div class="custom-card-deck">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '소주')">
                                         <div class="card-body">
                                             <p class="card-text">소주</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '맥주')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '맥주')">
                                         <div class="card-body">
                                             <p class="card-text">맥주</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '와인')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '와인')">
                                         <div class="card-body">
                                             <p class="card-text">와인</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '전통주')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '전통주')">
                                         <div class="card-body">
                                             <p class="card-text">전통주</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'food_preference', '칵테일')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'food_preference', '칵테일')">
                                         <div class="card-body">
                                             <p class="card-text">칵테일</p>
                                         </div>
@@ -433,298 +454,298 @@ running wsl-bootstrap: exit status 1
                             <h2>4. 선호하는 활동 선택</h2>
                             <label>여행 시 선호 하는 활동을 모두 선택하세요</label>
                             <button type="button" class="btn btn-secondary select-all-btn">전체 선택</button>
-                            <div class="card-deck">
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자연 명소')">
+                            <div class="custom-card-deck">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '자연 명소')">
                                     <div class="card-body">
                                         <p class="card-text">자연 명소</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '바닷가/해변')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '바닷가/해변')">
                                     <div class="card-body">
                                         <p class="card-text">바닷가/해변</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '공원')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '공원')">
                                     <div class="card-body">
                                         <p class="card-text">공원</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '산')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '산')">
                                     <div class="card-body">
                                         <p class="card-text">산</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '계곡/폭포')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '계곡/폭포')">
                                     <div class="card-body">
                                         <p class="card-text">계곡/폭포</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '생태관광지/휴양림')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '생태관광지/휴양림')">
                                     <div class="card-body">
                                         <p class="card-text">생태관광지/휴양림</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '고궁/성')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '고궁/성')">
                                     <div class="card-body">
                                         <p class="card-text">고궁/성</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '고택/생가')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '고택/생가')">
                                     <div class="card-body">
                                         <p class="card-text">고택/생가</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '민속마을')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '민속마을')">
                                     <div class="card-body">
                                         <p class="card-text">민속마을</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '유적지/사적지')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '유적지/사적지')">
                                     <div class="card-body">
                                         <p class="card-text">유적지/사적지</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '절/사찰')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '절/사찰')">
                                     <div class="card-body">
                                         <p class="card-text">절/사찰</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '종교성지')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '종교성지')">
                                     <div class="card-body">
                                         <p class="card-text">종교성지</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '온천/스파/찜질방')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '온천/스파/찜질방')">
                                     <div class="card-body">
                                         <p class="card-text">온천/스파/찜질방</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '테마공원')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '테마공원')">
                                     <div class="card-body">
                                         <p class="card-text">테마공원</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '유람선/잠수함')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '유람선/잠수함')">
                                     <div class="card-body">
                                         <p class="card-text">유람선/잠수함</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자연 체험')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '자연 체험')">
                                     <div class="card-body">
                                         <p class="card-text">자연 체험</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '전통 체험')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '전통 체험')">
                                     <div class="card-body">
                                         <p class="card-text">전통 체험</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '산사 체험')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '산사 체험')">
                                     <div class="card-body">
                                         <p class="card-text">산사 체험</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '이색 체험')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '이색 체험')">
                                     <div class="card-body">
                                         <p class="card-text">이색 체험</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '박물관')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '박물관')">
                                     <div class="card-body">
                                         <p class="card-text">박물관</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '기념관')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '기념관')">
                                     <div class="card-body">
                                         <p class="card-text">기념관</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '전시관')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '전시관')">
                                     <div class="card-body">
                                         <p class="card-text">전시관</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '컨벤션센터')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '컨벤션센터')">
                                     <div class="card-body">
                                         <p class="card-text">컨벤션센터</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '미술관/화랑')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '미술관/화랑')">
                                     <div class="card-body">
                                         <p class="card-text">미술관/화랑</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '도서관')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '도서관')">
                                     <div class="card-body">
                                         <p class="card-text">도서관</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '수상 레포츠')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '수상 레포츠')">
                                     <div class="card-body">
                                         <p class="card-text">수상 레포츠</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '항공 레포츠')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '항공 레포츠')">
                                     <div class="card-body">
                                         <p class="card-text">항공 레포츠</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '인라인/실내스케이트')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '실내스케이트')">
                                     <div class="card-body">
-                                        <p class="card-text">인라인/실내스케이트</p>
+                                        <p class="card-text">실내스케이트</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '자전거하이킹')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '자전거하이킹')">
                                     <div class="card-body">
                                         <p class="card-text">자전거하이킹</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '카트')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '카트')">
                                     <div class="card-body">
                                         <p class="card-text">카트</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '골프')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '골프')">
                                     <div class="card-body">
                                         <p class="card-text">골프</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '경마/경륜')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '경마/경륜')">
                                     <div class="card-body">
                                         <p class="card-text">경마/경륜</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '카지노')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '카지노')">
                                     <div class="card-body">
                                         <p class="card-text">카지노</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '승마')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '승마')">
                                     <div class="card-body">
                                         <p class="card-text">승마</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스키/스노보드')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '스키/스노보드')">
                                     <div class="card-body">
                                         <p class="card-text">스키/스노보드</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스케이트')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '스케이트')">
                                     <div class="card-body">
                                         <p class="card-text">스케이트</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '썰매장')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '썰매장')">
                                     <div class="card-body">
                                         <p class="card-text">썰매장</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '수렵/사격')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '수렵/사격')">
                                     <div class="card-body">
                                         <p class="card-text">수렵/사격</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '암벽등반')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '암벽등반')">
                                     <div class="card-body">
                                         <p class="card-text">암벽등반</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '서바이벌게임')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '서바이벌게임')">
                                     <div class="card-body">
                                         <p class="card-text">서바이벌게임</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', 'ATV/MTB')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', 'ATV/MTB')">
                                     <div class="card-body">
                                         <p class="card-text">ATV/MTB</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '번지점프')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '번지점프')">
                                     <div class="card-body">
                                         <p class="card-text">번지점프</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '트래킹')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '트래킹')">
                                     <div class="card-body">
                                         <p class="card-text">트래킹</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '윈드서핑/제트스키')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '윈드서핑/제트스키')">
                                     <div class="card-body">
                                         <p class="card-text">윈드서핑/제트스키</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '카약/카누')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '카약/카누')">
                                     <div class="card-body">
                                         <p class="card-text">카약/카누</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '요트')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '요트')">
                                     <div class="card-body">
                                         <p class="card-text">요트</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스노쿨링/스킨스쿠버다이빙')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '스킨스쿠버')">
                                     <div class="card-body">
-                                        <p class="card-text">스노쿨링/스킨스쿠버다이빙</p>
+                                        <p class="card-text">스킨스쿠버</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '낚시')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '낚시')">
                                     <div class="card-body">
                                         <p class="card-text">낚시</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '래프팅')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '래프팅')">
                                     <div class="card-body">
                                         <p class="card-text">래프팅</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '스카이다이빙')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '스카이다이빙')">
                                     <div class="card-body">
                                         <p class="card-text">스카이다이빙</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '초경량비행')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '초경량비행')">
                                     <div class="card-body">
                                         <p class="card-text">초경량비행</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '행글라이딩/패러글라이딩')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '패러글라이딩')">
                                     <div class="card-body">
-                                        <p class="card-text">행글라이딩/패러글라이딩</p>
+                                        <p class="card-text">패러글라이딩</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '5일장')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '5일장')">
                                     <div class="card-body">
                                         <p class="card-text">5일장</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '상설시장')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '상설시장')">
                                     <div class="card-body">
                                         <p class="card-text">상설시장</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '백화점')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '백화점')">
                                     <div class="card-body">
                                         <p class="card-text">백화점</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '면세점')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '면세점')">
                                     <div class="card-body">
                                         <p class="card-text">면세점</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '대형마트')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '대형마트')">
                                     <div class="card-body">
                                         <p class="card-text">대형마트</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '공예/공방')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '공예/공방')">
                                     <div class="card-body">
                                         <p class="card-text">공예/공방</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'tour_type', '특산물판매점')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'tour_type', '특산물판매점')">
                                     <div class="card-body">
                                         <p class="card-text">특산물판매점</p>
                                     </div>
@@ -742,49 +763,49 @@ running wsl-bootstrap: exit status 1
                             <label>선호하는 숙박 형태를 선택하세요</label>
                             <button type="button" class="btn btn-secondary select-all-btn">전체 선택</button>
                             <div>
-                                <div class="card-deck">
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '호텔')">
+                                <div class="custom-card-deck">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '호텔')">
                                         <div class="card-body">
                                             <p class="card-text">호텔</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '모텔')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '모텔')">
                                         <div class="card-body">
                                             <p class="card-text">모텔</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '펜션')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '펜션')">
                                         <div class="card-body">
                                             <p class="card-text">펜션</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '리조트')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '리조트')">
                                         <div class="card-body">
                                             <p class="card-text">리조트/콘도</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '서비스드레지던스')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '서비스드레지던스')">
                                         <div class="card-body">
                                             <p class="card-text">서비스드레지던스</p>
                                         </div>
                                     </div>
 
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '게스트하우스')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '게스트하우스')">
                                         <div class="card-body">
                                             <p class="card-text">게스트하우스</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '유스호스텔')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '유스호스텔')">
                                         <div class="card-body">
                                             <p class="card-text">유스호스텔</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '민박')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '민박')">
                                         <div class="card-body">
                                             <p class="card-text">민박</p>
                                         </div>
                                     </div>
-                                    <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '한옥')">
+                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '한옥')">
                                         <div class="card-body">
                                             <p class="card-text">한옥</p>
                                         </div>
@@ -801,15 +822,15 @@ running wsl-bootstrap: exit status 1
                         <div class="form-group">
                             <h2>6. 여행 취향 선택</h2>
                             <label>당신의 여행 취향을 선택하세요</label>
-                            <div class="card-deck">
-                                <div class="card option-card" onclick="toggleSelection(this, 'travel_preference', '느긋한 여행')">
+                            <div class="custom-card-deck">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'travel_preference', '느긋한 여행')">
                                     <div class="card-body">
                                         <p class="card-text">느긋한 여행</p>
                                     </div>
                                 </div>
-                                <div class="card option-card" onclick="toggleSelection(this, 'travel_preference', '바삐 돌아다니는 여행')">
+                                <div class="card custom-option-card" onclick="toggleSelection(this, 'travel_preference', '부지런한 여행')">
                                     <div class="card-body">
-                                        <p class="card-text">바삐 돌아다니는 여행</p>
+                                        <p class="card-text">부지런한 여행</p>
                                     </div>
                                 </div>
                             </div>
@@ -1071,13 +1092,13 @@ running wsl-bootstrap: exit status 1
 
         // 카드 선택 검증 함수
         function checkCardSelection(slideIndex) {
-            var selectedCards = $('.carousel-item').eq(slideIndex).find('.option-card.selected');
+            var selectedCards = $('.carousel-item').eq(slideIndex).find('.custom-option-card.selected');
             return selectedCards.length > 0; // 선택된 카드가 1개 이상인지 확인
         }
 
         // 전체 선택 버튼 클릭 이벤트
         $('.select-all-btn').on('click', function() {
-            var cards = $(this).closest('.carousel-item').find('.option-card');
+            var cards = $(this).closest('.carousel-item').find('.custom-option-card');
             var allSelected = cards.length === cards.filter('.selected').length;
             cards.each(function() {
                 var field = $(this).attr('onclick').match(/'([^']+)'/)[1];
