@@ -44,7 +44,7 @@ def recommend(request):
 
             form = UserPreferencesForm(data)
             if form.is_valid():
-                response = requests.post('http://127.0.0.1:5000/recommend', json=data)
+                response = requests.post('http://localhost:5000/recommend', json=data)
                 response_data = response.json()
                 logger.info(f"Response from FastAPI: {response_data}")
 
@@ -89,7 +89,7 @@ def results(request, plan_id):
     try:
         logger.info(f"Fetching plan with plan_id: {plan_id}")
         # FastAPI 서버에서 일정 정보 가져옴
-        response = requests.get(f'http://127.0.0.1:5000/plan/{plan_id}')
+        response = requests.get(f'http://localhost:5000/plan/{plan_id}')
         logger.info(f"^^^^^^^^^Response from FastAPI for plan_id: {response}")
         response_data = response.json()
         logger.info(f"Response from FastAPI for plan_id {plan_id}: {response_data}")
@@ -120,8 +120,10 @@ def results(request, plan_id):
 
 def get_place_details(request, contentid):
     # MongoDB 연결 설정
-    client = MongoClient('mongodb://127.0.0.1:27017/')
-    db = client['MyDiary']
+    # client = MongoClient('mongodb://127.0.0.1:27017/')
+    # db = client['MyDiary']
+    from django.conf import settings
+    db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
     collections = [
         db.accommodations,

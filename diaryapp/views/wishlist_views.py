@@ -7,6 +7,9 @@ from django.views.decorators.http import require_POST
 import logging
 from ..forms import *
 from ..models import *
+from ..mongo_queries import get_mongodb_connection
+from bson.objectid import ObjectId
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -52,16 +55,16 @@ logger = logging.getLogger(__name__)
 #         logger.error(f"Request data: {request.POST}")
 #         return JsonResponse({'status': 'error', 'message': '서버 오류가 발생했습니다.'}, status=500)
 
-from ..mongo_queries import get_mongodb_connection
-from bson.objectid import ObjectId
-import json
+
 
 
 @require_POST
 def add_wish(request):
     try:
         plan_id = request.POST.get('plan_id')
-        user_email = 'dobi3@nate.com'  # 실제 환경에서는 로그인한 사용자의 이메일을 사용해야 합니다.
+        # user_email = 'dobi3@nate.com'  # 실제 환경에서는 로그인한 사용자의 이메일을 사용해야 합니다.
+        user_email = request.session.get('userSession')
+        print(f"-------wish session-------{user_email}")
 
         logger.info(f"Attempting to add wish for plan_id: {plan_id}, user_email: {user_email}")
 
@@ -144,7 +147,9 @@ def add_wish(request):
 #     }
 #     return render(request, 'diaryapp/wishlist.html', context)
 def wishlist_view(request):
-    user_email = 'dobi3@nate.com'
+    # user_email = 'dobi3@nate.com'
+    user_email = request.session.get('userSession')
+    print(f"-------wish session-------{user_email}")
     wishlist_items = Wishlist.objects.filter(user_email=user_email).order_by('-added_at')
 
     # travel_dates 필드의 내용을 로그로 출력
@@ -168,8 +173,9 @@ def wishlist_view(request):
 
 '''일정 삭제'''
 def remove_wish(request, plan_id):
-    # user_email = request.user.email
-    user_email = 'dobi3@nate.com'  # 로그인된 사용자의 이메일 가져오기
+    # user_email = 'dobi3@nate.com'  # 로그인된 사용자의 이메일 가져오기
+    user_email = request.session.get('userSession')
+    print(f"-------wish session-------{user_email}")
     try:
         wishlist_item = Wishlist.objects.get(user_email=user_email, plan_id=plan_id)
         wishlist_item.delete()
