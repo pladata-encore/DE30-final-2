@@ -14,22 +14,16 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-#
-#     def create_superuser(self, email, password=None, **extra_fields):
-#         extra_fields.setdefault('is_staff', True)
-#         extra_fields.setdefault('is_superuser', True)
-#         return self.create_user(email, password, **extra_fields)
 
 from djongo import models
 
 class UserModel(AbstractBaseUser, PermissionsMixin, models.Model):
-    id = models.ObjectIdField(primary_key=True)
-    email = models.EmailField(max_length=100, unique=True, verbose_name='이메일', blank=False, null=False)
+    email = models.EmailField(max_length=100, unique=True, verbose_name='이메일', blank=False, null=False, primary_key=True)
     username = models.CharField(max_length=150, unique=True, verbose_name='사용자 이름', blank=False, null=False)
     gender = models.CharField(max_length=10, blank=True, verbose_name='성별')  # null=True 제거
     nickname = models.CharField(max_length=100, blank=True, verbose_name='닉네임')  # null=True 제거
     register_id = models.CharField(max_length=255, unique=True, blank=True,verbose_name='등록 ID')
-    isSocial = models.CharField(max_length=1, default='0')  # CharField로 정의
+    # isSocial = models.CharField(max_length=1, default='0')  # CharField로 정의
 
     objects = CustomUserManager()
 

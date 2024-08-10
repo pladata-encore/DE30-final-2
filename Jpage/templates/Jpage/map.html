@@ -710,6 +710,7 @@ function addMarker(day, placeName, lat, lng) {
     var markerPosition = new kakao.maps.LatLng(lat, lng);
     var marker = new kakao.maps.Marker({
         position: markerPosition,
+        title: placeName
     });
 
     marker.setMap(map);
