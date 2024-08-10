@@ -248,7 +248,7 @@ def login_view(request):
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
                 login(request, user)
                 request.session['userSession'] = user.email
-                print(f"----------------------------------------------------------{request.session['userSession']}")
+                print(f"-------------------------------------login_view---------------------{request.session['userSession']}")
 
                 response_data = {
                     'status': 'success',

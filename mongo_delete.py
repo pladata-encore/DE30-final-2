@@ -15,8 +15,13 @@ db = client['MyDiary']
 #
 from pymongo import MongoClient, ASCENDING
 #
+# # 로그인 사용자 이메일
+# user_email = request.session.get('userSession')
+# print(f'-----------------user_email_session-----mongo_delete------------{user_email}')
+#
 # # 중복 데이터 삭제
-# db.diaryapp_wishlist.delete_many({ "user_email": "neweeee@gmail.com", "plan_id": "" })
+# db.diaryapp_wishlist.delete_many({ "user_email": user_email, "plan_id": "" })
+#
 #
 # # 인덱스 삭제 및 재생성
 # db.diaryapp_wishlist.drop_index("diaryapp_wishlist_user_email_plan_id_a7813443_uniq")

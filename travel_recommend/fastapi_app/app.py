@@ -64,7 +64,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', PROJECT_ROOT)
 django.setup()
 
 # MongoDB 클라이언트 설정
-client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
+client = pymongo.MongoClient('mongodb://localhost:27017')
 db = client['MyDiary']
 # from django.conf import settings
 # db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]

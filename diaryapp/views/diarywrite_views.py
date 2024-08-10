@@ -112,8 +112,9 @@ def generate_diary(request, plan_id=None):
                     'errors': {'diarytitle': ['제목의 마지막 문자로 "/"를 사용할 수 없습니다.']}
                 })
 
-            #user_email = request.user.email
-            user_email = 'neweeee@gmail.com'
+            # 로그인 사용자 이메일
+            user_email = request.session.get('userSession')
+            print(f'-----------------user_email_session-----generate_diary------------{user_email}')
 
             image = Image.open(representative_image)
             image = image.resize((128, 128), Image.LANCZOS)
@@ -285,8 +286,9 @@ def write_diary(request, plan_id=None):
                     'errors': {'diarytitle': ['제목의 마지막 문자로 "/"를 사용할 수 없습니다.']}
                 })
 
-            #user_email = request.user.email
-            user_email = 'neweeee@gmail.com'
+            # 로그인 사용자 이메일
+            user_email = request.session.get('userSession')
+            print(f'-----------------user_email_session-----write_diary------------{user_email}')
 
             unique_diary_id = f"{timezone.now().strftime('%Y%m%d%H%M%S')}{diarytitle}"
 
@@ -467,9 +469,9 @@ def list_user_diary(request):
     db = get_mongodb_connection()
     aiwritemodel_collection = db['diaryapp_aiwritemodel']
 
-    # 사용자의 이메일을 가져옵니다.
-    # user_email = request.user.email
-    user_email = 'neweeee@gmail.com'
+    # 로그인 사용자 이메일
+    user_email = request.session.get('userSession')
+    print(f'-----------------user_email_session-----list_user_diary------------{user_email}')
 
     # 사용자의 이메일로 다이어리를 필터링합니다.
     diary_list = filter_user_diaries(year, month, user_email)
@@ -529,8 +531,9 @@ def list_user_diary(request):
 
 '''일기 내용 확인'''
 # def detail_diary_by_id(request, unique_diary_id):
-#     # user_email = request.user.email
-#     user_email = settings.DEFAULT_FROM_EMAIL
+#     # 로그인 사용자 이메일
+#     user_email = request.session.get('userSession')
+#     print(f'-----------------user_email_session-----일기 내용 확인------------{user_email}')
 #     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 #     form = CommentForm()
 #     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
@@ -645,8 +648,10 @@ def plan_modal(request, unique_diary_id):
 user가 생기면 변경 - 로그인한 사용자를 기준으로 자신이 작성한 일기와 다른 사용자가 작성한 일기를 볼 때 화면이 다름
 '''
 def detail_diary_by_id(request, unique_diary_id):
-    # user_email = request.user.email
-    user_email = 'neweeee@gmail.com'
+    # 로그인 사용자 이메일
+    user_email = request.session.get('userSession')
+    print(f'-----------------user_email_session-----detail_diary_by_id------------{user_email}')
+
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
     form = CommentForm()
     comment_list = CommentModel.objects.filter(diary_id=diary).order_by('-created_at')
@@ -778,8 +783,9 @@ def update_diary(request, unique_diary_id):
 '''일기 내용 삭제'''
 # @login_required   # html에서 할 수 있으면 삭제
 def delete_diary(request, unique_diary_id):
-    # user_email = request.user.email
-    user_email = settings.DEFAULT_FROM_EMAIL
+    # 로그인 사용자 이메일
+    user_email = request.session.get('userSession')
+    print(f'-----------------user_email_session-----delete_diary------------{user_email}')
     diary = get_object_or_404(AiwriteModel, unique_diary_id=unique_diary_id)
 
     if request.method == 'POST':
