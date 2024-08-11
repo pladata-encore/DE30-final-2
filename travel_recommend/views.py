@@ -9,7 +9,13 @@ from .forms import UserPreferencesForm
 from django.views.decorators.csrf import csrf_exempt
 import requests
 import json
+from django.contrib.auth.decorators import login_required
+from common.context_processors import get_user
 from datetime import datetime
+from django.contrib.auth import get_user_model
+from django.core.exceptions import MultipleObjectsReturned
+from django.contrib.auth.models import User
+
 
 # MongoDB 클라이언트 설정
 client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
@@ -120,10 +126,10 @@ def results(request, plan_id):
 
 def get_place_details(request, contentid):
     # MongoDB 연결 설정
-    # client = MongoClient('mongodb://127.0.0.1:27017/')
-    # db = client['MyDiary']
-    from django.conf import settings
-    db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+    client = MongoClient('mongodb://127.0.0.1:27017/')
+    db = client['MyDiary']
+    # from django.conf import settings
+    # db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
     collections = [
         db.accommodations,
@@ -136,11 +142,16 @@ def get_place_details(request, contentid):
 
     place_details = None
     for collection in collections:
-        place_details = collection.find_one({"contentid": contentid})
+        place_details = collection.find_one({"contentid": str(contentid)})
         if place_details:
+            logger.debug(f"Found place details in collection: {collection.name}")
             break
+        else:
+            logger.debug(f"Did not find contentid: {contentid} in collection: {collection.name}")
+
 
     if not place_details:
+        logger.warning(f"Place with contentid {contentid} not found in any collection.")
         return JsonResponse({'error': 'Place not found'}, status=404)
 
     response_data = {
@@ -153,14 +164,45 @@ def get_place_details(request, contentid):
 
     return JsonResponse(response_data)
 
+@login_required
+def get_user_info(request, user_email=None):
+    # 사용자 정보 가져오기
+    try:
+        user = User.objects.get(email=user_email)
+    except User.MultipleObjectsReturned:
+        user = User.objects.filter(email=user_email).first()
 
+    return user
 
-# 사용자 일정 불러오기
-def view_schedule(request):
-    user_id = request.GET.get('user_id')
-    schedules = list(db.schedules.find({'user_id': user_id}))
+@login_required
+def user_schedules(request):
+    # 현재 로그인한 사용자의 정보를 가져옴
+    user = get_user_info(request)
 
-    return render(request, 'recommendations/view_schedule.html', {'schedules': schedules})
+    # MongoDB에서 해당 사용자의 모든 일정 가져오기
+    schedules = list(db.plans.find({'email': user.email}, {'plan_title': 1, 'plan_id': 1, '_id': 0}))
+
+    # 사용자 일정 리스트를 템플릿에 전달
+    return render(request, 'recommendations/user_schedules.html', {'schedules': schedules})
+
+@login_required
+def delete_plan(request, plan_id):
+    if request.method == 'POST':
+        try:
+            # 현재 로그인한 사용자의 이메일 가져오기
+            user_email = request.user.email
+
+            # MongoDB에서 해당 일정 삭제
+            result = db.plans.delete_one({'plan_id': plan_id, 'email': user_email})
+
+            if result.deleted_count > 0:
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'message': 'Plan not found or not authorized'}, status=404)
+        except Exception as e:
+            logger.error(f"Error deleting plan: {e}")
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
 # 메인 페이지
 def index(request):

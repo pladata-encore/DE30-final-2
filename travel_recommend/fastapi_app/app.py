@@ -1,5 +1,4 @@
 import ast
-
 import bson
 import pymongo
 import uvicorn
@@ -11,7 +10,6 @@ from typing import List, Any, Dict, Optional
 from pydantic import BaseModel
 import numpy as np
 import pandas as pd
-import random
 import math
 import os
 from konlpy.tag import Komoran
@@ -27,7 +25,24 @@ import json
 from requests import request
 import uuid
 import django
+from pathlib import Path
+import requests
+from itertools import permutations
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+import sys
+
+# Django 프로젝트 루트 디렉토리를 sys.path에 추가
+sys.path.append(str(BASE_DIR))
+
+# 프로젝트의 루트 디렉토리 경로 설정
+PROJECT_ROOT = 'myproject.settings'
+
+# Django 설정 로드
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', PROJECT_ROOT)
+django.setup()
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -47,24 +62,13 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-import sys
-# Django 프로젝트 루트 디렉토리를 sys.path에 추가
-sys.path.append(str(BASE_DIR))
 
 # nickname api
 from diaryapp.fastapi_app.nickname_app import generate_nickname
 
-# 프로젝트의 루트 디렉토리 경로 설정
-PROJECT_ROOT = 'myproject.settings'
-
-# Django 설정 로드
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', PROJECT_ROOT)
-django.setup()
 
 # MongoDB 클라이언트 설정
-client = pymongo.MongoClient('mongodb://localhost:27017')
+client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
 db = client['MyDiary']
 # from django.conf import settings
 # db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
@@ -373,6 +377,29 @@ def transform_object_id(data):
         return {k: (str(v) if isinstance(v, bson.ObjectId) else v) for k, v in data.items()}
     return data
 
+class RearrangeRouteRequest(BaseModel):
+    start_location: str
+
+# Kakao Maps API를 사용해 주소를 좌표로 변환하는 함수
+def get_coordinates_from_address(address):
+    try:
+        url = "https://dapi.kakao.com/v2/local/search/address.json"
+        headers = {"Authorization": "KakaoAK 36240635035dd7609b9cd7b7ccbd2d1b"}  # 여기에 Kakao REST API 키를 입력
+        params = {"query": address}
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        result = response.json()
+        if result['documents']:
+            x = float(result['documents'][0]['x'])
+            y = float(result['documents'][0]['y'])
+            return (x, y)
+        else:
+            raise ValueError("No coordinates found for this address")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch coordinates: {str(e)}")
+
+
+
 def recommend(user_input, df, day, used_ids):
     if not isinstance(user_input, UserInput):
         user_input = UserInput(**user_input)
@@ -602,8 +629,63 @@ def recommend(user_input, df, day, used_ids):
     logger.info(f"Day {day} recommendation process completed")
     return recommendations
 
+# 유클리드 거리 계산 함수
+def calculate_distance(point1, point2):
+    return haversine(point1[1], point1[0], point2[1], point2[0])
+
+# 일정별 전체 경로 계산
+def calculate_total_distance(route, locations):
+    total_distance = 0
+    for i in range(len(route) -1):
+        start = locations[route[i]]
+        end = locations[route[i+1]]
+        total_distance += haversine(start[1], start[0], end[1], end[0])
+    return total_distance
+
+def solve_tsp(locations):
+    # 유효한 좌표만 사용 (0이거나 변환할 수 없는 좌표 제거)
+    valid_locations = []
+    for loc in locations:
+        try:
+            x, y = float(loc[0]), float(loc[1])
+            if x != 0 and y != 0:
+                valid_locations.append((x, y))
+        except ValueError:
+            continue  # 변환 불가한 값은 무시
+
+    num_points = len(valid_locations)
+
+    if num_points == 0:
+        return [], 0  # 유효한 위치가 없는 경우 빈 경로와 0 반환
+
+    # 모든 가능한 경로의 순열을 생성
+    permutations_of_points = permutations(range(num_points))
+
+    min_distance = float('inf')
+    best_route = None
+
+    # 모든 경로에 대해 거리 계산
+    for perm in permutations_of_points:
+        current_distance = 0
+
+        for i in range(num_points - 1):
+            current_distance += calculate_distance(valid_locations[perm[i]], valid_locations[perm[i + 1]])
+
+        if current_distance < min_distance:
+            min_distance = current_distance
+            best_route = perm
+
+    # 최적 경로 반환
+    if best_route:
+        optimal_route = [locations[i] for i in best_route]
+        return optimal_route, min_distance
+    else:
+        return [], 0
+
+import fastapi
+from fastapi import Request
 @app.post("/recommend", response_model=Dict[str, Any])
-async def recommend_schedule(user_input: UserInput):
+async def recommend_schedule(user_input: UserInput, request: Request):
     try:
         logger.debug("Received POST request to /recommend")
         logger.debug(f"Raw user input: {user_input}")
@@ -650,6 +732,7 @@ async def recommend_schedule(user_input: UserInput):
         for day in range(num_days):
             daily_recommendations = recommend(user_input, df, day, used_ids)
             used_ids.update([rec['contentid'] for rec in daily_recommendations])
+
             itinerary.append({
                 'date': (start_date + timedelta(days=day)).strftime('%Y-%m-%d'),
                 'recommendations': transform_object_id(daily_recommendations)
@@ -658,12 +741,24 @@ async def recommend_schedule(user_input: UserInput):
 
         # MongoDB에 일정 저장
         plan_id = str(uuid.uuid4())
+
+        user_email = None
+        # 사용자 정보를 Django API로부터 가져오기
+        response = requests.get('http://127.0.0.1:8000/api/get_user_info/', cookies=request.cookies)
+
+        if response.status_code == 200:
+            user_info = response.json()
+            user_email = user_info.get('email')
+
+            if not user_email:
+                raise HTTPException(status_code=401, detail="User not authenticated")
+
         plan_data = {
             'plan_id': plan_id,
             'province': user_input.region,
             'city': user_input.subregion,
             'plan_title': f"{user_input.region}의 여행 일정",
-            'email': request.user.email,  # 이 부분은 실제 이메일로 교체해야 합니다.
+            'email': user_email,  # 이 부분은 실제 이메일로 교체해야 합니다.
             'days': itinerary
         }
         db.plan.insert_one(plan_data)
@@ -676,7 +771,7 @@ async def recommend_schedule(user_input: UserInput):
         logger.error(f"Validation Error: {ve}")
         raise HTTPException(status_code=422, detail=str(ve))
     except Exception as e:
-        logger.error(f"Error during recommendatiㅁons: {e}")
+        logger.error(f"Error during recommendations: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -707,6 +802,58 @@ async def get_plan(plan_id: str):
         logger.error(f"Error fetching plan: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+@app.post("/rearrange_route/{plan_id}")
+async def rearrange_route(plan_id: str, request: RearrangeRouteRequest):
+    try:
+        logger.info(f"Rearranging route for plan_id: {plan_id} with start location: {request.start_location}")
+        # 사용자가 입력한 출발 위치의 좌표를 가져옵니다.
+        start_coord = get_coordinates_from_address(request.start_location)
+
+        # MongoDB에서 plan_id에 해당하는 일정을 조회합니다.
+        plan_data = db.plan.find_one({"plan_id": plan_id})
+        if not plan_data:
+            raise HTTPException(status_code=404, detail="Plan not found")
+
+        # 기존 일정에서 모든 좌표를 추출합니다.
+        waypoints = []
+        for day in plan_data["days"]:
+            for recommendation in day["recommendations"]:
+                mapx = float(recommendation["mapx"])
+                mapy = float(recommendation["mapy"])
+                waypoints.append((mapx, mapy))
+
+        if not waypoints:
+            raise HTTPException(status_code=400, detail="No waypoints found in the itinerary")
+
+        # 출발 좌표와 기존 좌표를 합쳐서 전체 경로를 만듭니다.
+        all_locations = [start_coord] + waypoints
+
+        # TSP 문제를 풀어 최적의 경로를 계산합니다.
+        optimal_route = solve_tsp(all_locations)
+
+        # 최적 경로에 따른 새로운 일정을 생성합니다.
+        new_itinerary = {
+            "success": True,
+            "new_itinerary": []
+        }
+
+        for day_index, day in enumerate(plan_data["days"]):
+            new_day_recommendations = []
+            for waypoint_index in optimal_route[1:]:  # 출발지 제외
+                original_recommendation = day["recommendations"][waypoint_index - 1]  # 인덱스 조정
+                new_day_recommendations.append(original_recommendation)
+            new_itinerary["new_itinerary"].append({
+                "date": day["date"],
+                "recommendations": new_day_recommendations
+            })
+
+        return new_itinerary
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Travel Recommendation API!"}
@@ -725,4 +872,4 @@ async def nickname_app(plan_id: str = Query(...), content: str = Query(...)):
 
 if __name__=="__main__":
     # uvicorn.run("fastapi_app.app:app", host="0.0.0.0", port=5000, reload=True)
-    uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)
+    uvicorn.run("app:app", host="127.0.0.1", port=5000, reload=True)

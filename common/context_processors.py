@@ -1,10 +1,13 @@
 from django.conf import settings
 from pymongo import MongoClient
-
+import pymongo
 from diaryapp.views.badge_views import get_main_badge
 
 # MongoDB 클라이언트 설정
-db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
+# db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']['CLIENT']]
+# MongoDB 클라이언트 설정
+client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
+db = client['MyDiary']
 
 # 컬렉션
 user_collection_social = db['users_usermodel']

@@ -38,7 +38,7 @@ def viewDiary(request, user_email=None):
     user_info = get_user(request, user_email)
     user = user_info['user']
     is_own_page = user_info['is_own_page']
-    print(f'-------------------------------viewDiary--user_email---------{user['email']}')
+    print(f'-------------------------------viewDiary--user_email---------{user.email}')
 
     # 사용자 다이어리 전체 이름 가져오기
     user['title_diary'] = user.get('title_diary', f"{user.get('username', '즐거운 여행자')}의 여행 다이어리")
