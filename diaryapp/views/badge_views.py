@@ -10,10 +10,7 @@ from django.http import JsonResponse
 from .nickname_views import get_nickname
 
 # MongoDB 클라이언트 설정
-# db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
-# MongoDB 클라이언트 설정
-client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
-db = client['MyDiary']
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
 collection = db['areaBaseList']
@@ -28,9 +25,12 @@ nickname_collection = db['diaryapp_nickname']
 #@login_required
 def list_badge(request):
 
+    # user_email = request.user.email
+    # 로그인 사용자 예시 이메일
+    user_email = settings.DEFAULT_FROM_EMAIL
     #로그인 사용자 이메일
-    user_email = request.session.get('userSession')
-    print(f'-----------------user_email_session-----list_badge------------{user_email}')
+    #user_email = request.session.get('userSession')
+    #print(f'-----------------user_email_session-----list_badge------------{user_email}')
 
     # 대표 별명 가져 오기
     nickname_main = nickname_collection.find_one({"user_email": user_email, "is_main": True})
@@ -91,8 +91,11 @@ def set_main_badge(request):
     nickname_id = request.POST.get('nickname_id')
 
     # 로그인 사용자 이메일
-    user_email = request.session.get('userSession')
-    print(f'-----------------user_email_session-----set_main_badge------------{user_email}')
+    #user_email = request.session.get('userSession')
+    #print(f'-----------------user_email_session-----set_main_badge------------{user_email}')
+    # user_email = request.user.email
+    # 로그인 사용자 예시 이메일
+    user_email = settings.DEFAULT_FROM_EMAIL
 
     # 현재 대표 뱃지
     current_main_nickname = nickname_collection.find_one({"user_email": user_email, "is_main": True})
@@ -119,8 +122,11 @@ def unset_main_badge(request):
     nickname_id = request.POST.get('nickname_id')
 
     # 로그인 사용자 이메일
-    user_email = request.session.get('userSession')
-    print(f'-----------------user_email_session-----unset_main_badge------------{user_email}')
+    # user_email = request.session.get('userSession')
+    # print(f'-----------------user_email_session-----unset_main_badge------------{user_email}')
+    # user_email = request.user.email
+    # 로그인 사용자 예시 이메일
+    user_email = settings.DEFAULT_FROM_EMAIL
 
     # 선택된 닉네임의 is_main 필드를 삭제
     nickname_collection.update_one(

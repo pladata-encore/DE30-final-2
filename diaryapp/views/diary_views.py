@@ -20,8 +20,7 @@ db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
 collection = db['areaBaseList']
-user_collection_social = db['users_usermodel']
-user_collection_basic = db['users']
+user_collection = db['users_usermodel']
 diary_collection = db['diaryapp_aiwritemodel']
 image_collection = db['diaryapp_imagemodel']
 plan_collection = db['plan']
@@ -38,7 +37,7 @@ def viewDiary(request, user_email=None):
     user_info = get_user(request, user_email)
     user = user_info['user']
     is_own_page = user_info['is_own_page']
-    print(f'-------------------------------viewDiary--user_email---------{user.email}')
+
 
     # 사용자 다이어리 전체 이름 가져오기
     user['title_diary'] = user.get('title_diary', f"{user.get('username', '즐거운 여행자')}의 여행 다이어리")
@@ -202,25 +201,13 @@ def viewDiary(request, user_email=None):
 def save_title_diary(request):
     if request.method == 'POST':
         title = request.POST.get('title')
-
-        # 로그인 사용자 이메일
-        user_email = request.session.get('userSession')
-        print(f'-------------------------------save_title_diary--session---------{user_email}')
+        # user_email = request.user.email
+        # 로그인 사용자 예시 이메일
+        user_email = settings.DEFAULT_FROM_EMAIL
 
         try:
-            user_basic = user_collection_basic.find_one({'email': user_email})
-            user_social = user_collection_social.find_one({'email': user_email})
-
-            if user_social:
-                user = user_social
-                current_title = user.get('title_diary', '')
-                collection_to_update = user_collection_social
-            elif user_basic:
-                user = user_basic
-                current_title = user.get('title_diary', '')
-                collection_to_update = user_collection_basic
-            else:
-                return JsonResponse({'success': False, 'message': '사용자를 찾을 수 없습니다.'})
+            user = user_collection.find_one({'email': user_email})
+            current_title = user.get('title_diary', '')
 
             if title == current_title:
                 return JsonResponse({'success': True})
@@ -228,7 +215,7 @@ def save_title_diary(request):
             if not title:
                 title = f"{user.get('username', '즐거운 여행자')}의 여행 다이어리"
 
-            result = collection_to_update.update_one(
+            result = user_collection.update_one(
                 {'email': user_email},
                 {'$set': {'title_diary': title}}
             )

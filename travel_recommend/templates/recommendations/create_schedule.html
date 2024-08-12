@@ -50,6 +50,9 @@
         .carousel-item {
             padding: 20px;
         }
+        .carousel-inner {
+            width: 100%;
+        }
         .form-navigation {
             display: flex;Docker Desktop - WSL distro terminated abruptly
 A WSL distro that Docker Desktop relies on has exited unexpectedly. This usually happens as a result of an external entity terminating WSL (e.g. running wsl --shutdown). Restart Docker Desktop. If the issue persists, collect diagnostics and submit an issue⁠.
@@ -111,6 +114,7 @@ running wsl-bootstrap: exit status 1
             display: none;
             position: fixed;
             z-index: 1;
+            padding-top: 100px;
             left: 0;
             top: 0;
             width: 100%;
@@ -790,60 +794,60 @@ running wsl-bootstrap: exit status 1
                                         </div>
                                     </div>
 
-                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '게스트하우스')">
-                                        <div class="card-body">
-                                            <p class="card-text">게스트하우스</p>
-                                        </div>
+                                <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '게스트하우스')">
+                                    <div class="card-body">
+                                        <p class="card-text">게스트하우스</p>
                                     </div>
-                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '유스호스텔')">
-                                        <div class="card-body">
-                                            <p class="card-text">유스호스텔</p>
-                                        </div>
+                                </div>
+                                <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '유스호스텔')">
+                                    <div class="card-body">
+                                        <p class="card-text">유스호스텔</p>
                                     </div>
-                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '민박')">
-                                        <div class="card-body">
-                                            <p class="card-text">민박</p>
-                                        </div>
+                                </div>
+                                <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '민박')">
+                                    <div class="card-body">
+                                        <p class="card-text">민박</p>
                                     </div>
-                                    <div class="card custom-option-card" onclick="toggleSelection(this, 'accommodation_type', '한옥')">
-                                        <div class="card-body">
-                                            <p class="card-text">한옥</p>
-                                        </div>
+                                </div>
+                                <div class="card option-card" onclick="toggleSelection(this, 'accommodation_type', '한옥')">
+                                    <div class="card-body">
+                                        <p class="card-text">한옥</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div id="accommodation-detail-input" class="form-group" style="display: none; margin-top: 20px;">
-                            <label for="accommodation_detail">숙소와 관련해서 더 원하는 사항이 있으면 자유롭게 입력해주세요</label>
-                            <input type="text" name="accommodation_detail" id="accommodation_detail" class="form-control" placeholder="예시: 어린 아이가 놀기 좋은 수영장이 있는 펜션을 원해요" />
                         </div>
                     </div>
-                    <div class="carousel-item">
-                        <div class="form-group">
-                            <h2>6. 여행 취향 선택</h2>
-                            <label>당신의 여행 취향을 선택하세요</label>
-                            <div class="custom-card-deck">
-                                <div class="card custom-option-card" onclick="toggleSelection(this, 'travel_preference', '느긋한 여행')">
-                                    <div class="card-body">
-                                        <p class="card-text">느긋한 여행</p>
-                                    </div>
-                                </div>
-                                <div class="card custom-option-card" onclick="toggleSelection(this, 'travel_preference', '부지런한 여행')">
-                                    <div class="card-body">
-                                        <p class="card-text">부지런한 여행</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="accommodation-detail-input" class="form-group" style="display: none; margin-top: 20px;">
+                        <label for="accommodation_detail">숙소와 관련해서 더 원하는 사항이 있으면 자유롭게 입력해주세요</label>
+                        <input type="text" name="accommodation_detail" id="accommodation_detail" class="form-control" placeholder="예시: 어린 아이가 놀기 좋은 수영장이 있는 펜션을 원해요" />
                     </div>
                 </div>
-                <div class="form-navigation">
-                    <button class="btn btn-primary" type="button" id="prevBtn" style="display: none;">이전</button>
-                    <button class="btn btn-primary" type="button" id="nextBtn">다음</button>
+                <div class="carousel-item">
+                    <div class="form-group">
+                        <h2>6. 여행 취향 선택</h2>
+                        <label>당신의 여행 취향을 선택하세요</label>
+                        <div class="card-deck">
+                            <div class="card option-card" onclick="toggleSelection(this, 'travel_preference', '느긋한 여행')">
+                                <div class="card-body">
+                                    <p class="card-text">느긋한 여행</p>
+                                </div>
+                            </div>
+                            <div class="card option-card" onclick="toggleSelection(this, 'travel_preference', '바삐 돌아다니는 여행')">
+                                <div class="card-body">
+                                    <p class="card-text">바삐 돌아다니는 여행</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button type="button" id="recommend-btn" class="btn btn-success mt-3" style="display: none;">추천 받기</button>
-        </form>
+            <div class="form-navigation">
+                <button class="btn btn-primary" type="button" id="prevBtn" style="display: none;">이전</button>
+                <button class="btn btn-primary" type="button" id="nextBtn">다음</button>
+            </div>
+        </div>
+        <button type="button" id="recommend-btn" class="btn btn-success mt-3" style="display: none;">추천 받기</button>
+    </form>
 
         <div id="validationModal" class="modal">
             <div class="modal-content">

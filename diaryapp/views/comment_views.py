@@ -32,11 +32,8 @@ def create_comment(request, unique_diary_id):
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            # # comment.user_email = request.user.email  # 로그인한 사용자의 이메일로 설정 - 계정이 요상하게 들어감
-            # comment.user_email = settings.DEFAULT_FROM_EMAIL  # 로그인한 사용자의 이메일로 설정 - 계정이 요상하게 들어감
-            # 로그인 사용자 이메일
-            comment.user_email = request.session.get('userSession')
-            print(f'-----------------user_email_session-----create_comment------------{comment.user_email}')
+            # comment.user_email = request.user.email  # 로그인한 사용자의 이메일로 설정 - 계정이 요상하게 들어감
+            comment.user_email = settings.DEFAULT_FROM_EMAIL  # 로그인한 사용자의 이메일로 설정 - 계정이 요상하게 들어감
             comment.save()
             comment.diary_id.set([diary])  # ManyToMany 관계 설정
             return redirect('detail_diary_by_id', unique_diary_id=unique_diary_id)
@@ -62,26 +59,10 @@ def list_comment(request, unique_diary_id):
 ''' 댓글 삭제하기
     # 로그인된 사용자와 해당 댓글 작성자가 일치할 경우에만 삭제버튼 활성화 '''
 # @login_required
-# def delete_comment(request, diary_id, comment_id):
-#     comment = get_object_or_404(CommentModel, comment_id=comment_id)
-#     # 로그인 사용자 이메일
-#     user_email = request.session.get('userSession')
-#     print(f'-----------------user_email_session-----delete_comment------------{user_email}')
-#
-#     if comment.user_email != user_email:
-#         raise PermissionDenied("You do not have permission to delete this comment.")
-#     comment.delete()
-#     return redirect('detail_diary_by_id', unique_diary_id=diary_id)
-
 def delete_comment(request, diary_id, comment_id):
     comment = get_object_or_404(CommentModel, comment_id=comment_id)
-    # user_email = request.user.email
-    # 로그인 사용자 이메일
-    user_email = request.session.get('userSession')
-    print(f'-----------------user_email_session-----delete_comment------------{user_email}')
-    if comment.user_email != user_email:
-        messages.error(request, '댓글 작성자만 삭제할 수 있습니다!')
-    else:
-        comment.delete()
-        messages.success(request, '댓글이 삭제되었습니다.')
+    # if comment.user_email != request.user.email:
+    if comment.user_email != settings.DEFAULT_FROM_EMAIL:
+        raise PermissionDenied("You do not have permission to delete this comment.")
+    comment.delete()
     return redirect('detail_diary_by_id', unique_diary_id=diary_id)

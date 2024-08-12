@@ -8,12 +8,7 @@ import gzip
 from io import BytesIO
 
 # MongoDB 클라이언트 설정
-# db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
-
-
-# MongoDB 클라이언트 설정
-client = pymongo.MongoClient('mongodb://127.0.0.1:27017')
-db = client['MyDiary']
+db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
 collection = db['areaBaseList']

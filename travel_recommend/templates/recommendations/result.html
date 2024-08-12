@@ -216,8 +216,10 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // 카카오맵 스크립트 로드
             var kakaoScript = document.createElement('script');
             kakaoScript.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=2993b12f7f8eef3e44d407aac5b8ab3a&autoload=false';
             kakaoScript.onload = function() {
@@ -234,6 +236,7 @@
 
                 var map = new kakao.maps.Map(mapContainer, mapOption);
 
+                // 각 일자의 일정을 저장할 변수
                 var itinerary = {{ itinerary|safe }};
 
                 function showMapForDay(dayIndex) {
@@ -382,8 +385,7 @@
                     });
                 });
 
-                showMapForDay(0);
-
+                // 탭 클릭 시 해당 일자의 지도를 표시합니다
                 $('#itineraryTabs a').on('click', function (e) {
                     e.preventDefault();
                     $(this).tab('show');

@@ -1,4 +1,5 @@
 import ast
+
 import bson
 import pymongo
 import uvicorn
@@ -10,6 +11,7 @@ from typing import List, Any, Dict, Optional
 from pydantic import BaseModel
 import numpy as np
 import pandas as pd
+import random
 import math
 import os
 from konlpy.tag import Komoran
@@ -872,4 +874,4 @@ async def nickname_app(plan_id: str = Query(...), content: str = Query(...)):
 
 if __name__=="__main__":
     # uvicorn.run("fastapi_app.app:app", host="0.0.0.0", port=5000, reload=True)
-    uvicorn.run("app:app", host="127.0.0.1", port=5000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)

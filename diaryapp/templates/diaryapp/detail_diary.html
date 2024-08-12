@@ -48,7 +48,7 @@
 
             <!-- 리스트로 돌아가는 버튼 -->
             <button class="btn-diary-action">
-                <a href="{% url 'list_user_diary' %}">리스트로 돌아가기</a>
+                <a href="{% url 'list_diary' %}">리스트로 돌아가기</a>
             </button>
         </div>
         <br/><br/>
@@ -82,7 +82,9 @@
                         {{ comment.created_at|date:"Y년 n월 j일" }}
                     </div>
                     <p>{{ comment.comment }}</p>
-                    <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}" class="btn-diary-action">댓글 삭제</a>
+                    {% if request.user.email == comment.user_email %}
+                        <a href="{% url 'delete_comment' diary.unique_diary_id comment.comment_id %}">댓글 삭제</a>
+                    {% endif %}
                     <hr>
                 {% empty %}
                     <p>댓글이 없습니다.</p>
