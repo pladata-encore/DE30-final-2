@@ -1,6 +1,6 @@
 import logging
 import uuid
-
+from django.http import HttpRequest
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from pymongo import MongoClient
@@ -95,7 +95,7 @@ def results(request, plan_id):
     try:
         logger.info(f"Fetching plan with plan_id: {plan_id}")
         # FastAPI 서버에서 일정 정보 가져옴
-        response = requests.get(f'http://localhost:5000/plan/{plan_id}')
+        response = requests.get(f'http://127.0.0.1:5000/plan/{plan_id}')
         logger.info(f"^^^^^^^^^Response from FastAPI for plan_id: {response}")
         response_data = response.json()
         logger.info(f"Response from FastAPI for plan_id {plan_id}: {response_data}")
@@ -164,15 +164,22 @@ def get_place_details(request, contentid):
 
     return JsonResponse(response_data)
 
-@login_required
-def get_user_info(request, user_email=None):
-    # 사용자 정보 가져오기
-    try:
-        user = User.objects.get(email=user_email)
-    except User.MultipleObjectsReturned:
-        user = User.objects.filter(email=user_email).first()
 
-    return user
+@login_required
+def get_user_info(request: HttpRequest, user_email=None):
+    # get_user 함수를 통해 사용자 정보를 가져옵니다.
+    user_info = get_user(request, user_email)
+
+    if not user_info or not user_info.get('user'):
+        # 사용자 정보를 찾지 못한 경우 오류 응답을 반환합니다.
+        return JsonResponse({'error': 'User not found or not logged in'}, status=404)
+
+    # 사용자 정보를 JSON으로 반환합니다.
+    return JsonResponse({
+        'email': user_info['user']['email'],
+        'username': user_info['user'].get('username', ''),
+        'is_own_page': user_info['is_own_page']
+    })
 
 @login_required
 def user_schedules(request):

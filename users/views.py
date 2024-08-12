@@ -62,7 +62,7 @@ db = settings.MONGO_CLIENT[settings.DATABASES['default']['NAME']]
 
 # 컬렉션
 user_collection = db['users']
-user_model_collection = db['users_model']
+# user_model_collection = db['users_model']
 
 #-------------------------설아 도커-------------------------------------------------------------------
 class User:

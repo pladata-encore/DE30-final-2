@@ -746,7 +746,8 @@ async def recommend_schedule(user_input: UserInput, request: Request):
 
         user_email = None
         # 사용자 정보를 Django API로부터 가져오기
-        response = requests.get('http://127.0.0.1:8000/api/get_user_info/', cookies=request.cookies)
+        response = requests.get('http://127.0.0.1:8000/travel/api/get_user_info/', cookies=request.cookies)
+        logger.info(f"Response text: {response.text}")
 
         if response.status_code == 200:
             user_info = response.json()
